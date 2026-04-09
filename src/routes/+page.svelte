@@ -1,54 +1,55 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 
-	const formats = [
+	const highlights = [
 		{
-			name: 'Events',
-			copy: 'High-impact guest capture for launches, galas, weddings, and premium parties.'
+			name: 'Your photo, elevated',
+			copy: 'A selected image is transformed into a luminous holographic magnet with a polished, dimensional finish.'
 		},
 		{
-			name: 'Retail',
-			copy: 'Window, in-store, and pop-up holographic moments that stop people mid-walk.'
+			name: 'Optional personal touch',
+			copy: 'Add handwritten notes, signatures, dates, or a custom drawing layer to make the piece unmistakably yours.'
 		},
 		{
-			name: 'Portraits',
-			copy: 'Commissioned holographic portrait pieces built to feel collectible and cinematic.'
+			name: 'Made to gift and keep',
+			copy: 'Designed as a high-quality keepsake that feels more special than a standard print or magnet.'
 		}
 	];
 
-	const pillars = [
-		'Layered light, motion, and reflective depth',
-		'Designed to feel sculptural, not novelty',
-		'Portable formats for touring or one-night installs',
-		'Creative direction included from concept through capture'
+	const steps = [
+		'Choose the photo that means the most',
+		'Add optional handwriting, a note, or a custom sketch',
+		'We turn it into a polished holographic magnet',
+		'It arrives ready to gift, display, or keep close'
 	];
 </script>
 
 <svelte:head>
-	<title>Holographe | Holographic Photo Experiences</title>
+	<title>Holographe | Personalized Holographic Photo Magnets</title>
 	<meta
 		name="description"
-		content="Holographe produces immersive holographic photo moments for events, installations, brand activations, and private celebrations."
+		content="Holographe creates premium personalized holographic photo magnets with optional handwriting and drawing add-ons."
 	/>
 </svelte:head>
 
 <section class="section hero-section">
 	<div class="page-wrap hero-grid">
 		<div class="hero-copy">
-			<span class="eyebrow">Holographe Photo</span>
-			<h1>Photos that feel like light objects.</h1>
+			<span class="eyebrow">Premium Keepsake Product</span>
+			<h1>Your favorite photo, turned into a holographic magnet.</h1>
 			<p class="hero-text">
-				Holographe creates immersive holographic photo experiences that turn a portrait, memory, or
-				brand moment into something people stop and stare at.
+				Holographe is a personalized photo magnet designed to feel high quality, giftable, and
+				distinctive. Start with a meaningful image, then add optional handwriting or custom drawing
+				details for something far more personal than a standard print.
 			</p>
 			<div class="button-row">
-				<a class="button-primary" href={resolve('/contact')}>Start a project</a>
-				<a class="button-secondary" href={resolve('/gallery')}>View gallery</a>
+				<a class="button-primary" href={resolve('/contact')}>Start your order</a>
+				<a class="button-secondary" href={resolve('/formats')}>See personalization</a>
 			</div>
 			<div class="hero-points">
-				<span>Premium events</span>
-				<span>Brand activations</span>
-				<span>Collectible portraits</span>
+				<span>Personalized gift</span>
+				<span>Holographic finish</span>
+				<span>Optional handwriting or drawing</span>
 			</div>
 		</div>
 
@@ -59,16 +60,16 @@
 						<div class="holo-shine"></div>
 						<div class="holo-subject">
 							<p>HOLOGRAPHE</p>
-							<p>depth / light / reflection</p>
+							<p>photo / memory / keepsake</p>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="hero-note">
-				<p class="note-label">Signature feel</p>
+				<p class="note-label">Product direction</p>
 				<p>
-					A polished visual language built around refraction, motion, luminous edges, and
-					exhibition-level presentation.
+					Clean, premium, and emotional. The goal is to make a small object feel meaningful enough
+					to keep on display.
 				</p>
 			</div>
 		</div>
@@ -79,26 +80,30 @@
 	<div class="page-wrap intro-band glass-card">
 		<div class="section-head">
 			<span class="eyebrow">What it is</span>
-			<h2>Not a photo booth. Not a screen. Something in between.</h2>
+			<h2>Not a throwaway novelty magnet.</h2>
 			<p>
-				Holographe is for projects that need stronger presence than standard event photography and
-				more intimacy than a large-format installation.
+				This is a polished personalized product built around emotion, memory, and presentation. The
+				holographic finish makes it feel elevated. The optional personal add-ons make it yours.
 			</p>
 		</div>
 		<div class="intro-grid">
 			<div>
-				<p class="mini-title">Visual impact</p>
-				<p>The final result feels dimensional, reflective, and theatrical from multiple angles.</p>
-			</div>
-			<div>
-				<p class="mini-title">Creative control</p>
-				<p>Styling, lighting, backdrop behavior, and motion cues are part of the concept.</p>
-			</div>
-			<div>
-				<p class="mini-title">Flexible output</p>
+				<p class="mini-title">Premium look</p>
 				<p>
-					Built for one-night activations, permanent displays, campaign assets, or private
-					commissions.
+					Designed to feel crisp, dimensional, and high quality rather than casual or disposable.
+				</p>
+			</div>
+			<div>
+				<p class="mini-title">Personal meaning</p>
+				<p>
+					A favorite image becomes more intimate when paired with your own writing or drawn details.
+				</p>
+			</div>
+			<div>
+				<p class="mini-title">Made to keep</p>
+				<p>
+					It works as a thoughtful gift, an anniversary piece, a memorial keepsake, or a small
+					luxury object for everyday display.
 				</p>
 			</div>
 		</div>
@@ -108,11 +113,11 @@
 <section class="section">
 	<div class="page-wrap">
 		<div class="section-head">
-			<span class="eyebrow">Use cases</span>
-			<h2>Built for premium moments that need a new visual hook.</h2>
+			<span class="eyebrow">Highlights</span>
+			<h2>Simple product, stronger emotional value.</h2>
 		</div>
 		<div class="cards-grid">
-			{#each formats as format (format.name)}
+			{#each highlights as format (format.name)}
 				<article class="glass-card info-card">
 					<h3>{format.name}</h3>
 					<p>{format.copy}</p>
@@ -125,15 +130,15 @@
 <section class="section">
 	<div class="page-wrap split-band">
 		<div class="section-head">
-			<span class="eyebrow">Why Holographe</span>
-			<h2>Designed to feel elevated from the first glance.</h2>
+			<span class="eyebrow">How it works</span>
+			<h2>Built around one photo and one very personal detail.</h2>
 			<p>
-				The aesthetic direction is crisp, futuristic, and warm enough to feel human. The goal is not
-				tech for its own sake. The goal is memorability.
+				The site should feel easy to understand: choose the image, decide whether you want a note or
+				custom illustration added, then we produce the finished magnet.
 			</p>
 		</div>
 		<div class="glass-card checklist">
-			{#each pillars as pillar (pillar)}
+			{#each steps as pillar (pillar)}
 				<div class="check-item">
 					<span></span>
 					<p>{pillar}</p>
@@ -147,13 +152,12 @@
 	<div class="page-wrap cta-band glass-card">
 		<div>
 			<span class="eyebrow">Next step</span>
-			<h2>Tell me what you want people to feel when they see it.</h2>
+			<h2>Start with the photo. We&apos;ll shape the keepsake around it.</h2>
 			<p>
-				That is the best starting point for shaping the right Holographe format, capture approach,
-				and installation footprint.
+				If you know the image and the message, the rest of the order flow can be refined from there.
 			</p>
 		</div>
-		<a class="button-primary" href={resolve('/contact')}>Book a consultation</a>
+		<a class="button-primary" href={resolve('/contact')}>Start your order</a>
 	</div>
 </section>
 

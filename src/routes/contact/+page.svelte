@@ -2,7 +2,7 @@
 	<title>Contact | Holographe</title>
 	<meta
 		name="description"
-		content="Contact Holographe to discuss event installations, commissions, or holographic brand activations."
+		content="Contact Holographe to start an order for a personalized holographic photo magnet."
 	/>
 </svelte:head>
 
@@ -10,15 +10,15 @@
 	<div class="page-wrap contact-layout">
 		<div class="section-head">
 			<span class="eyebrow">Contact</span>
-			<h1>Let&apos;s shape the right format for the project.</h1>
+			<h1>Start your holographic magnet order.</h1>
 			<p>
-				Use this page as your intake point for events, commissions, retail displays, and creative
-				collaborations.
+				Use this form to tell us about the photo you want to use, whether you want handwriting or a
+				custom drawing added, and when you need it.
 			</p>
 			<div class="contact-notes glass-card">
 				<p>Email: hello@holographephoto.com</p>
 				<p>Website: holographephoto.com</p>
-				<p>Typical first step: a short creative consultation and scope review.</p>
+				<p>Best starting point: the photo, the occasion, and the personalization you want.</p>
 			</div>
 		</div>
 
@@ -32,18 +32,22 @@
 				<input type="email" name="email" placeholder="you@example.com" />
 			</label>
 			<label>
-				Project type
-				<input type="text" name="project" placeholder="Event, portrait, retail, activation..." />
+				Product type
+				<input
+					type="text"
+					name="project"
+					placeholder="Photo only, photo + handwriting, photo + drawing..."
+				/>
 			</label>
 			<label>
-				Project details
+				Order details
 				<textarea
 					name="details"
 					rows="6"
-					placeholder="Tell me about the audience, venue, timeline, and what you want the piece to feel like."
+					placeholder="Tell me about the photo, the occasion, the message or drawing you want added, and your timeline."
 				></textarea>
 			</label>
-			<button type="submit" class="button-primary">Send inquiry</button>
+			<button type="submit" class="button-primary">Send order inquiry</button>
 		</form>
 	</div>
 </section>

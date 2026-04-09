@@ -1,40 +1,40 @@
 <script lang="ts">
 	const formats = [
 		{
-			name: 'Signature Event Installation',
-			copy: 'A hero setup for galas, weddings, launches, and private events where the guest experience needs a central visual magnet.'
+			name: 'Photo only',
+			copy: 'A clean holographic magnet built from a single selected image for customers who want the premium finish without extra customization.'
 		},
 		{
-			name: 'Brand Activation Format',
-			copy: 'Designed for retail, experiential campaigns, and press moments where shareability and foot traffic both matter.'
+			name: 'Photo + handwriting',
+			copy: 'Add a personal note, date, signature, or short message so the magnet feels more intimate and specific.'
 		},
 		{
-			name: 'Commissioned Portrait Piece',
-			copy: 'A more intimate format for collectors, families, artists, or milestone gifting with a gallery-minded finish.'
+			name: 'Photo + custom drawing',
+			copy: 'Layer in a simple illustration, traced motif, or accent drawing to give the product a more bespoke visual identity.'
 		},
 		{
-			name: 'Window / Pop-Up Display',
-			copy: 'A visible-from-the-street format that creates curiosity before someone even walks into the room.'
+			name: 'Full custom keepsake',
+			copy: 'Combine the holographic photo with both writing and drawn elements for the richest, most personalized version of the product.'
 		}
 	];
 </script>
 
 <svelte:head>
-	<title>Formats | Holographe</title>
+	<title>Personalization | Holographe</title>
 	<meta
 		name="description"
-		content="Explore Holographe formats for events, retail installations, portraits, and custom commissions."
+		content="Explore Holographe personalization options including photo-only, handwriting add-ons, custom drawing add-ons, and fully customized keepsakes."
 	/>
 </svelte:head>
 
 <section class="section">
 	<div class="page-wrap">
 		<div class="section-head">
-			<span class="eyebrow">Formats</span>
-			<h1>Different footprints. Same cinematic effect.</h1>
+			<span class="eyebrow">Personalization</span>
+			<h1>Choose how personal you want the piece to feel.</h1>
 			<p>
-				The Holographe format should fit the audience, the venue, and the way people are expected to
-				interact with it.
+				The core product stays the same: a premium holographic photo magnet. What changes is how
+				much custom meaning gets layered into it.
 			</p>
 		</div>
 		<div class="format-grid">

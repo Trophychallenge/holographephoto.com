@@ -1,58 +1,58 @@
 <script lang="ts">
 	const systemCards = [
 		{
-			title: 'Capture',
-			copy: 'Portrait sessions are planned around controlled light, wardrobe contrast, and movement that reads well in reflective space.'
+			title: 'Holographic finish',
+			copy: 'The visual effect is the hero. The final magnet should catch light, shift subtly, and feel more dimensional than a normal printed keepsake.'
 		},
 		{
-			title: 'Build',
-			copy: 'Each piece is assembled around layers, reflective surfaces, and presentation formats chosen for the specific venue or use case.'
+			title: 'Photo-first design',
+			copy: 'Everything begins with a strong image selection, then the composition is refined so the final piece feels clean and intentional.'
 		},
 		{
-			title: 'Install',
-			copy: 'The final environment is tuned for sightline, ambient light, foot traffic, and the distance from first glance to close inspection.'
+			title: 'Giftable quality',
+			copy: 'The product direction should read as premium and polished, not novelty-store. That applies to layout, finish, packaging, and presentation.'
 		}
 	];
 </script>
 
 <svelte:head>
-	<title>Technology | Holographe</title>
+	<title>Product | Holographe</title>
 	<meta
 		name="description"
-		content="Learn how Holographe blends reflective materials, light control, layered surfaces, and motion cues into premium holographic photo experiences."
+		content="See how Holographe positions its personalized holographic photo magnet as a premium, design-led keepsake product."
 	/>
 </svelte:head>
 
 <section class="section">
 	<div class="page-wrap">
 		<div class="section-head">
-			<span class="eyebrow">Technology</span>
-			<h1>Depth is the product.</h1>
+			<span class="eyebrow">Product</span>
+			<h1>A small object designed to feel special.</h1>
 			<p>
-				The technical side of Holographe exists to support a single outcome: images that feel more
-				physical, luminous, and intriguing than a flat print or ordinary screen.
+				Holographe is not being sold as abstract tech. It is being sold as a premium personalized
+				holographic photo magnet that feels emotionally valuable and visually refined.
 			</p>
 		</div>
 		<div class="tech-hero glass-card">
 			<div>
-				<p class="label">Core system</p>
+				<p class="label">Core product idea</p>
 				<p>
-					Reflective layering, directed light, controlled contrast, and presentation design work
-					together so the image shifts as viewers move around it.
+					A personal photo becomes a keepsake with more presence, more light-play, and a more
+					finished feel than a flat print or basic magnet.
 				</p>
 			</div>
 			<div class="tech-grid">
 				<div>
 					<p class="metric">01</p>
-					<p>Refraction-minded composition</p>
+					<p>Premium holographic surface</p>
 				</div>
 				<div>
 					<p class="metric">02</p>
-					<p>Venue-specific lighting logic</p>
+					<p>Thoughtful photo selection</p>
 				</div>
 				<div>
 					<p class="metric">03</p>
-					<p>Display formats matched to audience flow</p>
+					<p>Personalized finishing options</p>
 				</div>
 			</div>
 		</div>
@@ -73,12 +73,12 @@
 <section class="section">
 	<div class="page-wrap glass-card technology-note">
 		<div>
-			<span class="eyebrow">Approach</span>
-			<h2>No gimmick language. Just a stronger visual experience.</h2>
+			<span class="eyebrow">Positioning</span>
+			<h2>High quality first. Personal second. Memorable throughout.</h2>
 		</div>
 		<p>
-			Holographe is most effective when the creative direction is restrained, intentional, and
-			well-produced. The result should feel like a premium object, not a temporary novelty.
+			The website should keep explaining the product in plain language: a personalized holographic
+			magnet, upgraded with design quality and optional handwritten or illustrated customization.
 		</p>
 	</div>
 </section>

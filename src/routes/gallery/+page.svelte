@@ -1,11 +1,11 @@
 <script lang="ts">
 	const galleryItems = [
-		'Editorial portrait with prismatic edge light',
-		'Luxury wedding keepsake installation',
-		'Product launch holographic reveal wall',
-		'Retail window portrait object',
-		'Artist commission with layered reflection',
-		'Private event centerpiece display'
+		'Couple portrait magnet with anniversary date',
+		'Pet photo magnet with handwritten note',
+		'Baby photo keepsake with custom illustration',
+		'Travel memory magnet with location script',
+		'Memorial magnet with signature detail',
+		'Minimal portrait magnet in premium packaging'
 	];
 </script>
 
@@ -13,7 +13,7 @@
 	<title>Gallery | Holographe</title>
 	<meta
 		name="description"
-		content="A preview gallery of Holographe's visual direction for holographic portraits, event installations, and brand moments."
+		content="Explore the visual direction for Holographe personalized holographic photo magnets and custom keepsake variations."
 	/>
 </svelte:head>
 
@@ -21,10 +21,10 @@
 	<div class="page-wrap">
 		<div class="section-head">
 			<span class="eyebrow">Gallery</span>
-			<h1>Reference moods and visual direction.</h1>
+			<h1>Reference directions for the product line.</h1>
 			<p>
-				This gallery is currently a curated style board while the first Holographe case studies are
-				assembled.
+				This is a style-forward preview of how the holographic magnet product can look across
+				gifting, romantic, family, memorial, and custom keepsake use cases.
 			</p>
 		</div>
 		<div class="gallery-grid">

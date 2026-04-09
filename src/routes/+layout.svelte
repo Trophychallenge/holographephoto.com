@@ -7,8 +7,8 @@
 
 	const navItems = [
 		{ href: '/', label: 'Home' },
-		{ href: '/technology', label: 'Technology' },
-		{ href: '/formats', label: 'Formats' },
+		{ href: '/technology', label: 'Product' },
+		{ href: '/formats', label: 'Personalization' },
 		{ href: '/gallery', label: 'Gallery' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
@@ -19,7 +19,7 @@
 	<title>Holographe</title>
 	<meta
 		name="description"
-		content="Holographe creates elevated holographic photo experiences for events, retail, and premium brand storytelling."
+		content="Holographe creates premium personalized holographic photo magnets with optional handwritten or illustrated add-ons."
 	/>
 </svelte:head>
 
@@ -29,7 +29,7 @@
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
 			<span class="brand-kicker">Holographe</span>
-			<span class="brand-name">Holographic Photo Experiences</span>
+			<span class="brand-name">Personalized Holographic Photo Magnets</span>
 		</a>
 		<nav class="site-nav" aria-label="Main navigation">
 			{#each navItems as item (item.href)}
@@ -46,15 +46,15 @@
 		<div>
 			<p class="footer-title">Holographe</p>
 			<p class="footer-copy">
-				Cinematic holographic photo installations for launches, galleries, weddings, and luxury
-				events.
+				Premium holographic photo magnets with optional personal handwriting and drawn details, made
+				to feel giftable, display-worthy, and personal.
 			</p>
 		</div>
 		<div class="footer-links">
-			<a href={resolve('/technology')}>Technology</a>
-			<a href={resolve('/formats')}>Formats</a>
+			<a href={resolve('/technology')}>Product</a>
+			<a href={resolve('/formats')}>Personalization</a>
 			<a href={resolve('/gallery')}>Gallery</a>
-			<a href={resolve('/contact')}>Book a consultation</a>
+			<a href={resolve('/contact')}>Start your order</a>
 		</div>
 		<p class="footer-meta">holographephoto.com</p>
 	</footer>
