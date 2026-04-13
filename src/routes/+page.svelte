@@ -198,6 +198,7 @@
 					>
 						<img class="hero-image" src={activePreview.src} alt={activePreview.alt} />
 						<div class="preview-overlay">{personalText || 'Your keepsake text'}</div>
+						<div class="zoom-chip">Click to enlarge</div>
 						<div class="spark spark-one"></div>
 						<div class="spark spark-two"></div>
 						<div class="shimmer-band"></div>
@@ -692,6 +693,19 @@
 		font-weight: 700;
 		text-align: center;
 		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+	}
+
+	.zoom-chip {
+		position: absolute;
+		top: 0.8rem;
+		left: 0.8rem;
+		padding: 0.35rem 0.65rem;
+		border-radius: 999px;
+		background: rgba(10, 10, 13, 0.76);
+		color: var(--accent-soft);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
 	}
 
 	.shimmer-band {

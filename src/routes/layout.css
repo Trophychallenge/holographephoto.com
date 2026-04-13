@@ -3,23 +3,19 @@
 @plugin '@tailwindcss/typography';
 
 :root {
-	--bg: #07111a;
-	--bg-soft: #0c1824;
-	--panel: rgba(10, 18, 29, 0.68);
-	--panel-strong: rgba(12, 22, 35, 0.88);
-	--text: #edf3f8;
-	--muted: #a9b8c7;
-	--accent: #9fe8ff;
-	--accent-2: #ffca87;
+	--bg: #060607;
+	--bg-soft: #0b0b0e;
+	--panel: rgba(12, 12, 15, 0.74);
+	--panel-strong: rgba(12, 12, 15, 0.9);
+	--text: #f7f0e2;
+	--muted: #c4b498;
+	--accent: #c7d8ff;
+	--accent-2: #d9b466;
 	--line: rgba(255, 255, 255, 0.12);
 	--shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
 	font-family: 'Space Grotesk', 'Avenir Next', sans-serif;
 	color: var(--text);
-	background:
-		radial-gradient(circle at 12% 12%, rgba(94, 214, 255, 0.22), transparent 24%),
-		radial-gradient(circle at 88% 18%, rgba(255, 184, 111, 0.18), transparent 22%),
-		radial-gradient(circle at 50% 120%, rgba(58, 113, 255, 0.16), transparent 28%),
-		linear-gradient(160deg, #07111a 0%, #0b1320 46%, #060c14 100%);
+	background: linear-gradient(180deg, #060607 0%, #0b0b0e 46%, #060607 100%);
 }
 
 :global(html) {
@@ -142,31 +138,6 @@
 	min-height: 100vh;
 }
 
-.ambient {
-	position: fixed;
-	inset: auto;
-	border-radius: 999px;
-	filter: blur(90px);
-	pointer-events: none;
-	opacity: 0.45;
-}
-
-.ambient-a {
-	top: 5rem;
-	left: -6rem;
-	width: 20rem;
-	height: 20rem;
-	background: rgba(159, 232, 255, 0.18);
-}
-
-.ambient-b {
-	right: -4rem;
-	top: 16rem;
-	width: 18rem;
-	height: 18rem;
-	background: rgba(255, 202, 135, 0.14);
-}
-
 .site-header {
 	position: sticky;
 	top: 0;
@@ -180,7 +151,7 @@
 	padding: 1rem 1.2rem;
 	border: 1px solid var(--line);
 	border-radius: 999px;
-	background: rgba(8, 14, 23, 0.72);
+	background: rgba(8, 8, 11, 0.82);
 	backdrop-filter: blur(18px);
 }
 
@@ -225,7 +196,7 @@
 	padding: 2rem;
 	border: 1px solid var(--line);
 	border-radius: 1.75rem;
-	background: rgba(8, 14, 23, 0.72);
+	background: rgba(8, 8, 11, 0.82);
 }
 
 .footer-title {

@@ -24,8 +24,6 @@
 </svelte:head>
 
 <div class="site-shell">
-	<div class="ambient ambient-a"></div>
-	<div class="ambient ambient-b"></div>
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
 			<span class="brand-kicker">Holographe</span>
