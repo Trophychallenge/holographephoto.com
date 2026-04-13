@@ -87,12 +87,18 @@
 	let activeVibeId = $state('soft');
 	let shimmerOn = $state(true);
 	let personalText = $state('Love you forever');
+	let expandedPreview = $state<Preview | null>(null);
 
 	const activeVibe = $derived(vibes.find((vibe) => vibe.id === activeVibeId) ?? vibes[0]);
 
 	function setPreview(preview: Preview) {
 		activePreview = preview;
 		activeVibeId = preview.vibe;
+	}
+
+	function openPreview(preview: Preview) {
+		setPreview(preview);
+		expandedPreview = preview;
 	}
 </script>
 
@@ -183,13 +189,19 @@
 						</label>
 					</div>
 
-					<div class:shimmer-on={shimmerOn} class="hero-image-wrap">
+					<button
+						type="button"
+						class:shimmer-on={shimmerOn}
+						class="hero-image-wrap"
+						aria-label={`Enlarge ${activePreview.label.toLowerCase()} preview`}
+						onclick={() => openPreview(activePreview)}
+					>
 						<img class="hero-image" src={activePreview.src} alt={activePreview.alt} />
 						<div class="preview-overlay">{personalText || 'Your keepsake text'}</div>
 						<div class="spark spark-one"></div>
 						<div class="spark spark-two"></div>
 						<div class="shimmer-band"></div>
-					</div>
+					</button>
 
 					<div class="preview-picker" aria-label="Preview examples">
 						{#each previews as preview}
@@ -219,8 +231,8 @@
 					<button
 						type="button"
 						class={`stage-card ${index === 0 ? 'stage-card-small' : index === 1 ? 'stage-card-large' : 'stage-card-medium'}`}
-						aria-label={`Show ${preview.label.toLowerCase()} preview`}
-						onclick={() => setPreview(preview)}
+						aria-label={`Enlarge ${preview.label.toLowerCase()} preview`}
+						onclick={() => openPreview(preview)}
 					>
 						<img src={preview.src} alt={preview.alt} />
 					</button>
@@ -267,6 +279,34 @@
 			</div>
 		</section>
 	</main>
+
+	{#if expandedPreview}
+		<div
+			class="lightbox"
+			role="presentation"
+			onclick={(event) => {
+				if (event.target === event.currentTarget) expandedPreview = null;
+			}}
+		>
+			<div
+				class="lightbox-dialog"
+				role="dialog"
+				aria-modal="true"
+				aria-label="Expanded photo preview"
+			>
+				<button
+					type="button"
+					class="lightbox-close"
+					aria-label="Close enlarged preview"
+					onclick={() => (expandedPreview = null)}
+				>
+					Close
+				</button>
+				<img class="lightbox-image" src={expandedPreview.src} alt={expandedPreview.alt} />
+				<p class="lightbox-label">{expandedPreview.label}</p>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -622,6 +662,9 @@
 			linear-gradient(135deg, rgba(240, 222, 192, 0.18), rgba(199, 216, 255, 0.14)),
 			rgba(255, 255, 255, 0.03);
 		overflow: hidden;
+		border: 0;
+		width: 100%;
+		cursor: zoom-in;
 	}
 
 	.hero-image {
@@ -826,6 +869,55 @@
 		right: 1rem;
 		top: 1rem;
 		transform: rotate(6deg);
+	}
+
+	.lightbox {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		display: grid;
+		place-items: center;
+		padding: 1.5rem;
+		background: rgba(4, 4, 6, 0.82);
+		backdrop-filter: blur(10px);
+	}
+
+	.lightbox-dialog {
+		position: relative;
+		width: min(92vw, 760px);
+		padding: 1rem;
+		border-radius: 1.4rem;
+		border: 1px solid var(--line);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--panel);
+		box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+	}
+
+	.lightbox-close {
+		position: absolute;
+		top: 0.9rem;
+		right: 0.9rem;
+		padding: 0.45rem 0.75rem;
+		border-radius: 999px;
+		border: 1px solid rgba(224, 205, 162, 0.12);
+		background: rgba(255, 255, 255, 0.04);
+		color: var(--tone-strong);
+		cursor: pointer;
+	}
+
+	.lightbox-image {
+		display: block;
+		width: 100%;
+		max-height: 78vh;
+		object-fit: contain;
+		border-radius: 1rem;
+	}
+
+	.lightbox-label {
+		margin-top: 0.75rem;
+		text-align: center;
+		color: var(--tone-soft);
+		font-weight: 700;
 	}
 
 	.features {
