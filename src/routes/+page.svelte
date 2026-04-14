@@ -90,6 +90,11 @@
 	let expandedPreview = $state<Preview | null>(null);
 
 	const activeVibe = $derived(vibes.find((vibe) => vibe.id === activeVibeId) ?? vibes[0]);
+	const expandedIndex = $derived(
+		expandedPreview
+			? previews.findIndex((preview) => preview.id === (expandedPreview as Preview).id)
+			: -1
+	);
 
 	function setPreview(preview: Preview) {
 		activePreview = preview;
@@ -99,6 +104,20 @@
 	function openPreview(preview: Preview) {
 		setPreview(preview);
 		expandedPreview = preview;
+	}
+
+	function showPreviousPreview() {
+		if (!expandedPreview) return;
+		const nextIndex = expandedIndex <= 0 ? previews.length - 1 : expandedIndex - 1;
+		expandedPreview = previews[nextIndex];
+		setPreview(previews[nextIndex]);
+	}
+
+	function showNextPreview() {
+		if (!expandedPreview) return;
+		const nextIndex = expandedIndex >= previews.length - 1 ? 0 : expandedIndex + 1;
+		expandedPreview = previews[nextIndex];
+		setPreview(previews[nextIndex]);
 	}
 </script>
 
@@ -198,7 +217,6 @@
 					>
 						<img class="hero-image" src={activePreview.src} alt={activePreview.alt} />
 						<div class="preview-overlay">{personalText || 'Your keepsake text'}</div>
-						<div class="zoom-chip">Click to enlarge</div>
 						<div class="spark spark-one"></div>
 						<div class="spark spark-two"></div>
 						<div class="shimmer-band"></div>
@@ -297,14 +315,44 @@
 			>
 				<button
 					type="button"
+					class="lightbox-nav lightbox-nav-left"
+					aria-label="Previous image"
+					onclick={showPreviousPreview}
+				>
+					<span>&larr;</span>
+				</button>
+				<button
+					type="button"
+					class="lightbox-nav lightbox-nav-right"
+					aria-label="Next image"
+					onclick={showNextPreview}
+				>
+					<span>&rarr;</span>
+				</button>
+				<button
+					type="button"
 					class="lightbox-close"
 					aria-label="Close enlarged preview"
 					onclick={() => (expandedPreview = null)}
 				>
 					Close
 				</button>
-				<img class="lightbox-image" src={expandedPreview.src} alt={expandedPreview.alt} />
-				<p class="lightbox-label">{expandedPreview.label}</p>
+				<div class="lightbox-media">
+					<img class="lightbox-image" src={expandedPreview.src} alt={expandedPreview.alt} />
+				</div>
+				<aside class="lightbox-sidebar">
+					<p class="lightbox-kicker">Selected keepsake</p>
+					<h3>{expandedPreview.label}</h3>
+					<p class="lightbox-copy">
+						A larger preview for viewing the holographic finish, image detail, and overall keepsake
+						presentation.
+					</p>
+					<div class="lightbox-meta">
+						<span>Holographic finish</span>
+						<span>Custom text option</span>
+						<span>Gift-ready format</span>
+					</div>
+				</aside>
 			</div>
 		</div>
 	{/if}
@@ -665,7 +713,10 @@
 		overflow: hidden;
 		border: 0;
 		width: 100%;
-		cursor: zoom-in;
+		cursor:
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f4dfa8'/%3E%3Cstop offset='50%25' stop-color='%23c9d8ff'/%3E%3Cstop offset='100%25' stop-color='%23f2b6df'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='14' cy='14' r='8.5' fill='none' stroke='url(%23g)' stroke-width='2.5'/%3E%3Cpath d='M20.5 20.5L29 29' stroke='url(%23g)' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E")
+				14 14,
+			zoom-in;
 	}
 
 	.hero-image {
@@ -693,19 +744,6 @@
 		font-weight: 700;
 		text-align: center;
 		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
-	}
-
-	.zoom-chip {
-		position: absolute;
-		top: 0.8rem;
-		left: 0.8rem;
-		padding: 0.35rem 0.65rem;
-		border-radius: 999px;
-		background: rgba(10, 10, 13, 0.76);
-		color: var(--accent-soft);
-		font-size: 0.68rem;
-		font-weight: 700;
-		letter-spacing: 0.04em;
 	}
 
 	.shimmer-band {
@@ -891,20 +929,25 @@
 		z-index: 50;
 		display: grid;
 		place-items: center;
-		padding: 1.5rem;
+		padding: 1.2rem;
 		background: rgba(4, 4, 6, 0.82);
 		backdrop-filter: blur(10px);
 	}
 
 	.lightbox-dialog {
 		position: relative;
-		width: min(92vw, 760px);
+		width: min(94vw, 1240px);
+		height: min(84vh, 900px);
 		padding: 1rem;
-		border-radius: 1.4rem;
+		border-radius: 1.5rem;
 		border: 1px solid var(--line);
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--panel);
 		box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 240px;
+		gap: 1rem;
+		align-items: stretch;
 	}
 
 	.lightbox-close {
@@ -914,24 +957,136 @@
 		padding: 0.45rem 0.75rem;
 		border-radius: 999px;
 		border: 1px solid rgba(224, 205, 162, 0.12);
-		background: rgba(255, 255, 255, 0.04);
+		background:
+			linear-gradient(
+				135deg,
+				rgba(240, 222, 192, 0.16),
+				rgba(199, 216, 255, 0.14),
+				rgba(242, 182, 223, 0.12)
+			),
+			rgba(255, 255, 255, 0.04);
 		color: var(--tone-strong);
 		cursor: pointer;
+	}
+
+	.lightbox-media {
+		display: grid;
+		place-items: center;
+		min-height: 0;
+		border-radius: 1.1rem;
+		background:
+			radial-gradient(circle at top, rgba(217, 180, 102, 0.08), transparent 30%),
+			rgba(0, 0, 0, 0.18);
 	}
 
 	.lightbox-image {
 		display: block;
 		width: 100%;
-		max-height: 78vh;
+		height: 100%;
+		max-height: 80vh;
 		object-fit: contain;
 		border-radius: 1rem;
 	}
 
-	.lightbox-label {
-		margin-top: 0.75rem;
-		text-align: center;
-		color: var(--tone-soft);
+	.lightbox-sidebar {
+		display: grid;
+		align-content: start;
+		gap: 0.85rem;
+		padding: 1.05rem;
+		border-radius: 1.1rem;
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+			linear-gradient(
+				160deg,
+				rgba(240, 222, 192, 0.12),
+				rgba(199, 216, 255, 0.12),
+				rgba(242, 182, 223, 0.08)
+			);
+		border: 1px solid rgba(224, 205, 162, 0.12);
+	}
+
+	.lightbox-kicker {
+		color: var(--tone-muted);
+		font-size: 0.72rem;
 		font-weight: 700;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+	}
+
+	.lightbox-sidebar h3 {
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: 1.55rem;
+		font-weight: 500;
+	}
+
+	.lightbox-copy {
+		color: var(--tone-soft);
+		font-size: 0.94rem;
+		line-height: 1.6;
+	}
+
+	.lightbox-meta {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.lightbox-meta span {
+		padding: 0.55rem 0.75rem;
+		border-radius: 999px;
+		border: 1px solid rgba(224, 205, 162, 0.12);
+		background:
+			linear-gradient(
+				135deg,
+				rgba(240, 222, 192, 0.12),
+				rgba(199, 216, 255, 0.12),
+				rgba(242, 182, 223, 0.08)
+			),
+			rgba(255, 255, 255, 0.03);
+		color: var(--tone-soft);
+		font-size: 0.82rem;
+		font-weight: 700;
+	}
+
+	.lightbox-nav {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 3.15rem;
+		height: 3.15rem;
+		border-radius: 999px;
+		border: 1px solid rgba(224, 205, 162, 0.16);
+		background:
+			linear-gradient(
+				135deg,
+				rgba(240, 222, 192, 0.16),
+				rgba(199, 216, 255, 0.14),
+				rgba(242, 182, 223, 0.12)
+			),
+			rgba(10, 10, 13, 0.86);
+		color: var(--tone-strong);
+		box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+		cursor:
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f4dfa8'/%3E%3Cstop offset='50%25' stop-color='%23c9d8ff'/%3E%3Cstop offset='100%25' stop-color='%23f2b6df'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M17 3l3.3 10.7H31l-8.6 6.2L25.8 31 17 24.9 8.2 31l3.4-11.1L3 13.7h10.7L17 3z' fill='url(%23g)'/%3E%3C/svg%3E")
+				12 12,
+			pointer;
+	}
+
+	.lightbox-nav span {
+		font-size: 1.35rem;
+		line-height: 1;
+	}
+
+	.lightbox-nav-left {
+		left: 1rem;
+	}
+
+	.lightbox-nav-right {
+		right: 15.5rem;
+	}
+
+	.lightbox-nav:hover {
+		transform: translateY(-50%) scale(1.03);
 	}
 
 	.features {
@@ -1058,6 +1213,30 @@
 		.highlight-grid,
 		.preview-picker {
 			grid-template-columns: 1fr;
+		}
+
+		.lightbox-dialog {
+			grid-template-columns: 1fr;
+			height: auto;
+			max-height: 88vh;
+		}
+
+		.lightbox-nav {
+			top: auto;
+			bottom: 1rem;
+			transform: none;
+		}
+
+		.lightbox-nav:hover {
+			transform: scale(1.03);
+		}
+
+		.lightbox-nav-left {
+			left: 1rem;
+		}
+
+		.lightbox-nav-right {
+			right: 1rem;
 		}
 
 		.stage-card-large {
