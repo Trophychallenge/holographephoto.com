@@ -21,11 +21,8 @@
 	<div class="page-wrap">
 		<div class="section-head">
 			<span class="eyebrow">Gallery</span>
-			<h1>Reference directions for the product line.</h1>
-			<p>
-				This is a style-forward preview of how the holographic magnet product can look across
-				gifting, romantic, family, memorial, and custom keepsake use cases.
-			</p>
+			<h1>Visual directions for different keepsake moments.</h1>
+			<p>Simple ideas for gifting, family, and custom versions.</p>
 		</div>
 		<div class="gallery-grid">
 			{#each galleryItems as item, index (item)}
@@ -44,13 +41,14 @@
 		line-height: 0.96;
 		letter-spacing: -0.04em;
 		font-weight: 500;
-		font-size: clamp(3rem, 7vw, 5.3rem);
+		font-size: clamp(2.2rem, 5vw, 3.5rem);
 	}
 
 	p {
 		margin: 0;
 		color: var(--muted);
-		line-height: 1.7;
+		line-height: 1.6;
+		font-size: 0.95rem;
 	}
 
 	.gallery-grid {
@@ -60,11 +58,11 @@
 	}
 
 	.gallery-card {
-		padding: 1rem;
+		padding: 0.9rem;
 	}
 
 	.art {
-		min-height: 15rem;
+		min-height: 12rem;
 		border-radius: 1.2rem;
 		margin-bottom: 1rem;
 		background: repeating-linear-gradient(

@@ -10,15 +10,12 @@
 	<div class="page-wrap contact-layout">
 		<div class="section-head">
 			<span class="eyebrow">Contact</span>
-			<h1>Start your holographic magnet order.</h1>
-			<p>
-				Use this form to tell us about the photo you want to use, whether you want handwriting or a
-				custom drawing added, and when you need it.
-			</p>
+			<h1>Start your order.</h1>
+			<p>Share the photo, the occasion, and any personal details you want added.</p>
 			<div class="contact-notes glass-card">
 				<p>Email: hello@holographephoto.com</p>
 				<p>Website: holographephoto.com</p>
-				<p>Best starting point: the photo, the occasion, and the personalization you want.</p>
+				<p>Best starting point: photo, occasion, and personalization.</p>
 			</div>
 		</div>
 
@@ -58,13 +55,14 @@
 		line-height: 0.96;
 		letter-spacing: -0.04em;
 		font-weight: 500;
-		font-size: clamp(3rem, 7vw, 5.1rem);
+		font-size: clamp(2.2rem, 5vw, 3.4rem);
 	}
 
 	p {
 		margin: 0;
 		color: var(--muted);
-		line-height: 1.75;
+		line-height: 1.6;
+		font-size: 0.95rem;
 	}
 
 	.contact-layout {
@@ -75,13 +73,13 @@
 
 	.contact-notes,
 	.contact-form {
-		padding: 1.6rem;
+		padding: 1.2rem;
 	}
 
 	.contact-notes {
 		display: grid;
 		gap: 0.8rem;
-		margin-top: 2rem;
+		margin-top: 1.2rem;
 	}
 
 	.contact-form {

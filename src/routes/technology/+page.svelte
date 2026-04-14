@@ -2,15 +2,15 @@
 	const systemCards = [
 		{
 			title: 'Holographic finish',
-			copy: 'The visual effect is the hero. The final magnet should catch light, shift subtly, and feel more dimensional than a normal printed keepsake.'
+			copy: 'Light-catching and more dimensional than a flat print.'
 		},
 		{
-			title: 'Photo-first design',
-			copy: 'Everything begins with a strong image selection, then the composition is refined so the final piece feels clean and intentional.'
+			title: 'Photo-first',
+			copy: 'A strong image does most of the emotional work.'
 		},
 		{
 			title: 'Giftable quality',
-			copy: 'The product direction should read as premium and polished, not novelty-store. That applies to layout, finish, packaging, and presentation.'
+			copy: 'Premium, polished, and meant to stay on display.'
 		}
 	];
 </script>
@@ -27,19 +27,13 @@
 	<div class="page-wrap">
 		<div class="section-head">
 			<span class="eyebrow">Product</span>
-			<h1>A small object designed to feel special.</h1>
-			<p>
-				Holographe is not being sold as abstract tech. It is being sold as a premium personalized
-				holographic photo magnet that feels emotionally valuable and visually refined.
-			</p>
+			<h1>A small keepsake with a bigger feeling.</h1>
+			<p>Premium holographic magnets made to feel personal, polished, and worth keeping.</p>
 		</div>
 		<div class="tech-hero glass-card">
 			<div>
 				<p class="label">Core product idea</p>
-				<p>
-					A personal photo becomes a keepsake with more presence, more light-play, and a more
-					finished feel than a flat print or basic magnet.
-				</p>
+				<p>A personal photo with more glow, more presence, and a more finished feel.</p>
 			</div>
 			<div class="tech-grid">
 				<div>
@@ -74,12 +68,9 @@
 	<div class="page-wrap glass-card technology-note">
 		<div>
 			<span class="eyebrow">Positioning</span>
-			<h2>High quality first. Personal second. Memorable throughout.</h2>
+			<h2>Personal first. Beautiful throughout.</h2>
 		</div>
-		<p>
-			The website should keep explaining the product in plain language: a personalized holographic
-			magnet, upgraded with design quality and optional handwritten or illustrated customization.
-		</p>
+		<p>A keepsake magnet with a premium holographic finish and room for personal detail.</p>
 	</div>
 </section>
 
@@ -93,24 +84,25 @@
 	}
 
 	h1 {
-		font-size: clamp(3rem, 7vw, 5.4rem);
+		font-size: clamp(2.2rem, 5vw, 3.6rem);
 	}
 
 	h2 {
-		font-size: clamp(1.6rem, 3vw, 2.4rem);
+		font-size: clamp(1.3rem, 2.6vw, 1.9rem);
 	}
 
 	p {
 		margin: 0;
 		color: var(--muted);
-		line-height: 1.75;
+		line-height: 1.6;
+		font-size: 0.95rem;
 	}
 
 	.tech-hero,
 	.technology-note {
 		display: grid;
 		gap: 1.5rem;
-		padding: 2rem;
+		padding: 1.3rem;
 	}
 
 	.tech-grid,
@@ -129,7 +121,7 @@
 	}
 
 	.panel {
-		padding: 1.5rem;
+		padding: 1.1rem;
 	}
 
 	@media (max-width: 900px) {

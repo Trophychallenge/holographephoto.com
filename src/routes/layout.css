@@ -59,12 +59,12 @@
 }
 
 :global(.page-wrap) {
-	width: min(1120px, calc(100vw - 2rem));
+	width: min(980px, calc(100vw - 2rem));
 	margin: 0 auto;
 }
 
 :global(.section) {
-	padding: 2rem 0 4rem;
+	padding: 1.5rem 0 2.8rem;
 }
 
 :global(.glass-card) {
@@ -146,9 +146,9 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
-	width: min(1120px, calc(100vw - 2rem));
-	margin: 1rem auto 0;
-	padding: 1rem 1.2rem;
+	width: min(980px, calc(100vw - 2rem));
+	margin: 0.8rem auto 0;
+	padding: 0.8rem 1rem;
 	border: 1px solid var(--line);
 	border-radius: 999px;
 	background: rgba(8, 8, 11, 0.82);
@@ -161,14 +161,14 @@
 }
 
 .brand-kicker {
-	font-size: 0.72rem;
+	font-size: 0.68rem;
 	letter-spacing: 0.22em;
 	text-transform: uppercase;
 	color: var(--accent);
 }
 
 .brand-name {
-	font-size: 0.95rem;
+	font-size: 0.85rem;
 	color: var(--text);
 }
 
@@ -180,7 +180,7 @@
 
 .site-nav a {
 	color: var(--muted);
-	font-size: 0.95rem;
+	font-size: 0.88rem;
 }
 
 .site-nav a:hover {
@@ -191,9 +191,9 @@
 	display: grid;
 	grid-template-columns: 1.3fr auto;
 	gap: 1.5rem;
-	width: min(1120px, calc(100vw - 2rem));
-	margin: 2rem auto 3rem;
-	padding: 2rem;
+	width: min(980px, calc(100vw - 2rem));
+	margin: 1rem auto 2rem;
+	padding: 1.4rem;
 	border: 1px solid var(--line);
 	border-radius: 1.75rem;
 	background: rgba(8, 8, 11, 0.82);
@@ -201,14 +201,15 @@
 
 .footer-title {
 	margin: 0 0 0.5rem;
-	font-size: 1.1rem;
+	font-size: 1rem;
 }
 
 .footer-copy,
 .footer-meta {
 	margin: 0;
 	color: var(--muted);
-	line-height: 1.7;
+	line-height: 1.55;
+	font-size: 0.92rem;
 }
 
 .footer-links {

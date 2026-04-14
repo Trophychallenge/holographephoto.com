@@ -70,9 +70,9 @@
 	];
 
 	const featureCards = [
-		{ title: 'Shimmery finish', body: 'Holographic glow in real light' },
-		{ title: 'Made personal', body: 'Add text or handwriting' },
-		{ title: 'Easy gift', body: 'Includes envelope + ribbon' }
+		{ title: 'Shimmery finish', body: 'Light-catching in real life' },
+		{ title: 'Personal layers', body: 'Photo, note, or drawing' },
+		{ title: 'Gift-ready', body: 'Envelope + ribbon included' }
 	];
 
 	const useCases = [
@@ -207,7 +207,9 @@
 			<div class="hero-copy">
 				<p class="eyebrow">Custom holographic photo magnet</p>
 				<h1>Turn a meaningful photo into a lasting keepsake.</h1>
-				<p class="lede">Add a photo, a name, or handwriting. Keep it close or give it well.</p>
+				<p class="lede">
+					Upload a favorite photo. Add a note or drawing. See it come together here.
+				</p>
 
 				<div class="hero-actions">
 					<a class="button button-primary" href="https://www.amazon.com/dp/B0GWN48WZV"
@@ -236,7 +238,6 @@
 					</div>
 					<div class="vibe-copy">
 						<p class="vibe-headline">{activeVibe.headline}</p>
-						<p>{activeVibe.copy}</p>
 					</div>
 				</div>
 
@@ -255,6 +256,12 @@
 				<div class="floating-note floating-note-bottom">ready to gift</div>
 
 				<div class="product-frame">
+					<div class="tool-head">
+						<p class="tool-kicker">Try your keepsake preview</p>
+						<h2>Practice your image here.</h2>
+						<p>Upload a main photo and, if you want, add a handwritten note or drawing over it.</p>
+					</div>
+
 					<div class="interactive-tools">
 						<label class="toggle">
 							<input type="checkbox" bind:checked={shimmerOn} />
@@ -263,34 +270,37 @@
 
 						<div class="upload-stack">
 							<label class="upload-control">
-								<span>Base photo</span>
+								<span>Main photo</span>
 								<input
 									type="file"
 									accept="image/*"
 									onchange={(event) => updateUploadedImage(event, 'base')}
 								/>
 							</label>
+							<p class="upload-helper">Upload the photo you want as the base magnet image.</p>
 							{#if uploadedBaseName}
 								<div class="upload-meta">
 									<p>{uploadedBaseName}</p>
-									<button type="button" onclick={() => clearUploadedImage('base')}>Clear</button>
+									<button type="button" onclick={() => clearUploadedImage('base')}>Remove</button>
 								</div>
 							{/if}
 						</div>
 
 						<div class="upload-stack">
 							<label class="upload-control">
-								<span>Transparent overlay</span>
+								<span>Overlay artwork</span>
 								<input
 									type="file"
 									accept="image/png,image/webp,image/*"
 									onchange={(event) => updateUploadedImage(event, 'overlay')}
 								/>
 							</label>
+							<p class="upload-helper">Try a transparent note, drawing, or sketch on top.</p>
 							{#if uploadedOverlayName}
 								<div class="upload-meta">
 									<p>{uploadedOverlayName}</p>
-									<button type="button" onclick={() => clearUploadedImage('overlay')}>Clear</button>
+									<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button
+									>
 								</div>
 							{/if}
 						</div>
@@ -332,7 +342,7 @@
 		<section class="gallery">
 			<div class="gallery-copy">
 				<p class="eyebrow">Preview options</p>
-				<h2>View different keepsake styles and update the main preview.</h2>
+				<h2>Choose a mood, then make it your own.</h2>
 			</div>
 
 			<div class="gallery-stage">
@@ -768,6 +778,29 @@
 		gap: 0.8rem;
 	}
 
+	.tool-head {
+		display: grid;
+		gap: 0.35rem;
+	}
+
+	.tool-kicker {
+		color: var(--tone-muted);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	.tool-head h2 {
+		font-size: clamp(1.2rem, 2vw, 1.6rem);
+	}
+
+	.tool-head p {
+		color: var(--tone-soft);
+		font-size: 0.92rem;
+		line-height: 1.55;
+	}
+
 	.interactive-tools {
 		display: grid;
 		grid-template-columns: auto 1fr 1fr;
@@ -793,6 +826,12 @@
 	.upload-stack {
 		display: grid;
 		gap: 0.4rem;
+	}
+
+	.upload-helper {
+		color: var(--tone-muted);
+		font-size: 0.74rem;
+		line-height: 1.45;
 	}
 
 	.upload-control input {
@@ -972,7 +1011,7 @@
 	.gallery-copy {
 		display: grid;
 		gap: 0.5rem;
-		max-width: 38rem;
+		max-width: 32rem;
 	}
 
 	.gallery-stage {

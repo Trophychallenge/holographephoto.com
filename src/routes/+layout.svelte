@@ -8,7 +8,7 @@
 	const navItems = [
 		{ href: '/', label: 'Home' },
 		{ href: '/technology', label: 'Product' },
-		{ href: '/formats', label: 'Personalization' },
+		{ href: '/formats', label: 'Options' },
 		{ href: '/gallery', label: 'Gallery' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
@@ -44,8 +44,7 @@
 		<div>
 			<p class="footer-title">Holographe</p>
 			<p class="footer-copy">
-				Premium holographic photo magnets with optional personal handwriting and drawn details, made
-				to feel giftable, display-worthy, and personal.
+				Premium holographic photo magnets made to feel personal, giftable, and worth keeping.
 			</p>
 		</div>
 		<div class="footer-links">

@@ -2,19 +2,19 @@
 	const formats = [
 		{
 			name: 'Photo only',
-			copy: 'A clean holographic magnet built from a single selected image for customers who want the premium finish without extra customization.'
+			copy: 'A clean keepsake built from one photo.'
 		},
 		{
 			name: 'Photo + handwriting',
-			copy: 'Add a personal note, date, signature, or short message so the magnet feels more intimate and specific.'
+			copy: 'Add a note, date, or signature.'
 		},
 		{
 			name: 'Photo + custom drawing',
-			copy: 'Layer in a simple illustration, traced motif, or accent drawing to give the product a more bespoke visual identity.'
+			copy: 'Layer in a drawing or traced artwork.'
 		},
 		{
 			name: 'Full custom keepsake',
-			copy: 'Combine the holographic photo with both writing and drawn elements for the richest, most personalized version of the product.'
+			copy: 'Combine photo, writing, and artwork together.'
 		}
 	];
 </script>
@@ -31,11 +31,8 @@
 	<div class="page-wrap">
 		<div class="section-head">
 			<span class="eyebrow">Personalization</span>
-			<h1>Choose how personal you want the piece to feel.</h1>
-			<p>
-				The core product stays the same: a premium holographic photo magnet. What changes is how
-				much custom meaning gets layered into it.
-			</p>
+			<h1>Choose your level of personalization.</h1>
+			<p>Keep it minimal or layer in more meaning.</p>
 		</div>
 		<div class="format-grid">
 			{#each formats as format (format.name)}
@@ -58,17 +55,18 @@
 	}
 
 	h1 {
-		font-size: clamp(3rem, 7vw, 5.3rem);
+		font-size: clamp(2.2rem, 5vw, 3.5rem);
 	}
 
 	h2 {
-		font-size: 1.65rem;
+		font-size: 1.3rem;
 	}
 
 	p {
 		margin: 0;
 		color: var(--muted);
-		line-height: 1.75;
+		line-height: 1.6;
+		font-size: 0.95rem;
 	}
 
 	.format-grid {
@@ -78,8 +76,8 @@
 	}
 
 	.format-card {
-		padding: 1.6rem;
-		min-height: 15rem;
+		padding: 1.15rem;
+		min-height: 11rem;
 	}
 
 	@media (max-width: 900px) {
