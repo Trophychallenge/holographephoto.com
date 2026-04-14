@@ -7,6 +7,15 @@
 		vibe: string;
 	};
 
+	type LightboxItem = {
+		id: string;
+		label: string;
+		src: string;
+		alt: string;
+		vibe: string;
+		overlaySrc?: string;
+	};
+
 	const vibeTags = ['Custom photo', 'Handwriting', 'Gift-ready'];
 
 	const previews: Preview[] = [
@@ -86,38 +95,88 @@
 	let activePreview = $state(previews[0]);
 	let activeVibeId = $state('soft');
 	let shimmerOn = $state(true);
-	let personalText = $state('Love you forever');
-	let expandedPreview = $state<Preview | null>(null);
+	let uploadedBaseSrc = $state('');
+	let uploadedBaseName = $state('');
+	let uploadedOverlaySrc = $state('');
+	let uploadedOverlayName = $state('');
+	let expandedPreview = $state<LightboxItem | null>(null);
 
 	const activeVibe = $derived(vibes.find((vibe) => vibe.id === activeVibeId) ?? vibes[0]);
 	const expandedIndex = $derived(
-		expandedPreview
+		expandedPreview && expandedPreview.id !== 'custom'
 			? previews.findIndex((preview) => preview.id === (expandedPreview as Preview).id)
 			: -1
 	);
+	const currentBaseSrc = $derived(uploadedBaseSrc || activePreview.src);
+	const currentBaseAlt = $derived(uploadedBaseName || activePreview.alt);
+	const currentOverlaySrc = $derived(uploadedOverlaySrc);
 
 	function setPreview(preview: Preview) {
 		activePreview = preview;
 		activeVibeId = preview.vibe;
 	}
 
-	function openPreview(preview: Preview) {
+	function openPreview(preview: LightboxItem) {
 		setPreview(preview);
 		expandedPreview = preview;
 	}
 
+	function openCurrentPreview() {
+		expandedPreview = {
+			id: uploadedBaseSrc ? 'custom' : activePreview.id,
+			label: uploadedBaseName || activePreview.label,
+			src: currentBaseSrc,
+			alt: currentBaseAlt,
+			vibe: activePreview.vibe,
+			overlaySrc: currentOverlaySrc || undefined
+		};
+	}
+
 	function showPreviousPreview() {
-		if (!expandedPreview) return;
+		if (!expandedPreview || expandedPreview.id === 'custom') return;
 		const nextIndex = expandedIndex <= 0 ? previews.length - 1 : expandedIndex - 1;
 		expandedPreview = previews[nextIndex];
 		setPreview(previews[nextIndex]);
 	}
 
 	function showNextPreview() {
-		if (!expandedPreview) return;
+		if (!expandedPreview || expandedPreview.id === 'custom') return;
 		const nextIndex = expandedIndex >= previews.length - 1 ? 0 : expandedIndex + 1;
 		expandedPreview = previews[nextIndex];
 		setPreview(previews[nextIndex]);
+	}
+
+	function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		const nextUrl = URL.createObjectURL(file);
+		if (type === 'base') {
+			if (uploadedBaseSrc) URL.revokeObjectURL(uploadedBaseSrc);
+			uploadedBaseSrc = nextUrl;
+			uploadedBaseName = file.name;
+		} else {
+			if (uploadedOverlaySrc) URL.revokeObjectURL(uploadedOverlaySrc);
+			uploadedOverlaySrc = nextUrl;
+			uploadedOverlayName = file.name;
+		}
+
+		input.value = '';
+	}
+
+	function clearUploadedImage(type: 'base' | 'overlay') {
+		if (type === 'base' && uploadedBaseSrc) {
+			URL.revokeObjectURL(uploadedBaseSrc);
+			uploadedBaseSrc = '';
+			uploadedBaseName = '';
+		}
+
+		if (type === 'overlay' && uploadedOverlaySrc) {
+			URL.revokeObjectURL(uploadedOverlaySrc);
+			uploadedOverlaySrc = '';
+			uploadedOverlayName = '';
+		}
 	}
 </script>
 
@@ -202,21 +261,52 @@
 							<span>Shimmer</span>
 						</label>
 
-						<label class="text-demo">
-							<span>Preview your text</span>
-							<input type="text" bind:value={personalText} maxlength="28" />
-						</label>
+						<div class="upload-stack">
+							<label class="upload-control">
+								<span>Base photo</span>
+								<input
+									type="file"
+									accept="image/*"
+									onchange={(event) => updateUploadedImage(event, 'base')}
+								/>
+							</label>
+							{#if uploadedBaseName}
+								<div class="upload-meta">
+									<p>{uploadedBaseName}</p>
+									<button type="button" onclick={() => clearUploadedImage('base')}>Clear</button>
+								</div>
+							{/if}
+						</div>
+
+						<div class="upload-stack">
+							<label class="upload-control">
+								<span>Transparent overlay</span>
+								<input
+									type="file"
+									accept="image/png,image/webp,image/*"
+									onchange={(event) => updateUploadedImage(event, 'overlay')}
+								/>
+							</label>
+							{#if uploadedOverlayName}
+								<div class="upload-meta">
+									<p>{uploadedOverlayName}</p>
+									<button type="button" onclick={() => clearUploadedImage('overlay')}>Clear</button>
+								</div>
+							{/if}
+						</div>
 					</div>
 
 					<button
 						type="button"
 						class:shimmer-on={shimmerOn}
 						class="hero-image-wrap"
-						aria-label={`Enlarge ${activePreview.label.toLowerCase()} preview`}
-						onclick={() => openPreview(activePreview)}
+						aria-label="Enlarge current preview"
+						onclick={openCurrentPreview}
 					>
-						<img class="hero-image" src={activePreview.src} alt={activePreview.alt} />
-						<div class="preview-overlay">{personalText || 'Your keepsake text'}</div>
+						<img class="hero-image" src={currentBaseSrc} alt={currentBaseAlt} />
+						{#if currentOverlaySrc}
+							<img class="hero-overlay-image" src={currentOverlaySrc} alt="Overlay preview" />
+						{/if}
 						<div class="spark spark-one"></div>
 						<div class="spark spark-two"></div>
 						<div class="shimmer-band"></div>
@@ -318,6 +408,7 @@
 					class="lightbox-nav lightbox-nav-left"
 					aria-label="Previous image"
 					onclick={showPreviousPreview}
+					disabled={expandedPreview.id === 'custom'}
 				>
 					<span>&larr;</span>
 				</button>
@@ -326,6 +417,7 @@
 					class="lightbox-nav lightbox-nav-right"
 					aria-label="Next image"
 					onclick={showNextPreview}
+					disabled={expandedPreview.id === 'custom'}
 				>
 					<span>&rarr;</span>
 				</button>
@@ -339,6 +431,13 @@
 				</button>
 				<div class="lightbox-media">
 					<img class="lightbox-image" src={expandedPreview.src} alt={expandedPreview.alt} />
+					{#if expandedPreview.overlaySrc}
+						<img
+							class="lightbox-overlay-image"
+							src={expandedPreview.overlaySrc}
+							alt="Overlay preview"
+						/>
+					{/if}
 				</div>
 				<aside class="lightbox-sidebar">
 					<p class="lightbox-kicker">Selected keepsake</p>
@@ -349,7 +448,7 @@
 					</p>
 					<div class="lightbox-meta">
 						<span>Holographic finish</span>
-						<span>Custom text option</span>
+						<span>Overlay artwork option</span>
 						<span>Gift-ready format</span>
 					</div>
 				</aside>
@@ -671,13 +770,13 @@
 
 	.interactive-tools {
 		display: grid;
-		grid-template-columns: auto 1fr;
+		grid-template-columns: auto 1fr 1fr;
 		gap: 0.7rem;
-		align-items: center;
+		align-items: start;
 	}
 
 	.toggle,
-	.text-demo {
+	.upload-control {
 		display: grid;
 		gap: 0.35rem;
 		font-size: 0.78rem;
@@ -691,14 +790,42 @@
 		gap: 0.55rem;
 	}
 
-	.text-demo input {
+	.upload-stack {
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.upload-control input {
 		width: 100%;
-		min-height: 2.4rem;
-		padding: 0 0.8rem;
-		border-radius: 999px;
+		padding: 0.55rem 0.7rem;
+		border-radius: 0.9rem;
 		border: 1px solid rgba(224, 205, 162, 0.12);
 		background: rgba(255, 255, 255, 0.04);
 		color: var(--tone-strong);
+	}
+
+	.upload-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.6rem;
+	}
+
+	.upload-meta p {
+		font-size: 0.72rem;
+		color: var(--tone-muted);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.upload-meta button {
+		padding: 0.3rem 0.55rem;
+		border-radius: 999px;
+		border: 1px solid rgba(224, 205, 162, 0.12);
+		background: rgba(255, 255, 255, 0.04);
+		color: var(--tone-soft);
+		cursor: pointer;
 	}
 
 	.hero-image-wrap {
@@ -726,24 +853,18 @@
 		transition: transform 180ms ease;
 	}
 
-	.hero-image-wrap:hover .hero-image {
-		transform: scale(1.02);
+	.hero-overlay-image {
+		position: absolute;
+		inset: 0.35rem;
+		width: calc(100% - 0.7rem);
+		height: calc(100% - 0.7rem);
+		object-fit: contain;
+		border-radius: 1rem;
+		pointer-events: none;
 	}
 
-	.preview-overlay {
-		position: absolute;
-		left: 50%;
-		bottom: 1rem;
-		transform: translateX(-50%);
-		max-width: 70%;
-		padding: 0.35rem 0.7rem;
-		border-radius: 999px;
-		background: rgba(10, 10, 13, 0.76);
-		color: var(--accent-soft);
-		font-size: 0.74rem;
-		font-weight: 700;
-		text-align: center;
-		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+	.hero-image-wrap:hover .hero-image {
+		transform: scale(1.02);
 	}
 
 	.shimmer-band {
@@ -988,6 +1109,18 @@
 		border-radius: 1rem;
 	}
 
+	.lightbox-overlay-image {
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		width: 100%;
+		height: 100%;
+		max-height: 80vh;
+		object-fit: contain;
+		border-radius: 1rem;
+		pointer-events: none;
+	}
+
 	.lightbox-sidebar {
 		display: grid;
 		align-content: start;
@@ -1070,6 +1203,11 @@
 			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f4dfa8'/%3E%3Cstop offset='50%25' stop-color='%23c9d8ff'/%3E%3Cstop offset='100%25' stop-color='%23f2b6df'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M17 3l3.3 10.7H31l-8.6 6.2L25.8 31 17 24.9 8.2 31l3.4-11.1L3 13.7h10.7L17 3z' fill='url(%23g)'/%3E%3C/svg%3E")
 				12 12,
 			pointer;
+	}
+
+	.lightbox-nav:disabled {
+		opacity: 0.45;
+		cursor: default;
 	}
 
 	.lightbox-nav span {
