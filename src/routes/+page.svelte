@@ -123,8 +123,8 @@
 				<p class="eyebrow">Live preview</p>
 				<h2>See the finish before you order.</h2>
 				<p>
-					The hero handles the ambient motion preview. This full-size player stays available on
-					demand, so the page does not force a second autoplay video during the initial load.
+					The hero handles the ambient motion preview. This larger player stays available on demand
+					for a closer look before someone moves into the customizer.
 				</p>
 				<div class="reel-tags">
 					{#each reelMoments as item}
@@ -156,10 +156,6 @@
 					</video>
 					<div class="video-glow"></div>
 				</div>
-				<p class="video-note">
-					The current reel is a large source export, so the full player loads only when requested.
-					<a href={heroVideoSrc}>Open the source clip</a>
-				</p>
 			</div>
 		</div>
 	</section>
@@ -512,15 +508,6 @@
 	.video-stage {
 		display: grid;
 		gap: 1rem;
-	}
-
-	.video-note {
-		font-size: 0.92rem;
-	}
-
-	.video-note a {
-		color: var(--text);
-		text-decoration-color: rgba(255, 255, 255, 0.35);
 	}
 
 	.reel-tags {

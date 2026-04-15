@@ -51,6 +51,10 @@
 		{ id: 'envelope', label: 'Envelope' }
 	];
 
+	const reelTags = ['Real shimmer', 'Closer preview', 'Deluxe finish'];
+	const heroVideoSrc = '/holographe/hero-reel.mov';
+	const heroVideoPoster = '/holographe/lydholowed.png';
+
 	let activePreview = $state(previews[0]);
 	let activeModeId = $state<GiftMode['id']>('quiet');
 	let uploadedBaseSrc = $state('');
@@ -207,6 +211,45 @@
 				<div class="order-actions">
 					<a class="button-primary" href="https://www.amazon.com/dp/B0GWN48WZV">Order on Amazon</a>
 					<a class="button-secondary" href="/contact">Custom order</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="page-wrap reel-grid">
+			<div class="glass-card reel-card">
+				<p class="card-kicker">Motion preview</p>
+				<h2>See the finish in motion while you build.</h2>
+				<p>
+					Use the reel as a live reference for shimmer, depth, and the finished keepsake feel while
+					you upload and place your image.
+				</p>
+				<div class="reel-tags">
+					{#each reelTags as item}
+						<span>{item}</span>
+					{/each}
+				</div>
+			</div>
+
+			<div class="glass-card reel-video-card">
+				<div class="reel-shell">
+					<!-- svelte-ignore a11y_media_has_caption because the current preview reel has no spoken audio -->
+					<video
+						class="reel-video"
+						src={heroVideoSrc}
+						poster={heroVideoPoster}
+						playsinline
+						controls
+						preload="metadata"
+						aria-label="Reference video preview of the holographic keepsake"
+					>
+						<p>
+							Your browser does not support embedded video.
+							<a href={heroVideoSrc}>Open the preview reel directly.</a>
+						</p>
+					</video>
+					<div class="reel-glow"></div>
 				</div>
 			</div>
 		</div>
@@ -540,6 +583,7 @@
 	}
 
 	.studio-head,
+	.reel-grid,
 	.studio-grid,
 	.lower-grid {
 		display: grid;
@@ -557,7 +601,14 @@
 		max-width: 36rem;
 	}
 
+	.reel-grid {
+		grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+		align-items: center;
+	}
+
 	.order-bar,
+	.reel-card,
+	.reel-video-card,
 	.preview-card,
 	.action-card,
 	.compare-card,
@@ -576,6 +627,7 @@
 	.order-bar,
 	.order-actions,
 	.card-top,
+	.reel-tags,
 	.mode-switcher,
 	.action-row,
 	.control-row,
@@ -591,6 +643,12 @@
 		justify-content: space-between;
 	}
 
+	.reel-card,
+	.reel-video-card {
+		display: grid;
+		gap: 0.95rem;
+	}
+
 	.order-kicker,
 	.card-kicker {
 		font-size: 0.72rem;
@@ -603,6 +661,83 @@
 	.studio-grid {
 		grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
 		align-items: start;
+	}
+
+	.reel-tags span {
+		padding: 0.55rem 0.85rem;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background:
+			linear-gradient(
+				135deg,
+				rgba(240, 222, 192, 0.1),
+				rgba(199, 216, 255, 0.1),
+				rgba(242, 182, 223, 0.08)
+			),
+			rgba(255, 255, 255, 0.03);
+		color: var(--text);
+		font-size: 0.88rem;
+	}
+
+	.reel-shell {
+		position: relative;
+		padding: 0.85rem;
+		border-radius: 1.4rem;
+		background: linear-gradient(145deg, rgba(18, 18, 24, 0.98), rgba(10, 10, 14, 0.94));
+		overflow: hidden;
+	}
+
+	.reel-shell::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		padding: 1px;
+		border-radius: 1.4rem;
+		background: linear-gradient(
+			120deg,
+			rgba(240, 222, 192, 0.75),
+			rgba(199, 216, 255, 0.85),
+			rgba(242, 182, 223, 0.75),
+			rgba(240, 222, 192, 0.75)
+		);
+		background-size: 200% 100%;
+		animation: borderFlow 6s linear infinite;
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		mask-composite: exclude;
+		pointer-events: none;
+	}
+
+	.reel-video {
+		position: relative;
+		display: block;
+		width: 100%;
+		max-height: 38rem;
+		border-radius: 1rem;
+		background: #08090d;
+		object-fit: cover;
+		box-shadow: 0 26px 56px rgba(0, 0, 0, 0.34);
+		z-index: 1;
+	}
+
+	.reel-glow {
+		position: absolute;
+		inset: auto 8% 4% 8%;
+		height: 18%;
+		border-radius: 999px;
+		background: linear-gradient(
+			90deg,
+			rgba(240, 222, 192, 0.18),
+			rgba(199, 216, 255, 0.28),
+			rgba(242, 182, 223, 0.18)
+		);
+		filter: blur(28px);
+		opacity: 0.8;
 	}
 
 	.preview-card,
@@ -1004,6 +1139,7 @@
 
 	@media (max-width: 960px) {
 		.studio-head,
+		.reel-grid,
 		.studio-grid,
 		.lower-grid,
 		.sample-row {
@@ -1018,6 +1154,16 @@
 
 		.lightbox-nav-right {
 			right: 1rem;
+		}
+	}
+
+	@keyframes borderFlow {
+		from {
+			background-position: 0% 50%;
+		}
+
+		to {
+			background-position: 200% 50%;
 		}
 	}
 </style>
