@@ -4,146 +4,118 @@
 		label: string;
 		src: string;
 		alt: string;
-		vibe: string;
+		mode: 'quiet' | 'ceremony' | 'signature';
 	};
 
-	type LightboxItem = {
-		id: string;
+	type GiftMode = {
+		id: 'quiet' | 'ceremony' | 'signature';
 		label: string;
-		src: string;
-		alt: string;
-		vibe: string;
-		overlaySrc?: string;
+		headline: string;
 	};
 
-	const vibeTags = ['Custom photo', 'Handwriting', 'Gift-ready'];
+	type Mockup = 'fridge' | 'locker' | 'envelope';
 
 	const previews: Preview[] = [
 		{
 			id: 'baby',
 			label: 'Baby',
 			src: '/holographe/jessholo.png',
-			alt: 'Holographe baby keepsake with holographic shimmer',
-			vibe: 'soft'
+			alt: 'Baby keepsake with holographic shimmer',
+			mode: 'quiet'
 		},
 		{
 			id: 'wedding',
 			label: 'Wedding',
 			src: '/holographe/lydholowed.png',
-			alt: 'Holographe wedding keepsake with holographic shimmer',
-			vibe: 'romantic'
+			alt: 'Wedding keepsake with holographic shimmer',
+			mode: 'ceremony'
 		},
 		{
 			id: 'portrait',
 			label: 'Portrait',
 			src: '/holographe/leo.png',
-			alt: 'Holographe portrait keepsake with holographic shimmer',
-			vibe: 'bold'
+			alt: 'Portrait keepsake with holographic shimmer',
+			mode: 'signature'
 		}
 	];
 
-	const vibes = [
+	const modes: GiftMode[] = [
+		{ id: 'quiet', label: 'Quiet', headline: 'Soft, personal, and easy to gift.' },
+		{ id: 'ceremony', label: 'Ceremony', headline: 'Elegant for weddings and milestone moments.' },
 		{
-			id: 'soft',
-			label: 'Quiet',
-			headline: 'Soft light, gentle details, timeless feeling.',
-			copy: 'Ideal for baby photos, family moments, and keepsakes with a calmer tone.'
-		},
-		{
-			id: 'romantic',
-			label: 'Ceremony',
-			headline: 'Elegant, sentimental, and made to keep.',
-			copy: 'Best for wedding photos, anniversaries, and meaningful gifts.'
-		},
-		{
-			id: 'bold',
+			id: 'signature',
 			label: 'Signature',
-			headline: 'A more striking finish with modern contrast.',
-			copy: 'Well suited to portraits, standout memories, and statement keepsakes.'
+			headline: 'Stronger contrast with a more statement finish.'
 		}
 	];
 
-	const highlights = [
-		{ value: '$15', label: 'Price' },
-		{ value: '8x10', label: 'Size' },
-		{ value: '2', label: 'Photos' }
+	const mockups: { id: Mockup; label: string }[] = [
+		{ id: 'fridge', label: 'Fridge' },
+		{ id: 'locker', label: 'Locker' },
+		{ id: 'envelope', label: 'Envelope' }
 	];
 
-	const featureCards = [
-		{ title: 'Shimmery finish', body: 'Light-catching in real life' },
-		{ title: 'Personal layers', body: 'Photo, note, or drawing' },
-		{ title: 'Gift-ready', body: 'Envelope + ribbon included' }
-	];
-
-	const useCases = [
-		'Weddings',
-		'Baby memories',
-		'Pet keepsakes',
-		'Memorial gifts',
-		"Mother's Day",
-		"Father's Day"
-	];
-
-	const specs = [
-		['Price', '$15.00'],
-		['Size', '8x10'],
-		['Color', 'Holographic'],
-		['Included', 'Magnet, envelope, ribbon'],
-		['Custom', '2 images + 1 text input']
+	const storySteps = [
+		{ title: 'Upload the photo', copy: 'Start with the image that matters.' },
+		{ title: 'Layer the detail', copy: 'Add handwriting, a drawing, or a note.' },
+		{ title: 'Let it shimmer', copy: 'Preview the holographic light pass.' },
+		{ title: 'Gift or keep', copy: 'Make one or build a full set.' }
 	];
 
 	let activePreview = $state(previews[0]);
-	let activeVibeId = $state('soft');
-	let shimmerOn = $state(true);
+	let activeModeId = $state<GiftMode['id']>('quiet');
 	let uploadedBaseSrc = $state('');
 	let uploadedBaseName = $state('');
 	let uploadedOverlaySrc = $state('');
 	let uploadedOverlayName = $state('');
-	let expandedPreview = $state<LightboxItem | null>(null);
+	let shimmerOn = $state(true);
+	let shimmerValue = $state(58);
+	let revealOverlay = $state(true);
+	let compareSplit = $state(48);
+	let activeMockup = $state<Mockup>('fridge');
+	let bulkEvent = $state('Wedding favor');
+	let bulkQty = $state('24');
+	let bulkStyle = $state('Photo + handwriting');
+	let storyIndex = $state(0);
+	let expanded = $state(false);
 
-	const activeVibe = $derived(vibes.find((vibe) => vibe.id === activeVibeId) ?? vibes[0]);
-	const expandedIndex = $derived(
-		expandedPreview && expandedPreview.id !== 'custom'
-			? previews.findIndex((preview) => preview.id === (expandedPreview as Preview).id)
-			: -1
-	);
+	let overlayX = $state(50);
+	let overlayY = $state(58);
+	let overlayScale = $state(68);
+	let overlayRotation = $state(-4);
+
+	let previewStage: HTMLDivElement | null = null;
+	let draggingOverlay = $state(false);
+
+	const currentMode = $derived(modes.find((mode) => mode.id === activeModeId) ?? modes[0]);
 	const currentBaseSrc = $derived(uploadedBaseSrc || activePreview.src);
 	const currentBaseAlt = $derived(uploadedBaseName || activePreview.alt);
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
+	const activePreviewIndex = $derived(
+		previews.findIndex((preview) => preview.id === activePreview.id)
+	);
+	const bulkRecommendation = $derived.by(() => {
+		const qty = Number.parseInt(bulkQty, 10);
+		if (bulkEvent === 'Wedding favor') {
+			return qty >= 40
+				? 'A coordinated wedding-favor set with one image style and names or dates layered on top.'
+				: 'A polished small-batch wedding favor set for close family or the bridal party.';
+		}
+
+		if (bulkEvent === 'Christmas gifts') {
+			return 'A family gift run with one photo direction and personalized handwriting or short notes.';
+		}
+
+		if (bulkEvent === 'Party favors') {
+			return 'A playful favor set that still feels personal and elevated, especially with simple overlays.';
+		}
+
+		return `A ${bulkStyle.toLowerCase()} set sized for ${bulkQty} keepsakes.`;
+	});
 
 	function setPreview(preview: Preview) {
 		activePreview = preview;
-		activeVibeId = preview.vibe;
-	}
-
-	function openPreview(preview: LightboxItem) {
-		setPreview(preview);
-		expandedPreview = preview;
-	}
-
-	function openCurrentPreview() {
-		expandedPreview = {
-			id: uploadedBaseSrc ? 'custom' : activePreview.id,
-			label: uploadedBaseName || activePreview.label,
-			src: currentBaseSrc,
-			alt: currentBaseAlt,
-			vibe: activePreview.vibe,
-			overlaySrc: currentOverlaySrc || undefined
-		};
-	}
-
-	function showPreviousPreview() {
-		if (!expandedPreview || expandedPreview.id === 'custom') return;
-		const nextIndex = expandedIndex <= 0 ? previews.length - 1 : expandedIndex - 1;
-		expandedPreview = previews[nextIndex];
-		setPreview(previews[nextIndex]);
-	}
-
-	function showNextPreview() {
-		if (!expandedPreview || expandedPreview.id === 'custom') return;
-		const nextIndex = expandedIndex >= previews.length - 1 ? 0 : expandedIndex + 1;
-		expandedPreview = previews[nextIndex];
-		setPreview(previews[nextIndex]);
+		activeModeId = preview.mode;
 	}
 
 	function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
@@ -160,6 +132,7 @@
 			if (uploadedOverlaySrc) URL.revokeObjectURL(uploadedOverlaySrc);
 			uploadedOverlaySrc = nextUrl;
 			uploadedOverlayName = file.name;
+			applySignaturePlacement();
 		}
 
 		input.value = '';
@@ -178,233 +151,382 @@
 			uploadedOverlayName = '';
 		}
 	}
+
+	function applySignaturePlacement() {
+		overlayX = 67;
+		overlayY = 79;
+		overlayScale = 42;
+		overlayRotation = -6;
+		revealOverlay = true;
+	}
+
+	function applyArtworkPlacement() {
+		overlayX = 50;
+		overlayY = 50;
+		overlayScale = 72;
+		overlayRotation = 0;
+		revealOverlay = true;
+	}
+
+	function updateOverlayPosition(event: PointerEvent) {
+		if (!previewStage) return;
+		const bounds = previewStage.getBoundingClientRect();
+		overlayX = Math.max(10, Math.min(90, ((event.clientX - bounds.left) / bounds.width) * 100));
+		overlayY = Math.max(10, Math.min(90, ((event.clientY - bounds.top) / bounds.height) * 100));
+	}
+
+	function startOverlayDrag(event: PointerEvent) {
+		draggingOverlay = true;
+		(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+		updateOverlayPosition(event);
+	}
+
+	function continueOverlayDrag(event: PointerEvent) {
+		if (!draggingOverlay) return;
+		updateOverlayPosition(event);
+	}
+
+	function endOverlayDrag(event: PointerEvent) {
+		draggingOverlay = false;
+		(event.currentTarget as HTMLElement).releasePointerCapture(event.pointerId);
+	}
+
+	function openExpanded() {
+		expanded = true;
+	}
+
+	function closeExpanded() {
+		expanded = false;
+	}
+
+	function showPreviousPreview() {
+		const nextIndex = activePreviewIndex <= 0 ? previews.length - 1 : activePreviewIndex - 1;
+		setPreview(previews[nextIndex]);
+	}
+
+	function showNextPreview() {
+		const nextIndex = activePreviewIndex >= previews.length - 1 ? 0 : activePreviewIndex + 1;
+		setPreview(previews[nextIndex]);
+	}
 </script>
 
 <svelte:head>
 	<title>Holographe | Custom Holographic Photo Magnet</title>
 	<meta
 		name="description"
-		content="Custom holographic photo magnets with text or handwriting personalization."
+		content="Premium holographic photo magnets with layered handwriting, drawing, and gift-ready keepsake styling."
 	/>
 </svelte:head>
 
 <div class="page-shell">
-	<div class="ambient ambient-one"></div>
-	<div class="ambient ambient-two"></div>
-	<div class="ambient ambient-three"></div>
-
-	<header class="site-header">
-		<div class="brand-block">
-			<img class="brand-logo" src="/holographe/logo.png" alt="Holographe" />
-			<p class="brand-subtitle">Personalized Keepsakes</p>
-		</div>
-
-		<a class="button button-secondary" href="https://www.amazon.com/dp/B0GWN48WZV">Shop Amazon</a>
-	</header>
-
-	<main>
-		<section class="hero">
+	<section class="hero section">
+		<div class="page-wrap hero-grid">
 			<div class="hero-copy">
 				<p class="eyebrow">Custom holographic photo magnet</p>
-				<h1>Turn a meaningful photo into a lasting keepsake.</h1>
-				<p class="lede">
-					Upload a favorite photo. Add a note or drawing. See it come together here.
-				</p>
+				<h1>Photo in. Keepsake out.</h1>
+				<p class="hero-text">Upload, layer, preview, and make it feel special.</p>
 
 				<div class="hero-actions">
-					<a class="button button-primary" href="https://www.amazon.com/dp/B0GWN48WZV"
-						>Customize now</a
+					<a class="button-primary" href="https://www.amazon.com/dp/B0GWN48WZV"
+						>Customize on Amazon</a
 					>
+					<button class="button-secondary" type="button" onclick={openExpanded}>View larger</button>
 				</div>
 
-				<div class="tag-row">
-					{#each vibeTags as tag}
-						<span>{tag}</span>
+				<div class="mode-switcher" aria-label="Gift mode">
+					{#each modes as mode}
+						<button
+							type="button"
+							class:active={activeModeId === mode.id}
+							onclick={() => (activeModeId = mode.id)}
+						>
+							{mode.label}
+						</button>
 					{/each}
 				</div>
 
-				<div class="vibe-panel">
-					<div class="vibe-switcher" aria-label="Choose a vibe">
-						{#each vibes as vibe}
-							<button
-								type="button"
-								class:active={activeVibeId === vibe.id}
-								onclick={() => (activeVibeId = vibe.id)}
-								aria-pressed={activeVibeId === vibe.id}
-							>
-								{vibe.label}
-							</button>
-						{/each}
-					</div>
-					<div class="vibe-copy">
-						<p class="vibe-headline">{activeVibe.headline}</p>
-					</div>
-				</div>
-
-				<div class="highlight-grid">
-					{#each highlights as item}
-						<div class="highlight-pill">
-							<span>{item.value}</span>
-							<p>{item.label}</p>
-						</div>
-					{/each}
-				</div>
+				<p class="mode-headline">{currentMode.headline}</p>
 			</div>
 
-			<div class="hero-card">
-				<div class="floating-note floating-note-top">text or handwriting</div>
-				<div class="floating-note floating-note-bottom">ready to gift</div>
+			<div class="glass-card studio-card">
+				<div class="studio-head">
+					<p class="studio-kicker">Preview your keepsake</p>
+					<h2>See your image come to life.</h2>
+				</div>
 
-				<div class="product-frame">
-					<div class="tool-head">
-						<p class="tool-kicker">Preview your keepsake</p>
-						<h2>See your image come to life.</h2>
-						<p>Upload a main photo and, if you want, layer in handwriting or artwork.</p>
-					</div>
-
-					<div class="interactive-tools">
-						<label class="toggle">
-							<input type="checkbox" bind:checked={shimmerOn} />
-							<span>Shimmer</span>
+				<div class="upload-grid">
+					<div class="upload-stack">
+						<label class="upload-control">
+							<span>Main photo</span>
+							<input
+								type="file"
+								accept="image/*"
+								onchange={(event) => updateUploadedImage(event, 'base')}
+							/>
 						</label>
-
-						<div class="upload-stack">
-							<label class="upload-control">
-								<span>Main photo</span>
-								<input
-									type="file"
-									accept="image/*"
-									onchange={(event) => updateUploadedImage(event, 'base')}
-								/>
-							</label>
-							<p class="upload-helper">Upload the photo you want as the base magnet image.</p>
-							{#if uploadedBaseName}
-								<div class="upload-meta">
-									<p>{uploadedBaseName}</p>
-									<button type="button" onclick={() => clearUploadedImage('base')}>Remove</button>
-								</div>
-							{/if}
-						</div>
-
-						<div class="upload-stack">
-							<label class="upload-control">
-								<span>Overlay artwork</span>
-								<input
-									type="file"
-									accept="image/png,image/webp,image/*"
-									onchange={(event) => updateUploadedImage(event, 'overlay')}
-								/>
-							</label>
-							<p class="upload-helper">Try a transparent note, drawing, or sketch on top.</p>
-							{#if uploadedOverlayName}
-								<div class="upload-meta">
-									<p>{uploadedOverlayName}</p>
-									<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button
-									>
-								</div>
-							{/if}
-						</div>
+						<p class="upload-helper">Upload the base image for the magnet.</p>
+						{#if uploadedBaseName}
+							<div class="upload-meta">
+								<p>{uploadedBaseName}</p>
+								<button type="button" onclick={() => clearUploadedImage('base')}>Remove</button>
+							</div>
+						{/if}
 					</div>
 
+					<div class="upload-stack">
+						<label class="upload-control">
+							<span>Overlay artwork</span>
+							<input
+								type="file"
+								accept="image/png,image/webp,image/*"
+								onchange={(event) => updateUploadedImage(event, 'overlay')}
+							/>
+						</label>
+						<p class="upload-helper">Add transparent handwriting, a note, or a drawing.</p>
+						{#if uploadedOverlayName}
+							<div class="upload-meta">
+								<p>{uploadedOverlayName}</p>
+								<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button>
+							</div>
+						{/if}
+					</div>
+
+					<label class="toggle">
+						<input type="checkbox" bind:checked={shimmerOn} />
+						<span>Shimmer</span>
+					</label>
+				</div>
+
+				<div
+					bind:this={previewStage}
+					class:shimmer-on={shimmerOn}
+					class="preview-stage"
+					style={`--overlay-x:${overlayX}%; --overlay-y:${overlayY}%; --overlay-scale:${overlayScale / 100}; --overlay-rotation:${overlayRotation}deg; --shimmer:${shimmerValue}%`}
+				>
 					<button
 						type="button"
-						class:shimmer-on={shimmerOn}
-						class="hero-image-wrap"
-						aria-label="Enlarge current preview"
-						onclick={openCurrentPreview}
+						class="preview-surface"
+						aria-label="Open larger preview"
+						onclick={openExpanded}
 					>
-						<img class="hero-image" src={currentBaseSrc} alt={currentBaseAlt} />
+						<img class="base-image" src={currentBaseSrc} alt={currentBaseAlt} />
 						{#if currentOverlaySrc}
-							<img class="hero-overlay-image" src={currentOverlaySrc} alt="Overlay preview" />
+							<img
+								class:revealed={revealOverlay}
+								class="overlay-image"
+								src={currentOverlaySrc}
+								alt="Overlay artwork preview"
+								onpointerdown={startOverlayDrag}
+								onpointermove={continueOverlayDrag}
+								onpointerup={endOverlayDrag}
+								onpointercancel={endOverlayDrag}
+							/>
 						{/if}
-						<div class="spark spark-one"></div>
-						<div class="spark spark-two"></div>
 						<div class="shimmer-band"></div>
 					</button>
+				</div>
 
-					<div class="preview-picker" aria-label="Preview examples">
-						{#each previews as preview}
-							<button
-								type="button"
-								class:active={activePreview.id === preview.id}
-								onclick={() => setPreview(preview)}
-								aria-pressed={activePreview.id === preview.id}
+				<div class="control-grid">
+					<div class="control-card">
+						<p class="control-title">Signature scan tool</p>
+						<div class="mini-button-row">
+							<button type="button" class="mini-button" onclick={applySignaturePlacement}
+								>Place as signature</button
 							>
-								<img src={preview.src} alt={preview.alt} />
-								<span>{preview.label}</span>
-							</button>
-						{/each}
+							<button type="button" class="mini-button" onclick={applyArtworkPlacement}
+								>Center artwork</button
+							>
+						</div>
+					</div>
+
+					<div class="control-card">
+						<p class="control-title">Handwriting reveal</p>
+						<button
+							type="button"
+							class="mini-button wide"
+							onclick={() => (revealOverlay = !revealOverlay)}
+						>
+							{revealOverlay ? 'Hide overlay' : 'Reveal overlay'}
+						</button>
+					</div>
+
+					<div class="control-card">
+						<p class="control-title">Shimmer slider</p>
+						<input class="slider" type="range" min="12" max="88" bind:value={shimmerValue} />
+					</div>
+
+					<div class="control-card">
+						<p class="control-title">Overlay size</p>
+						<input class="slider" type="range" min="20" max="95" bind:value={overlayScale} />
 					</div>
 				</div>
 			</div>
-		</section>
+		</div>
+	</section>
 
-		<section class="gallery">
-			<div class="gallery-copy">
-				<p class="eyebrow">Preview gallery</p>
-				<h2>Choose a mood, then make it your own.</h2>
+	<section class="section">
+		<div class="page-wrap sample-row">
+			{#each previews as preview}
+				<button
+					type="button"
+					class="sample-card glass-card"
+					class:active={activePreview.id === preview.id}
+					onclick={() => setPreview(preview)}
+				>
+					<img src={preview.src} alt={preview.alt} />
+					<span>{preview.label}</span>
+				</button>
+			{/each}
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="page-wrap compare-grid">
+			<div class="section-head compact">
+				<span class="eyebrow">Before / after</span>
+				<h2>See the change.</h2>
 			</div>
 
-			<div class="gallery-stage">
-				{#each previews as preview, index}
+			<div class="glass-card compare-card">
+				<div class="compare-stage">
+					<img class="compare-base" src={currentBaseSrc} alt={currentBaseAlt} />
+					<div class="compare-after" style={`clip-path: inset(0 ${100 - compareSplit}% 0 0)`}>
+						<img class="compare-base" src={currentBaseSrc} alt={currentBaseAlt} />
+						{#if currentOverlaySrc}
+							<img
+								class="compare-overlay"
+								src={currentOverlaySrc}
+								alt="Overlay artwork preview"
+								style={`left:${overlayX}%; top:${overlayY}%; transform: translate(-50%, -50%) scale(${overlayScale / 100}) rotate(${overlayRotation}deg); opacity:${revealOverlay ? 1 : 0}`}
+							/>
+						{/if}
+						<div class="compare-shimmer" style={`left:${shimmerValue}%`}></div>
+					</div>
+					<div class="compare-line" style={`left:${compareSplit}%`}></div>
+				</div>
+				<input class="slider" type="range" min="10" max="90" bind:value={compareSplit} />
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="page-wrap mockup-grid">
+			<div class="section-head compact">
+				<span class="eyebrow">Live mockups</span>
+				<h2>See it in place.</h2>
+			</div>
+
+			<div class="mockup-tabs">
+				{#each mockups as mockup}
 					<button
 						type="button"
-						class={`stage-card ${index === 0 ? 'stage-card-small' : index === 1 ? 'stage-card-large' : 'stage-card-medium'}`}
-						aria-label={`Enlarge ${preview.label.toLowerCase()} preview`}
-						onclick={() => openPreview(preview)}
+						class:active={activeMockup === mockup.id}
+						onclick={() => (activeMockup = mockup.id)}
 					>
-						<img src={preview.src} alt={preview.alt} />
+						{mockup.label}
 					</button>
 				{/each}
-				<div class="stage-badge">{activePreview.label} preview selected</div>
 			</div>
 
-			<div class="use-case-list">
-				{#each useCases as useCase}
-					<span>{useCase}</span>
-				{/each}
+			<div class={`glass-card mockup-stage mockup-${activeMockup}`}>
+				<div class="mockup-target">
+					<img class="mockup-image" src={currentBaseSrc} alt={currentBaseAlt} />
+					{#if currentOverlaySrc}
+						<img
+							class="mockup-overlay"
+							src={currentOverlaySrc}
+							alt="Overlay artwork preview"
+							style={`left:${overlayX}%; top:${overlayY}%; transform: translate(-50%, -50%) scale(${overlayScale / 100}) rotate(${overlayRotation}deg); opacity:${revealOverlay ? 1 : 0}`}
+						/>
+					{/if}
+				</div>
 			</div>
-		</section>
+		</div>
+	</section>
 
-		<section class="features">
-			{#each featureCards as card}
-				<article class="feature-card">
-					<h3>{card.title}</h3>
-					<p>{card.body}</p>
-				</article>
-			{/each}
-		</section>
-
-		<section class="bottom-grid">
-			<div class="spec-grid">
-				{#each specs as [label, value]}
-					<div class="spec-row">
-						<p>{label}</p>
-						<span>{value}</span>
-					</div>
-				{/each}
+	<section class="section">
+		<div class="page-wrap utility-grid">
+			<div class="glass-card bulk-card">
+				<span class="eyebrow">Bulk gift builder</span>
+				<h2>Plan a group order.</h2>
+				<div class="bulk-controls">
+					<label>
+						Event
+						<select bind:value={bulkEvent}>
+							<option>Wedding favor</option>
+							<option>Christmas gifts</option>
+							<option>Party favors</option>
+						</select>
+					</label>
+					<label>
+						Quantity
+						<select bind:value={bulkQty}>
+							<option>12</option>
+							<option>24</option>
+							<option>50</option>
+							<option>100</option>
+						</select>
+					</label>
+					<label>
+						Style
+						<select bind:value={bulkStyle}>
+							<option>Photo only</option>
+							<option>Photo + handwriting</option>
+							<option>Photo + drawing</option>
+						</select>
+					</label>
+				</div>
+				<p class="bulk-result">{bulkRecommendation}</p>
 			</div>
 
-			<div class="buy-card">
-				<p class="buy-kicker">Order on Amazon</p>
-				<h2>Personal, polished, and easy to customize.</h2>
-				<p class="buy-copy">
-					Also well suited to bulk gifting, including party favors, wedding favors, holiday gifts
-					for family, and other keepsake-style group orders.
-				</p>
-				<a class="button button-primary" href="https://www.amazon.com/dp/B0GWN48WZV"
-					>Customize on Amazon</a
+			<div class="glass-card story-card">
+				<span class="eyebrow">Story mode</span>
+				<h2>Keep it simple.</h2>
+				<div class="story-panel">
+					<p class="story-step">0{storyIndex + 1}</p>
+					<h3>{storySteps[storyIndex].title}</h3>
+					<p>{storySteps[storyIndex].copy}</p>
+				</div>
+				<div class="mini-button-row">
+					<button
+						type="button"
+						class="mini-button"
+						onclick={() => (storyIndex = storyIndex === 0 ? storySteps.length - 1 : storyIndex - 1)}
+					>
+						Prev
+					</button>
+					<button
+						type="button"
+						class="mini-button"
+						onclick={() => (storyIndex = storyIndex === storySteps.length - 1 ? 0 : storyIndex + 1)}
+					>
+						Next
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="page-wrap cta-card glass-card">
+			<div>
+				<span class="eyebrow">Ready when you are</span>
+				<h2>Made for one keepsake or a full gifting run.</h2>
+			</div>
+			<div class="hero-actions">
+				<a class="button-primary" href="https://www.amazon.com/dp/B0GWN48WZV">Customize on Amazon</a
 				>
+				<a class="button-secondary" href="/contact">Start a custom order</a>
 			</div>
-		</section>
-	</main>
+		</div>
+	</section>
 
-	{#if expandedPreview}
+	{#if expanded}
 		<div
 			class="lightbox"
 			role="presentation"
 			onclick={(event) => {
-				if (event.target === event.currentTarget) expandedPreview = null;
+				if (event.target === event.currentTarget) closeExpanded();
 			}}
 		>
 			<div
@@ -418,7 +540,6 @@
 					class="lightbox-nav lightbox-nav-left"
 					aria-label="Previous image"
 					onclick={showPreviousPreview}
-					disabled={expandedPreview.id === 'custom'}
 				>
 					<span>&larr;</span>
 				</button>
@@ -427,7 +548,6 @@
 					class="lightbox-nav lightbox-nav-right"
 					aria-label="Next image"
 					onclick={showNextPreview}
-					disabled={expandedPreview.id === 'custom'}
 				>
 					<span>&rarr;</span>
 				</button>
@@ -435,26 +555,26 @@
 					type="button"
 					class="lightbox-close"
 					aria-label="Close enlarged preview"
-					onclick={() => (expandedPreview = null)}
+					onclick={closeExpanded}
 				>
 					Close
 				</button>
 				<div class="lightbox-media">
-					<img class="lightbox-image" src={expandedPreview.src} alt={expandedPreview.alt} />
-					{#if expandedPreview.overlaySrc}
+					<img class="lightbox-image" src={currentBaseSrc} alt={currentBaseAlt} />
+					{#if currentOverlaySrc}
 						<img
-							class="lightbox-overlay-image"
-							src={expandedPreview.overlaySrc}
-							alt="Overlay preview"
+							class="lightbox-overlay"
+							src={currentOverlaySrc}
+							alt="Overlay artwork preview"
+							style={`left:${overlayX}%; top:${overlayY}%; transform: translate(-50%, -50%) scale(${overlayScale / 100}) rotate(${overlayRotation}deg); opacity:${revealOverlay ? 1 : 0}`}
 						/>
 					{/if}
 				</div>
 				<aside class="lightbox-sidebar">
 					<p class="lightbox-kicker">Selected keepsake</p>
-					<h3>{expandedPreview.label}</h3>
+					<h3>{uploadedBaseName || activePreview.label}</h3>
 					<p class="lightbox-copy">
-						A larger preview for viewing the holographic finish, image detail, and overall keepsake
-						presentation.
+						A larger view for checking the image, overlay placement, and holographic feel.
 					</p>
 					<div class="lightbox-meta">
 						<span>Holographic finish</span>
@@ -477,9 +597,9 @@
 		--accent: #d9b466;
 		--accent-soft: #f0dec0;
 		--iridescent: #c7d8ff;
+		--pink-soft: #f2b6df;
 		--font-display: 'Georgia', 'Iowan Old Style', serif;
-		--font-body:
-			'Segoe UI', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+		--font-body: 'Space Grotesk', 'Avenir Next', sans-serif;
 	}
 
 	:global(body) {
@@ -492,92 +612,29 @@
 	.page-shell {
 		position: relative;
 		min-height: 100vh;
-		overflow: hidden;
 	}
 
 	.ambient {
 		display: none;
 	}
 
-	.ambient-one {
-		top: -8rem;
-		right: -6rem;
-		width: 24rem;
-		height: 24rem;
-		background: rgba(216, 202, 180, 0.34);
-	}
-
-	.ambient-two {
-		top: 28rem;
-		left: -8rem;
-		width: 22rem;
-		height: 22rem;
-		background: rgba(207, 218, 242, 0.2);
-	}
-
-	.ambient-three {
-		top: 12rem;
-		right: 25%;
-		width: 18rem;
-		height: 18rem;
-		background: rgba(232, 226, 214, 0.3);
-	}
-
-	.site-header,
-	main {
-		position: relative;
-		z-index: 1;
-		width: min(980px, calc(100% - 2rem));
-		margin: 0 auto;
-	}
-
-	.site-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
+	.hero-grid,
+	.compare-grid,
+	.mockup-grid,
+	.utility-grid {
+		display: grid;
 		gap: 1rem;
-		padding: 1rem 0 0;
 	}
 
-	.brand-block {
-		display: grid;
-		gap: 0.55rem;
-	}
-
-	.brand-subtitle {
-		margin: 0;
-		font-size: 0.78rem;
-		letter-spacing: 0.26em;
-		text-transform: uppercase;
-		color: var(--tone-muted);
-	}
-
-	.brand-logo {
-		width: min(18rem, 58vw);
-		max-width: 100%;
-		display: block;
-	}
-
-	main {
-		display: grid;
-		gap: 2.5rem;
-		padding: 2rem 0 4rem;
-	}
-
-	.hero {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(280px, 0.88fr);
-		gap: 1.5rem;
+	.hero-grid {
+		grid-template-columns: minmax(0, 0.88fr) minmax(320px, 1.12fr);
 		align-items: start;
 	}
 
-	.eyebrow {
-		margin: 0 0 0.8rem;
-		color: var(--tone-muted);
-		font-size: 0.78rem;
-		font-weight: 700;
-		letter-spacing: 0.34em;
-		text-transform: uppercase;
+	.hero-copy {
+		display: grid;
+		gap: 0.85rem;
+		padding-top: 1rem;
 	}
 
 	h1,
@@ -589,152 +646,99 @@
 
 	h1 {
 		font-family: var(--font-display);
-		font-size: clamp(2.4rem, 5vw, 3.8rem);
-		font-weight: 500;
-		line-height: 0.98;
+		font-size: clamp(2.6rem, 6vw, 4.6rem);
+		line-height: 0.96;
 		letter-spacing: -0.05em;
-		max-width: 10ch;
+		font-weight: 500;
+		max-width: 9ch;
 	}
 
 	h2 {
 		font-family: var(--font-display);
-		font-size: clamp(1.4rem, 2.5vw, 2rem);
+		font-size: clamp(1.35rem, 2.5vw, 2rem);
 		font-weight: 500;
-		line-height: 1.15;
+		line-height: 1.1;
 	}
 
-	.lede {
-		max-width: 28rem;
-		margin-top: 0.8rem;
-		font-size: 1rem;
-		line-height: 1.6;
+	h3 {
+		font-family: var(--font-display);
+		font-size: 1.2rem;
+		font-weight: 500;
+	}
+
+	.hero-text,
+	.mode-headline,
+	.bulk-result,
+	.story-panel p,
+	.lightbox-copy {
 		color: var(--tone-soft);
+		line-height: 1.55;
 	}
 
-	.hero-actions {
+	.hero-actions,
+	.mini-button-row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.9rem;
-		margin-top: 1.2rem;
-	}
-
-	.button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 2.9rem;
-		padding: 0 1.1rem;
-		border-radius: 999px;
-		text-decoration: none;
-		font-weight: 700;
-		transition: transform 160ms ease;
-	}
-
-	.button:hover {
-		transform: translateY(-1px);
-	}
-
-	.button-primary {
-		background: linear-gradient(180deg, #f0d796, #d8a84d);
-		color: #1a140a;
-		box-shadow: 0 18px 40px rgba(208, 162, 71, 0.18);
-	}
-
-	.button-secondary {
-		border: 1px solid var(--line);
-		color: var(--tone-strong);
-		background: rgba(255, 255, 255, 0.04);
-	}
-
-	.tag-row,
-	.use-case-list {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.55rem;
-		margin-top: 1rem;
-	}
-
-	.tag-row span,
-	.use-case-list span,
-	.stage-badge,
-	.floating-note {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.45rem 0.78rem;
-		border-radius: 999px;
-		font-size: 0.7rem;
-		font-weight: 700;
-		letter-spacing: 0.04em;
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(224, 205, 162, 0.12);
-		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-		color: var(--tone-soft);
-	}
-
-	.vibe-panel,
-	.highlight-grid,
-	.features,
-	.bottom-grid {
-		display: grid;
 		gap: 0.8rem;
 	}
 
-	.vibe-panel {
-		margin-top: 1rem;
-		padding: 0.9rem;
-		border-radius: 1rem;
-		border: 1px solid var(--line);
-		background: rgba(255, 255, 255, 0.03);
-	}
-
-	.vibe-switcher {
+	.mode-switcher,
+	.mockup-tabs {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.5rem;
+		gap: 0.55rem;
 	}
 
-	.vibe-switcher button,
-	.stage-card {
-		cursor: pointer;
+	.mode-switcher button,
+	.mockup-tabs button,
+	.mini-button,
+	.preview-surface,
+	.sample-card,
+	.stage-card,
+	.lightbox-nav,
+	.lightbox-close {
+		cursor:
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f4dfa8'/%3E%3Cstop offset='50%25' stop-color='%23c9d8ff'/%3E%3Cstop offset='100%25' stop-color='%23f2b6df'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M17 3l3.3 10.7H31l-8.6 6.2L25.8 31 17 24.9 8.2 31l3.4-11.1L3 13.7h10.7L17 3z' fill='url(%23g)'/%3E%3C/svg%3E")
+				12 12,
+			pointer;
 	}
 
-	.vibe-switcher button {
-		padding: 0.5rem 0.8rem;
+	.mode-switcher button,
+	.mockup-tabs button,
+	.mini-button {
+		padding: 0.55rem 0.8rem;
 		border-radius: 999px;
-		border: 1px solid rgba(224, 205, 162, 0.1);
-		background: rgba(255, 255, 255, 0.03);
-		font-weight: 700;
+		border: 1px solid rgba(224, 205, 162, 0.12);
+		background:
+			linear-gradient(
+				135deg,
+				rgba(240, 222, 192, 0.08),
+				rgba(199, 216, 255, 0.08),
+				rgba(242, 182, 223, 0.08)
+			),
+			rgba(255, 255, 255, 0.03);
 		color: var(--tone-soft);
-	}
-
-	.vibe-switcher button.active,
-	.vibe-switcher button:hover {
-		border-color: rgba(224, 205, 162, 0.22);
-		background: linear-gradient(135deg, rgba(240, 222, 192, 0.16), rgba(199, 216, 255, 0.1));
-	}
-
-	.vibe-copy {
-		display: grid;
-		gap: 0.25rem;
-	}
-
-	.vibe-headline {
 		font-weight: 700;
 	}
 
-	.highlight-grid {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		margin-top: 1rem;
+	.mode-switcher button.active,
+	.mockup-tabs button.active {
+		border-color: rgba(224, 205, 162, 0.22);
+		color: var(--tone-strong);
 	}
 
-	.highlight-pill,
-	.hero-card,
-	.gallery-stage,
+	.studio-card,
+	.compare-card,
+	.bulk-card,
+	.story-card,
+	.cta-card,
+	.sample-card,
 	.feature-card,
-	.spec-grid,
-	.buy-card {
+	.mockup-stage,
+	.spec-grid {
+		padding: 1rem;
 		border: 1px solid var(--line);
+		border-radius: 1.35rem;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--panel);
 		backdrop-filter: blur(18px);
@@ -743,104 +747,77 @@
 			0 24px 60px rgba(0, 0, 0, 0.28);
 	}
 
-	.highlight-pill {
-		padding: 0.75rem;
-		border-radius: 1rem;
+	.studio-card {
+		display: grid;
+		gap: 0.9rem;
 	}
 
-	.highlight-pill span {
-		display: block;
-		color: var(--accent);
-		font-family: var(--font-display);
-		font-size: 1.15rem;
-		margin-bottom: 0.2rem;
+	.studio-head,
+	.section-head.compact {
+		display: grid;
+		gap: 0.35rem;
 	}
 
-	.highlight-pill p {
-		font-size: 0.82rem;
-		line-height: 1.35;
+	.studio-kicker,
+	.control-title,
+	.bulk-card label,
+	.lightbox-kicker,
+	.story-step {
+		font-size: 0.72rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--tone-muted);
+		font-weight: 700;
 	}
 
-	.hero-card {
-		position: relative;
-		padding: 0.8rem;
-		border-radius: 1.75rem;
-		transform: rotate(-1deg);
-	}
-
-	.product-frame {
-		padding: 1rem;
-		border-radius: 1.35rem;
-		background:
-			linear-gradient(155deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
-			linear-gradient(135deg, rgba(93, 74, 37, 0.26), rgba(92, 114, 170, 0.14));
+	.upload-grid,
+	.control-grid,
+	.features {
 		display: grid;
 		gap: 0.8rem;
 	}
 
-	.tool-head {
-		display: grid;
-		gap: 0.35rem;
-	}
-
-	.tool-kicker {
-		color: var(--tone-muted);
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-	}
-
-	.tool-head h2 {
-		font-size: clamp(1.2rem, 2vw, 1.6rem);
-	}
-
-	.tool-head p {
-		color: var(--tone-soft);
-		font-size: 0.92rem;
-		line-height: 1.55;
-	}
-
-	.interactive-tools {
-		display: grid;
-		grid-template-columns: auto 1fr 1fr;
-		gap: 0.7rem;
+	.upload-grid {
+		grid-template-columns: 1fr 1fr auto;
 		align-items: start;
 	}
 
-	.toggle,
-	.upload-control {
-		display: grid;
-		gap: 0.35rem;
-		font-size: 0.78rem;
-		font-weight: 700;
-		color: var(--tone-soft);
+	.control-grid {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 	}
 
-	.toggle {
-		grid-template-columns: auto auto;
-		align-items: center;
+	.control-card {
+		display: grid;
 		gap: 0.55rem;
 	}
 
 	.upload-stack {
 		display: grid;
-		gap: 0.4rem;
+		gap: 0.35rem;
+	}
+
+	.upload-control {
+		display: grid;
+		gap: 0.35rem;
+		color: var(--tone-soft);
+		font-weight: 700;
+		font-size: 0.82rem;
+	}
+
+	.upload-control input,
+	.bulk-card select {
+		width: 100%;
+		padding: 0.6rem 0.75rem;
+		border-radius: 0.9rem;
+		border: 1px solid rgba(224, 205, 162, 0.12);
+		background: rgba(255, 255, 255, 0.04);
+		color: var(--tone-strong);
 	}
 
 	.upload-helper {
 		color: var(--tone-muted);
 		font-size: 0.74rem;
-		line-height: 1.45;
-	}
-
-	.upload-control input {
-		width: 100%;
-		padding: 0.55rem 0.7rem;
-		border-radius: 0.9rem;
-		border: 1px solid rgba(224, 205, 162, 0.12);
-		background: rgba(255, 255, 255, 0.04);
-		color: var(--tone-strong);
+		line-height: 1.4;
 	}
 
 	.upload-meta {
@@ -864,57 +841,85 @@
 		border: 1px solid rgba(224, 205, 162, 0.12);
 		background: rgba(255, 255, 255, 0.04);
 		color: var(--tone-soft);
-		cursor: pointer;
 	}
 
-	.hero-image-wrap {
-		position: relative;
+	.toggle {
 		display: flex;
-		justify-content: center;
+		align-items: center;
+		gap: 0.55rem;
+		padding-top: 1.8rem;
+		color: var(--tone-soft);
+		font-weight: 700;
+	}
+
+	.preview-stage {
+		position: relative;
 		padding: 0.35rem;
 		border-radius: 1.35rem;
 		background:
-			linear-gradient(135deg, rgba(240, 222, 192, 0.18), rgba(199, 216, 255, 0.14)),
+			linear-gradient(
+				135deg,
+				rgba(240, 222, 192, 0.18),
+				rgba(199, 216, 255, 0.14),
+				rgba(242, 182, 223, 0.12)
+			),
 			rgba(255, 255, 255, 0.03);
 		overflow: hidden;
-		border: 0;
+	}
+
+	.preview-surface {
+		position: relative;
+		display: flex;
+		justify-content: center;
 		width: 100%;
-		cursor:
-			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f4dfa8'/%3E%3Cstop offset='50%25' stop-color='%23c9d8ff'/%3E%3Cstop offset='100%25' stop-color='%23f2b6df'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='14' cy='14' r='8.5' fill='none' stroke='url(%23g)' stroke-width='2.5'/%3E%3Cpath d='M20.5 20.5L29 29' stroke='url(%23g)' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E")
-				14 14,
-			zoom-in;
+		padding: 0;
+		background: transparent;
+		border: 0;
 	}
 
-	.hero-image {
+	.base-image {
 		display: block;
-		width: min(12rem, 100%);
+		width: min(14rem, 100%);
 		border-radius: 1rem;
-		transition: transform 180ms ease;
 	}
 
-	.hero-overlay-image {
+	.overlay-image,
+	.compare-overlay,
+	.mockup-overlay,
+	.lightbox-overlay {
 		position: absolute;
-		inset: 0.35rem;
-		width: calc(100% - 0.7rem);
-		height: calc(100% - 0.7rem);
+		left: var(--overlay-x);
+		top: var(--overlay-y);
+		transform: translate(-50%, -50%) scale(var(--overlay-scale)) rotate(var(--overlay-rotation));
+		transform-origin: center;
+		max-width: 70%;
+		max-height: 70%;
 		object-fit: contain;
-		border-radius: 1rem;
-		pointer-events: none;
+		opacity: 0;
+		transition: opacity 180ms ease;
 	}
 
-	.hero-image-wrap:hover .hero-image {
-		transform: scale(1.02);
+	.overlay-image {
+		inset: auto;
+		cursor: move;
+	}
+
+	.overlay-image.revealed,
+	.compare-overlay,
+	.mockup-overlay,
+	.lightbox-overlay {
+		opacity: 1;
 	}
 
 	.shimmer-band {
 		position: absolute;
-		inset: -20% auto -20% -35%;
-		width: 40%;
+		inset: -18% auto -18% calc(var(--shimmer) - 78%);
+		width: 30%;
 		background: linear-gradient(
 			90deg,
 			transparent,
 			rgba(255, 255, 255, 0.08),
-			rgba(255, 255, 255, 0.6),
+			rgba(255, 255, 255, 0.56),
 			rgba(255, 255, 255, 0.08),
 			transparent
 		);
@@ -925,7 +930,6 @@
 
 	.shimmer-on .shimmer-band {
 		opacity: 1;
-		animation: shimmer-pass 2.8s linear infinite;
 	}
 
 	.spark {
@@ -946,141 +950,159 @@
 		bottom: 1rem;
 	}
 
-	.floating-note {
-		position: absolute;
-		z-index: 2;
+	.slider {
+		width: 100%;
 	}
 
-	.floating-note-top {
-		top: -0.5rem;
-		right: 0.8rem;
-		transform: rotate(4deg);
-	}
-
-	.floating-note-bottom {
-		left: -0.5rem;
-		bottom: 1rem;
-		transform: rotate(-5deg);
-	}
-
-	.preview-picker {
+	.sample-row,
+	.features,
+	.utility-grid,
+	.bottom-grid {
 		display: grid;
+		gap: 0.8rem;
+	}
+
+	.sample-row,
+	.features {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.55rem;
 	}
 
-	.preview-picker button {
+	.sample-card {
 		display: grid;
-		gap: 0.35rem;
-		padding: 0.4rem;
-		border: 1px solid rgba(224, 205, 162, 0.1);
-		border-radius: 0.9rem;
-		background: rgba(255, 255, 255, 0.04);
-		transition:
-			transform 160ms ease,
-			box-shadow 160ms ease,
-			border-color 160ms ease;
+		gap: 0.55rem;
+		text-align: left;
 	}
 
-	.preview-picker button:hover,
-	.preview-picker button.active {
-		transform: translateY(-2px);
-		border-color: rgba(224, 205, 162, 0.22);
-		box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
-	}
-
-	.preview-picker img {
+	.sample-card img {
 		display: block;
 		width: 100%;
-		height: 5rem;
+		height: 8rem;
 		object-fit: cover;
-		border-radius: 0.7rem;
+		border-radius: 0.9rem;
 	}
 
-	.preview-picker span {
-		font-size: 0.78rem;
-		font-weight: 700;
-		color: var(--tone-soft);
+	.sample-card.active {
+		border-color: rgba(224, 205, 162, 0.26);
 	}
 
-	.gallery {
+	.compare-card,
+	.mockup-stage {
 		display: grid;
-		gap: 1rem;
+		gap: 0.8rem;
 	}
 
-	.gallery-copy {
-		display: grid;
-		gap: 0.5rem;
-		max-width: 32rem;
-	}
-
-	.gallery-stage {
+	.compare-stage {
 		position: relative;
-		min-height: 22rem;
-		border-radius: 1.7rem;
+		min-height: 18rem;
+		border-radius: 1rem;
 		overflow: hidden;
+		background: rgba(255, 255, 255, 0.03);
 	}
 
-	.stage-card {
+	.compare-base {
 		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.compare-after {
+		position: absolute;
+		inset: 0;
+	}
+
+	.compare-shimmer {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 18%;
+		transform: translateX(-50%);
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+	}
+
+	.compare-line {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		transform: translateX(-50%);
+		background: linear-gradient(180deg, transparent, var(--accent-soft), transparent);
+	}
+
+	.mockup-tabs {
+		margin-top: 0.2rem;
+	}
+
+	.mockup-stage {
+		min-height: 22rem;
+		place-items: center;
+	}
+
+	.mockup-target {
+		position: relative;
+		width: min(16rem, 56vw);
+		aspect-ratio: 0.82;
 		border-radius: 1.2rem;
-		border: 6px solid rgba(255, 255, 255, 0.92);
 		overflow: hidden;
-		box-shadow: 0 24px 50px rgba(0, 0, 0, 0.32);
-		padding: 0;
-		background: transparent;
-		transition: transform 180ms ease;
+		box-shadow: 0 20px 44px rgba(0, 0, 0, 0.3);
 	}
 
-	.stage-card:hover {
-		transform: scale(1.02);
+	.mockup-fridge {
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+			linear-gradient(180deg, #24272f, #17191e);
 	}
 
-	.stage-card img {
+	.mockup-locker {
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+			linear-gradient(180deg, #28313a, #151a21);
+	}
+
+	.mockup-envelope {
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+			linear-gradient(180deg, #3a3029, #1e1814);
+	}
+
+	.mockup-image {
 		display: block;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 	}
 
-	.stage-card-large {
-		inset: 2rem 3rem 3rem 3.6rem;
-		transform: rotate(-4deg);
+	.utility-grid {
+		grid-template-columns: 1.1fr 0.9fr;
 	}
 
-	.stage-card-medium {
-		width: 8rem;
-		height: 10rem;
-		right: 1.2rem;
-		bottom: 1.2rem;
-		transform: rotate(5deg);
+	.bulk-controls {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.8rem;
+		margin-top: 0.9rem;
 	}
 
-	.stage-card-small {
-		width: 9rem;
-		height: 11.5rem;
-		left: 1rem;
-		bottom: 1rem;
-		transform: rotate(7deg);
+	.bulk-card label {
+		display: grid;
+		gap: 0.35rem;
 	}
 
-	.stage-card-large:hover {
-		transform: rotate(-4deg) scale(1.02);
+	.bulk-result {
+		margin-top: 0.9rem;
 	}
 
-	.stage-card-medium:hover {
-		transform: rotate(5deg) scale(1.02);
+	.story-card,
+	.story-panel {
+		display: grid;
+		gap: 0.75rem;
 	}
 
-	.stage-card-small:hover {
-		transform: rotate(7deg) scale(1.02);
-	}
-
-	.stage-badge {
-		position: absolute;
-		right: 1rem;
-		top: 1rem;
-		transform: rotate(6deg);
+	.cta-card,
+	.lightbox-dialog {
+		display: grid;
+		gap: 1rem;
 	}
 
 	.lightbox {
@@ -1104,35 +1126,14 @@
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--panel);
 		box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
-		display: grid;
 		grid-template-columns: minmax(0, 1fr) 240px;
-		gap: 1rem;
 		align-items: stretch;
 	}
 
-	.lightbox-close {
-		position: absolute;
-		top: 0.9rem;
-		right: 0.9rem;
-		padding: 0.45rem 0.75rem;
-		border-radius: 999px;
-		border: 1px solid rgba(224, 205, 162, 0.12);
-		background:
-			linear-gradient(
-				135deg,
-				rgba(240, 222, 192, 0.16),
-				rgba(199, 216, 255, 0.14),
-				rgba(242, 182, 223, 0.12)
-			),
-			rgba(255, 255, 255, 0.04);
-		color: var(--tone-strong);
-		cursor: pointer;
-	}
-
 	.lightbox-media {
+		position: relative;
 		display: grid;
 		place-items: center;
-		min-height: 0;
 		border-radius: 1.1rem;
 		background:
 			radial-gradient(circle at top, rgba(217, 180, 102, 0.08), transparent 30%),
@@ -1146,18 +1147,6 @@
 		max-height: 80vh;
 		object-fit: contain;
 		border-radius: 1rem;
-	}
-
-	.lightbox-overlay-image {
-		position: absolute;
-		inset: 0;
-		margin: auto;
-		width: 100%;
-		height: 100%;
-		max-height: 80vh;
-		object-fit: contain;
-		border-radius: 1rem;
-		pointer-events: none;
 	}
 
 	.lightbox-sidebar {
@@ -1175,27 +1164,6 @@
 				rgba(242, 182, 223, 0.08)
 			);
 		border: 1px solid rgba(224, 205, 162, 0.12);
-	}
-
-	.lightbox-kicker {
-		color: var(--tone-muted);
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-	}
-
-	.lightbox-sidebar h3 {
-		margin: 0;
-		font-family: var(--font-display);
-		font-size: 1.55rem;
-		font-weight: 500;
-	}
-
-	.lightbox-copy {
-		color: var(--tone-soft);
-		font-size: 0.94rem;
-		line-height: 1.6;
 	}
 
 	.lightbox-meta {
@@ -1220,12 +1188,9 @@
 		font-weight: 700;
 	}
 
-	.lightbox-nav {
+	.lightbox-nav,
+	.lightbox-close {
 		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 3.15rem;
-		height: 3.15rem;
 		border-radius: 999px;
 		border: 1px solid rgba(224, 205, 162, 0.16);
 		background:
@@ -1238,20 +1203,13 @@
 			rgba(10, 10, 13, 0.86);
 		color: var(--tone-strong);
 		box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
-		cursor:
-			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f4dfa8'/%3E%3Cstop offset='50%25' stop-color='%23c9d8ff'/%3E%3Cstop offset='100%25' stop-color='%23f2b6df'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M17 3l3.3 10.7H31l-8.6 6.2L25.8 31 17 24.9 8.2 31l3.4-11.1L3 13.7h10.7L17 3z' fill='url(%23g)'/%3E%3C/svg%3E")
-				12 12,
-			pointer;
 	}
 
-	.lightbox-nav:disabled {
-		opacity: 0.45;
-		cursor: default;
-	}
-
-	.lightbox-nav span {
-		font-size: 1.35rem;
-		line-height: 1;
+	.lightbox-nav {
+		top: 50%;
+		transform: translateY(-50%);
+		width: 3.15rem;
+		height: 3.15rem;
 	}
 
 	.lightbox-nav-left {
@@ -1262,133 +1220,24 @@
 		right: 15.5rem;
 	}
 
-	.lightbox-nav:hover {
-		transform: translateY(-50%) scale(1.03);
+	.lightbox-close {
+		top: 0.9rem;
+		right: 0.9rem;
+		padding: 0.45rem 0.75rem;
 	}
 
-	.features {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-	}
-
-	.feature-card {
-		padding: 1rem;
-		border-radius: 1rem;
-	}
-
-	.feature-card h3 {
-		font-size: 1rem;
-	}
-
-	.feature-card p {
-		margin-top: 0.35rem;
-		color: var(--tone-soft);
-		font-size: 0.9rem;
-	}
-
-	.bottom-grid {
-		grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
-		align-items: start;
-	}
-
-	.spec-grid {
-		border-radius: 1.2rem;
-		overflow: hidden;
-	}
-
-	.spec-row {
-		display: flex;
-		justify-content: space-between;
-		gap: 1rem;
-		padding: 0.82rem 1rem;
-		border-bottom: 1px solid rgba(224, 205, 162, 0.08);
-	}
-
-	.spec-row:last-child {
-		border-bottom: 0;
-	}
-
-	.spec-row p,
-	.spec-row span {
-		margin: 0;
-	}
-
-	.spec-row p {
-		color: var(--tone-muted);
-	}
-
-	.spec-row span {
-		font-weight: 600;
-	}
-
-	.buy-card {
-		padding: 1.2rem;
-		border-radius: 1.2rem;
-		display: grid;
-		gap: 0.8rem;
-	}
-
-	.buy-copy {
-		color: var(--tone-soft);
-		font-size: 0.95rem;
-		line-height: 1.6;
-	}
-
-	.buy-kicker {
-		color: var(--tone-muted);
-		font-size: 0.78rem;
-		font-weight: 700;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-	}
-
-	@keyframes shimmer-pass {
-		from {
-			transform: translateX(0) skewX(-18deg);
-		}
-
-		to {
-			transform: translateX(420%) skewX(-18deg);
-		}
-	}
-
-	@media (max-width: 900px) {
-		.hero,
+	@media (max-width: 960px) {
+		.hero-grid,
+		.utility-grid,
+		.upload-grid,
 		.features,
-		.bottom-grid {
+		.sample-row {
 			grid-template-columns: 1fr;
 		}
 
-		.site-header {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-
-		.hero-card {
-			transform: none;
-		}
-
-		.interactive-tools {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	@media (max-width: 640px) {
-		.site-header,
-		main {
-			width: min(980px, calc(100% - 1.1rem));
-		}
-
-		main {
-			gap: 2rem;
-			padding-top: 1.5rem;
-		}
-
-		h1 {
-			font-size: clamp(2.1rem, 12vw, 3rem);
-		}
-
-		.highlight-grid,
-		.preview-picker {
+		.upload-grid,
+		.control-grid,
+		.bulk-controls {
 			grid-template-columns: 1fr;
 		}
 
@@ -1404,41 +1253,18 @@
 			transform: none;
 		}
 
-		.lightbox-nav:hover {
-			transform: scale(1.03);
-		}
-
-		.lightbox-nav-left {
-			left: 1rem;
-		}
-
 		.lightbox-nav-right {
 			right: 1rem;
 		}
+	}
 
-		.stage-card-large {
-			inset: 2.8rem 1rem 1rem;
+	@media (max-width: 640px) {
+		.base-image,
+		.mockup-target {
+			width: min(18rem, 100%);
 		}
 
 		.stage-card-medium {
-			width: 5.5rem;
-			height: 7rem;
-			right: 0.8rem;
-			bottom: 0.8rem;
-		}
-
-		.stage-card-small {
-			width: 6.8rem;
-			height: 8.6rem;
-			left: 0.8rem;
-			bottom: 0.8rem;
-		}
-
-		.brand-logo {
-			width: min(14rem, 82vw);
-		}
-
-		.floating-note {
 			display: none;
 		}
 	}
