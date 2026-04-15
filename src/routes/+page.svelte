@@ -28,6 +28,8 @@
 		'Group order pricing',
 		'Gift-ready keepsake feel'
 	];
+	const heroVideoSrc = '/holographe/hero-reel.mov';
+	const heroVideoPoster = '/holographe/lydholowed.png';
 </script>
 
 <svelte:head>
@@ -69,12 +71,14 @@
 					<div class="visual-main">
 						<video
 							class="visual-video"
-							src="/holographe/hero-reel.mov"
+							src={heroVideoSrc}
+							poster={heroVideoPoster}
 							autoplay
 							muted
 							loop
 							playsinline
 							preload="metadata"
+							aria-label="Preview reel showing the holographic keepsake finish"
 						></video>
 						<div class="visual-badge">From $25</div>
 					</div>
@@ -119,8 +123,8 @@
 				<p class="eyebrow">Live preview</p>
 				<h2>See the finish before you order.</h2>
 				<p>
-					This section is ready for the polished edited reel. Right now it uses the raw uploaded
-					clip so we can design the page around the final motion slot.
+					The hero handles the ambient motion preview. This full-size player stays available on
+					demand, so the page does not force a second autoplay video during the initial load.
 				</p>
 				<div class="reel-tags">
 					{#each reelMoments as item}
@@ -135,20 +139,27 @@
 
 			<div class="glass-card video-stage">
 				<div class="video-shell">
+					<!-- svelte-ignore a11y_media_has_caption because the current preview reel has no spoken audio -->
 					<video
 						class="hero-video"
-						src="/holographe/hero-reel.mov"
-						autoplay
-						muted
-						loop
+						src={heroVideoSrc}
+						poster={heroVideoPoster}
 						playsinline
 						controls
-						preload="metadata"
+						preload="none"
+						aria-label="Full-size video preview of the holographic keepsake"
 					>
-						<track kind="captions" />
+						<p>
+							Your browser does not support embedded video.
+							<a href={heroVideoSrc}>Open the preview reel directly.</a>
+						</p>
 					</video>
 					<div class="video-glow"></div>
 				</div>
+				<p class="video-note">
+					The current reel is a large source export, so the full player loads only when requested.
+					<a href={heroVideoSrc}>Open the source clip</a>
+				</p>
 			</div>
 		</div>
 	</section>
@@ -503,6 +514,15 @@
 		gap: 1rem;
 	}
 
+	.video-note {
+		font-size: 0.92rem;
+	}
+
+	.video-note a {
+		color: var(--text);
+		text-decoration-color: rgba(255, 255, 255, 0.35);
+	}
+
 	.reel-tags {
 		display: flex;
 		flex-wrap: wrap;
@@ -563,6 +583,7 @@
 		position: relative;
 		display: block;
 		width: 100%;
+		aspect-ratio: 16 / 10;
 		max-height: 42rem;
 		border-radius: 1rem;
 		background: #08090d;
