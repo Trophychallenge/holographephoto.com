@@ -7,8 +7,8 @@
 
 	const navItems = [
 		{ href: '/', label: 'Home' },
+		{ href: '/customize', label: 'Customize' },
 		{ href: '/prices', label: 'Prices' },
-		{ href: '/gallery', label: 'Gallery' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
 </script>
@@ -47,8 +47,8 @@
 			</p>
 		</div>
 		<div class="footer-links">
+			<a href={resolve('/customize')}>Customize</a>
 			<a href={resolve('/prices')}>Prices</a>
-			<a href={resolve('/gallery')}>Gallery</a>
 			<a href={resolve('/contact')}>Start your order</a>
 		</div>
 		<p class="footer-meta">holographephoto.com</p>
