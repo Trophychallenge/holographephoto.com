@@ -10,7 +10,7 @@
 	type GiftMode = {
 		id: 'quiet' | 'ceremony' | 'signature';
 		label: string;
-		headline: string;
+		heading: string;
 	};
 
 	type Mockup = 'fridge' | 'locker' | 'envelope';
@@ -40,26 +40,22 @@
 	];
 
 	const modes: GiftMode[] = [
-		{ id: 'quiet', label: 'Quiet', headline: 'Soft, personal, and easy to gift.' },
-		{ id: 'ceremony', label: 'Ceremony', headline: 'Elegant for weddings and milestone moments.' },
-		{
-			id: 'signature',
-			label: 'Signature',
-			headline: 'Stronger contrast with a more statement finish.'
-		}
+		{ id: 'quiet', label: 'Quiet', heading: 'Soft and personal.' },
+		{ id: 'ceremony', label: 'Ceremony', heading: 'Elegant for weddings and milestones.' },
+		{ id: 'signature', label: 'Signature', heading: 'A cleaner, bolder finish.' }
 	];
 
 	const mockups: { id: Mockup; label: string }[] = [
 		{ id: 'fridge', label: 'Fridge' },
 		{ id: 'locker', label: 'Locker' },
-		{ id: 'envelope', label: 'Envelope' }
+		{ id: 'envelope', label: 'Gift envelope' }
 	];
 
 	const storySteps = [
-		{ title: 'Upload the photo', copy: 'Start with the image that matters.' },
-		{ title: 'Layer the detail', copy: 'Add handwriting, a drawing, or a note.' },
-		{ title: 'Let it shimmer', copy: 'Preview the holographic light pass.' },
-		{ title: 'Gift or keep', copy: 'Make one or build a full set.' }
+		{ title: 'Upload', copy: 'Start with the photo you want to keep.' },
+		{ title: 'Layer', copy: 'Add a drawing, note, or handwriting overlay.' },
+		{ title: 'Preview', copy: 'See the finished keepsake before ordering.' },
+		{ title: 'Gift', copy: 'Order one or plan a full set.' }
 	];
 
 	let activePreview = $state(previews[0]);
@@ -68,10 +64,8 @@
 	let uploadedBaseName = $state('');
 	let uploadedOverlaySrc = $state('');
 	let uploadedOverlayName = $state('');
-	let shimmerOn = $state(true);
-	let shimmerValue = $state(58);
 	let revealOverlay = $state(true);
-	let compareSplit = $state(48);
+	let compareSplit = $state(52);
 	let activeMockup = $state<Mockup>('fridge');
 	let bulkEvent = $state('Wedding favor');
 	let bulkQty = $state('24');
@@ -79,11 +73,15 @@
 	let storyIndex = $state(0);
 	let expanded = $state(false);
 
-	let overlayX = $state(50);
-	let overlayY = $state(58);
-	let overlayScale = $state(68);
-	let overlayRotation = $state(-4);
+	let overlayX = $state(66);
+	let overlayY = $state(78);
+	let overlayScale = $state(42);
+	let overlayRotation = $state(-6);
 
+	let baseUploadInput: HTMLInputElement | null = null;
+	let baseCameraInput: HTMLInputElement | null = null;
+	let overlayUploadInput: HTMLInputElement | null = null;
+	let overlayCameraInput: HTMLInputElement | null = null;
 	let previewStage: HTMLDivElement | null = null;
 	let draggingOverlay = $state(false);
 
@@ -95,22 +93,21 @@
 		previews.findIndex((preview) => preview.id === activePreview.id)
 	);
 	const bulkRecommendation = $derived.by(() => {
-		const qty = Number.parseInt(bulkQty, 10);
 		if (bulkEvent === 'Wedding favor') {
-			return qty >= 40
-				? 'A coordinated wedding-favor set with one image style and names or dates layered on top.'
-				: 'A polished small-batch wedding favor set for close family or the bridal party.';
+			return bulkQty === '100'
+				? 'Best for large wedding tables, welcome gifts, and coordinated favor sets.'
+				: 'A refined wedding favor run with one image style and names, dates, or short notes.';
 		}
 
 		if (bulkEvent === 'Christmas gifts') {
-			return 'A family gift run with one photo direction and personalized handwriting or short notes.';
+			return 'Ideal for a family set with one visual direction and personalized handwriting.';
 		}
 
 		if (bulkEvent === 'Party favors') {
-			return 'A playful favor set that still feels personal and elevated, especially with simple overlays.';
+			return 'A playful group order that still feels polished and personal.';
 		}
 
-		return `A ${bulkStyle.toLowerCase()} set sized for ${bulkQty} keepsakes.`;
+		return `${bulkQty} keepsakes with a ${bulkStyle.toLowerCase()} finish.`;
 	});
 
 	function setPreview(preview: Preview) {
@@ -153,8 +150,8 @@
 	}
 
 	function applySignaturePlacement() {
-		overlayX = 67;
-		overlayY = 79;
+		overlayX = 66;
+		overlayY = 78;
 		overlayScale = 42;
 		overlayRotation = -6;
 		revealOverlay = true;
@@ -162,7 +159,7 @@
 
 	function applyArtworkPlacement() {
 		overlayX = 50;
-		overlayY = 50;
+		overlayY = 51;
 		overlayScale = 72;
 		overlayRotation = 0;
 		revealOverlay = true;
@@ -211,26 +208,24 @@
 </script>
 
 <svelte:head>
-	<title>Holographe | Custom Holographic Photo Magnet</title>
+	<title>Holographe | Personalized Holographic Photo Magnet</title>
 	<meta
 		name="description"
-		content="Premium holographic photo magnets with layered handwriting, drawing, and gift-ready keepsake styling."
+		content="Upload a photo, add handwriting or artwork, and preview a premium holographic keepsake magnet."
 	/>
 </svelte:head>
 
 <div class="page-shell">
-	<section class="hero section">
-		<div class="page-wrap hero-grid">
+	<section class="section hero">
+		<div class="page-wrap hero-wrap">
 			<div class="hero-copy">
-				<p class="eyebrow">Custom holographic photo magnet</p>
-				<h1>Photo in. Keepsake out.</h1>
-				<p class="hero-text">Upload, layer, preview, and make it feel special.</p>
+				<p class="eyebrow">Premium personalized keepsake</p>
+				<h1>Your photo, made worth keeping.</h1>
+				<p class="hero-text">Upload a photo. Add a note or drawing. Preview it instantly.</p>
 
 				<div class="hero-actions">
-					<a class="button-primary" href="https://www.amazon.com/dp/B0GWN48WZV"
-						>Customize on Amazon</a
-					>
-					<button class="button-secondary" type="button" onclick={openExpanded}>View larger</button>
+					<a class="button-primary" href="https://www.amazon.com/dp/B0GWN48WZV">Shop Amazon</a>
+					<a class="button-secondary" href="/prices">See pricing</a>
 				</div>
 
 				<div class="mode-switcher" aria-label="Gift mode">
@@ -245,63 +240,106 @@
 					{/each}
 				</div>
 
-				<p class="mode-headline">{currentMode.headline}</p>
+				<p class="mode-headline">{currentMode.heading}</p>
 			</div>
 
 			<div class="glass-card studio-card">
-				<div class="studio-head">
-					<p class="studio-kicker">Preview your keepsake</p>
-					<h2>See your image come to life.</h2>
+				<div class="studio-top">
+					<div>
+						<p class="studio-kicker">Preview your keepsake</p>
+						<h2>Try your image here.</h2>
+					</div>
+					<p class="studio-price">From $25</p>
 				</div>
 
 				<div class="upload-grid">
-					<div class="upload-stack">
-						<label class="upload-control">
-							<span>Main photo</span>
-							<input
-								type="file"
-								accept="image/*"
-								onchange={(event) => updateUploadedImage(event, 'base')}
-							/>
-						</label>
-						<p class="upload-helper">Upload the base image for the magnet.</p>
+					<div class="upload-card">
+						<p class="upload-label">Main photo</p>
+						<div class="action-row">
+							<button type="button" class="action-button" onclick={() => baseUploadInput?.click()}>
+								Upload
+							</button>
+							<button
+								type="button"
+								class="action-button ghost"
+								onclick={() => baseCameraInput?.click()}
+							>
+								Take photo
+							</button>
+						</div>
+						<input
+							bind:this={baseUploadInput}
+							class="hidden-input"
+							type="file"
+							accept="image/*"
+							onchange={(event) => updateUploadedImage(event, 'base')}
+						/>
+						<input
+							bind:this={baseCameraInput}
+							class="hidden-input"
+							type="file"
+							accept="image/*"
+							capture="environment"
+							onchange={(event) => updateUploadedImage(event, 'base')}
+						/>
 						{#if uploadedBaseName}
 							<div class="upload-meta">
 								<p>{uploadedBaseName}</p>
 								<button type="button" onclick={() => clearUploadedImage('base')}>Remove</button>
 							</div>
+						{:else}
+							<p class="upload-helper">Best for the main photo.</p>
 						{/if}
 					</div>
 
-					<div class="upload-stack">
-						<label class="upload-control">
-							<span>Overlay artwork</span>
-							<input
-								type="file"
-								accept="image/png,image/webp,image/*"
-								onchange={(event) => updateUploadedImage(event, 'overlay')}
-							/>
-						</label>
-						<p class="upload-helper">Add transparent handwriting, a note, or a drawing.</p>
+					<div class="upload-card">
+						<p class="upload-label">Overlay artwork</p>
+						<div class="action-row">
+							<button
+								type="button"
+								class="action-button"
+								onclick={() => overlayUploadInput?.click()}
+							>
+								Upload
+							</button>
+							<button
+								type="button"
+								class="action-button ghost"
+								onclick={() => overlayCameraInput?.click()}
+							>
+								Take photo
+							</button>
+						</div>
+						<input
+							bind:this={overlayUploadInput}
+							class="hidden-input"
+							type="file"
+							accept="image/png,image/webp,image/*"
+							onchange={(event) => updateUploadedImage(event, 'overlay')}
+						/>
+						<input
+							bind:this={overlayCameraInput}
+							class="hidden-input"
+							type="file"
+							accept="image/png,image/webp,image/*"
+							capture="environment"
+							onchange={(event) => updateUploadedImage(event, 'overlay')}
+						/>
 						{#if uploadedOverlayName}
 							<div class="upload-meta">
 								<p>{uploadedOverlayName}</p>
 								<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button>
 							</div>
+						{:else}
+							<p class="upload-helper">Perfect for handwriting, notes, or a child’s drawing.</p>
 						{/if}
 					</div>
-
-					<label class="toggle">
-						<input type="checkbox" bind:checked={shimmerOn} />
-						<span>Shimmer</span>
-					</label>
 				</div>
 
 				<div
 					bind:this={previewStage}
-					class:shimmer-on={shimmerOn}
-					class="preview-stage"
-					style={`--overlay-x:${overlayX}%; --overlay-y:${overlayY}%; --overlay-scale:${overlayScale / 100}; --overlay-rotation:${overlayRotation}deg; --shimmer:${shimmerValue}%`}
+					class="preview-stage shimmer-on"
+					style={`--overlay-x:${overlayX}%; --overlay-y:${overlayY}%; --overlay-scale:${overlayScale / 100}; --overlay-rotation:${overlayRotation}deg;`}
 				>
 					<button
 						type="button"
@@ -326,39 +364,23 @@
 					</button>
 				</div>
 
-				<div class="control-grid">
-					<div class="control-card">
-						<p class="control-title">Signature scan tool</p>
-						<div class="mini-button-row">
-							<button type="button" class="mini-button" onclick={applySignaturePlacement}
-								>Place as signature</button
-							>
-							<button type="button" class="mini-button" onclick={applyArtworkPlacement}
-								>Center artwork</button
-							>
-						</div>
-					</div>
-
-					<div class="control-card">
-						<p class="control-title">Handwriting reveal</p>
-						<button
-							type="button"
-							class="mini-button wide"
-							onclick={() => (revealOverlay = !revealOverlay)}
-						>
-							{revealOverlay ? 'Hide overlay' : 'Reveal overlay'}
-						</button>
-					</div>
-
-					<div class="control-card">
-						<p class="control-title">Shimmer slider</p>
-						<input class="slider" type="range" min="12" max="88" bind:value={shimmerValue} />
-					</div>
-
-					<div class="control-card">
-						<p class="control-title">Overlay size</p>
-						<input class="slider" type="range" min="20" max="95" bind:value={overlayScale} />
-					</div>
+				<div class="control-row">
+					<button type="button" class="mini-button" onclick={applySignaturePlacement}>
+						Signature placement
+					</button>
+					<button type="button" class="mini-button" onclick={applyArtworkPlacement}>
+						Center overlay
+					</button>
+					<button
+						type="button"
+						class="mini-button"
+						onclick={() => (revealOverlay = !revealOverlay)}
+					>
+						{revealOverlay ? 'Hide overlay' : 'Show overlay'}
+					</button>
+					<button type="button" class="mini-button" onclick={openExpanded}
+						>Open large preview</button
+					>
 				</div>
 			</div>
 		</div>
@@ -381,13 +403,13 @@
 	</section>
 
 	<section class="section">
-		<div class="page-wrap compare-grid">
-			<div class="section-head compact">
-				<span class="eyebrow">Before / after</span>
-				<h2>See the change.</h2>
-			</div>
-
+		<div class="page-wrap feature-grid">
 			<div class="glass-card compare-card">
+				<div class="section-head compact">
+					<span class="eyebrow">Before / after</span>
+					<h2>See the difference.</h2>
+				</div>
+
 				<div class="compare-stage">
 					<img class="compare-base" src={currentBaseSrc} alt={currentBaseAlt} />
 					<div class="compare-after" style={`clip-path: inset(0 ${100 - compareSplit}% 0 0)`}>
@@ -400,19 +422,50 @@
 								style={`left:${overlayX}%; top:${overlayY}%; transform: translate(-50%, -50%) scale(${overlayScale / 100}) rotate(${overlayRotation}deg); opacity:${revealOverlay ? 1 : 0}`}
 							/>
 						{/if}
-						<div class="compare-shimmer" style={`left:${shimmerValue}%`}></div>
+						<div class="compare-shimmer"></div>
 					</div>
 					<div class="compare-line" style={`left:${compareSplit}%`}></div>
 				</div>
+
 				<input class="slider" type="range" min="10" max="90" bind:value={compareSplit} />
+			</div>
+
+			<div class="glass-card story-card">
+				<div class="section-head compact">
+					<span class="eyebrow">Story mode</span>
+					<h2>Fast and simple.</h2>
+				</div>
+
+				<div class="story-panel">
+					<p class="story-step">0{storyIndex + 1}</p>
+					<h3>{storySteps[storyIndex].title}</h3>
+					<p>{storySteps[storyIndex].copy}</p>
+				</div>
+
+				<div class="mini-nav">
+					<button
+						type="button"
+						class="mini-button"
+						onclick={() => (storyIndex = storyIndex === 0 ? storySteps.length - 1 : storyIndex - 1)}
+					>
+						Prev
+					</button>
+					<button
+						type="button"
+						class="mini-button"
+						onclick={() => (storyIndex = storyIndex === storySteps.length - 1 ? 0 : storyIndex + 1)}
+					>
+						Next
+					</button>
+				</div>
 			</div>
 		</div>
 	</section>
 
 	<section class="section">
-		<div class="page-wrap mockup-grid">
+		<div class="page-wrap">
 			<div class="section-head compact">
-				<span class="eyebrow">Live mockups</span>
+				<span class="eyebrow">Mockups</span>
 				<h2>See it in place.</h2>
 			</div>
 
@@ -447,8 +500,11 @@
 	<section class="section">
 		<div class="page-wrap utility-grid">
 			<div class="glass-card bulk-card">
-				<span class="eyebrow">Bulk gift builder</span>
-				<h2>Plan a group order.</h2>
+				<div class="section-head compact">
+					<span class="eyebrow">Bulk gift builder</span>
+					<h2>Plan a group order.</h2>
+				</div>
+
 				<div class="bulk-controls">
 					<label>
 						Event
@@ -476,33 +532,23 @@
 						</select>
 					</label>
 				</div>
+
 				<p class="bulk-result">{bulkRecommendation}</p>
+				<a class="button-secondary bulk-link" href="/prices">See bulk pricing</a>
 			</div>
 
-			<div class="glass-card story-card">
-				<span class="eyebrow">Story mode</span>
-				<h2>Keep it simple.</h2>
-				<div class="story-panel">
-					<p class="story-step">0{storyIndex + 1}</p>
-					<h3>{storySteps[storyIndex].title}</h3>
-					<p>{storySteps[storyIndex].copy}</p>
+			<div class="glass-card mini-gallery">
+				<div class="section-head compact">
+					<span class="eyebrow">A few ways to use it</span>
+					<h2>Gift-ready from the start.</h2>
 				</div>
-				<div class="mini-button-row">
-					<button
-						type="button"
-						class="mini-button"
-						onclick={() => (storyIndex = storyIndex === 0 ? storySteps.length - 1 : storyIndex - 1)}
-					>
-						Prev
-					</button>
-					<button
-						type="button"
-						class="mini-button"
-						onclick={() => (storyIndex = storyIndex === storySteps.length - 1 ? 0 : storyIndex + 1)}
-					>
-						Next
-					</button>
-				</div>
+
+				<ul>
+					<li>Wedding favors</li>
+					<li>Christmas gifts for family</li>
+					<li>Baby keepsakes</li>
+					<li>Memorial pieces</li>
+				</ul>
 			</div>
 		</div>
 	</section>
@@ -510,12 +556,11 @@
 	<section class="section">
 		<div class="page-wrap cta-card glass-card">
 			<div>
-				<span class="eyebrow">Ready when you are</span>
-				<h2>Made for one keepsake or a full gifting run.</h2>
+				<span class="eyebrow">Ready to order</span>
+				<h2>Made for one keepsake or a full gift run.</h2>
 			</div>
 			<div class="hero-actions">
-				<a class="button-primary" href="https://www.amazon.com/dp/B0GWN48WZV">Customize on Amazon</a
-				>
+				<a class="button-primary" href="https://www.amazon.com/dp/B0GWN48WZV">Order on Amazon</a>
 				<a class="button-secondary" href="/contact">Start a custom order</a>
 			</div>
 		</div>
@@ -574,12 +619,12 @@
 					<p class="lightbox-kicker">Selected keepsake</p>
 					<h3>{uploadedBaseName || activePreview.label}</h3>
 					<p class="lightbox-copy">
-						A larger view for checking the image, overlay placement, and holographic feel.
+						A larger look at the image, artwork overlay, and final finish.
 					</p>
 					<div class="lightbox-meta">
-						<span>Holographic finish</span>
-						<span>Overlay artwork option</span>
-						<span>Gift-ready format</span>
+						<span>Premium holographic finish</span>
+						<span>Handwriting and drawing overlay</span>
+						<span>Gift-ready keepsake format</span>
 					</div>
 				</aside>
 			</div>
@@ -589,15 +634,15 @@
 
 <style>
 	:global(:root) {
-		--panel: rgba(14, 14, 17, 0.78);
+		--panel: rgba(14, 14, 17, 0.8);
 		--line: rgba(224, 205, 162, 0.14);
 		--tone-strong: #f7f0e2;
-		--tone-soft: rgba(241, 232, 214, 0.8);
-		--tone-muted: rgba(204, 186, 150, 0.7);
+		--tone-soft: rgba(241, 232, 214, 0.84);
+		--tone-muted: rgba(204, 186, 150, 0.74);
 		--accent: #d9b466;
 		--accent-soft: #f0dec0;
 		--iridescent: #c7d8ff;
-		--pink-soft: #f2b6df;
+		--rose: #f2b6df;
 		--font-display: 'Georgia', 'Iowan Old Style', serif;
 		--font-body: 'Space Grotesk', 'Avenir Next', sans-serif;
 	}
@@ -605,64 +650,56 @@
 	:global(body) {
 		margin: 0;
 		font-family: var(--font-body);
-		background: linear-gradient(180deg, #060607 0%, #0b0b0e 45%, #060607 100%);
+		background: linear-gradient(180deg, #060607 0%, #0b0b0e 48%, #060607 100%);
 		color: var(--tone-strong);
 	}
 
 	.page-shell {
-		position: relative;
 		min-height: 100vh;
-	}
-
-	.ambient {
-		display: none;
-	}
-
-	.hero-grid,
-	.compare-grid,
-	.mockup-grid,
-	.utility-grid {
-		display: grid;
-		gap: 1rem;
-	}
-
-	.hero-grid {
-		grid-template-columns: minmax(0, 0.88fr) minmax(320px, 1.12fr);
-		align-items: start;
-	}
-
-	.hero-copy {
-		display: grid;
-		gap: 0.85rem;
-		padding-top: 1rem;
 	}
 
 	h1,
 	h2,
 	h3,
-	p {
+	p,
+	ul {
 		margin: 0;
+	}
+
+	.hero-wrap {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+		align-items: center;
+		gap: 1.2rem;
+		padding-top: 0.5rem;
+	}
+
+	.hero-copy {
+		display: grid;
+		gap: 0.85rem;
+		max-width: 29rem;
+		margin: 0 auto 0 0;
 	}
 
 	h1 {
 		font-family: var(--font-display);
-		font-size: clamp(2.6rem, 6vw, 4.6rem);
-		line-height: 0.96;
+		font-size: clamp(2.7rem, 6vw, 4.9rem);
+		line-height: 0.94;
 		letter-spacing: -0.05em;
 		font-weight: 500;
-		max-width: 9ch;
+		max-width: 8.5ch;
 	}
 
 	h2 {
 		font-family: var(--font-display);
-		font-size: clamp(1.35rem, 2.5vw, 2rem);
+		font-size: clamp(1.45rem, 2.7vw, 2.2rem);
 		font-weight: 500;
-		line-height: 1.1;
+		line-height: 1.08;
 	}
 
 	h3 {
 		font-family: var(--font-display);
-		font-size: 1.2rem;
+		font-size: 1.22rem;
 		font-weight: 500;
 	}
 
@@ -670,75 +707,34 @@
 	.mode-headline,
 	.bulk-result,
 	.story-panel p,
-	.lightbox-copy {
+	.lightbox-copy,
+	.upload-helper {
 		color: var(--tone-soft);
 		line-height: 1.55;
 	}
 
 	.hero-actions,
-	.mini-button-row {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.8rem;
-	}
-
 	.mode-switcher,
+	.control-row,
+	.action-row,
+	.mini-nav,
 	.mockup-tabs {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.55rem;
-	}
-
-	.mode-switcher button,
-	.mockup-tabs button,
-	.mini-button,
-	.preview-surface,
-	.sample-card,
-	.stage-card,
-	.lightbox-nav,
-	.lightbox-close {
-		cursor:
-			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f4dfa8'/%3E%3Cstop offset='50%25' stop-color='%23c9d8ff'/%3E%3Cstop offset='100%25' stop-color='%23f2b6df'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M17 3l3.3 10.7H31l-8.6 6.2L25.8 31 17 24.9 8.2 31l3.4-11.1L3 13.7h10.7L17 3z' fill='url(%23g)'/%3E%3C/svg%3E")
-				12 12,
-			pointer;
-	}
-
-	.mode-switcher button,
-	.mockup-tabs button,
-	.mini-button {
-		padding: 0.55rem 0.8rem;
-		border-radius: 999px;
-		border: 1px solid rgba(224, 205, 162, 0.12);
-		background:
-			linear-gradient(
-				135deg,
-				rgba(240, 222, 192, 0.08),
-				rgba(199, 216, 255, 0.08),
-				rgba(242, 182, 223, 0.08)
-			),
-			rgba(255, 255, 255, 0.03);
-		color: var(--tone-soft);
-		font-weight: 700;
-	}
-
-	.mode-switcher button.active,
-	.mockup-tabs button.active {
-		border-color: rgba(224, 205, 162, 0.22);
-		color: var(--tone-strong);
+		gap: 0.7rem;
 	}
 
 	.studio-card,
-	.compare-card,
-	.bulk-card,
-	.story-card,
-	.cta-card,
 	.sample-card,
-	.feature-card,
+	.compare-card,
+	.story-card,
 	.mockup-stage,
-	.spec-grid {
+	.bulk-card,
+	.mini-gallery,
+	.cta-card {
 		padding: 1rem;
 		border: 1px solid var(--line);
-		border-radius: 1.35rem;
+		border-radius: 1.4rem;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--panel);
 		backdrop-filter: blur(18px);
@@ -749,20 +745,28 @@
 
 	.studio-card {
 		display: grid;
-		gap: 0.9rem;
+		gap: 0.95rem;
+		max-width: 100%;
 	}
 
-	.studio-head,
+	.studio-top,
 	.section-head.compact {
-		display: grid;
-		gap: 0.35rem;
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.section-head.compact {
+		align-items: start;
+		flex-direction: column;
 	}
 
 	.studio-kicker,
-	.control-title,
-	.bulk-card label,
+	.story-step,
 	.lightbox-kicker,
-	.story-step {
+	.upload-label,
+	.bulk-card label {
 		font-size: 0.72rem;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
@@ -770,92 +774,130 @@
 		font-weight: 700;
 	}
 
-	.upload-grid,
-	.control-grid,
-	.features {
-		display: grid;
-		gap: 0.8rem;
-	}
-
-	.upload-grid {
-		grid-template-columns: 1fr 1fr auto;
-		align-items: start;
-	}
-
-	.control-grid {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-	}
-
-	.control-card {
-		display: grid;
-		gap: 0.55rem;
-	}
-
-	.upload-stack {
-		display: grid;
-		gap: 0.35rem;
-	}
-
-	.upload-control {
-		display: grid;
-		gap: 0.35rem;
-		color: var(--tone-soft);
+	.studio-price {
+		padding: 0.45rem 0.8rem;
+		border-radius: 999px;
+		background: linear-gradient(
+			135deg,
+			rgba(240, 222, 192, 0.16),
+			rgba(199, 216, 255, 0.14),
+			rgba(242, 182, 223, 0.12)
+		);
+		border: 1px solid rgba(224, 205, 162, 0.16);
+		color: var(--tone-strong);
 		font-weight: 700;
-		font-size: 0.82rem;
 	}
 
-	.upload-control input,
-	.bulk-card select {
-		width: 100%;
-		padding: 0.6rem 0.75rem;
-		border-radius: 0.9rem;
-		border: 1px solid rgba(224, 205, 162, 0.12);
-		background: rgba(255, 255, 255, 0.04);
+	.mode-switcher button,
+	.mockup-tabs button,
+	.mini-button,
+	.action-button,
+	.upload-meta button,
+	.lightbox-nav,
+	.lightbox-close,
+	.sample-card {
+		transition:
+			transform 180ms ease,
+			border-color 180ms ease,
+			background 180ms ease,
+			box-shadow 180ms ease;
+	}
+
+	.mode-switcher button,
+	.mockup-tabs button,
+	.mini-button,
+	.action-button,
+	.upload-meta button,
+	.lightbox-nav,
+	.lightbox-close {
+		border-radius: 999px;
+		border: 1px solid rgba(224, 205, 162, 0.13);
+		background:
+			linear-gradient(
+				135deg,
+				rgba(240, 222, 192, 0.1),
+				rgba(199, 216, 255, 0.08),
+				rgba(242, 182, 223, 0.08)
+			),
+			rgba(255, 255, 255, 0.03);
 		color: var(--tone-strong);
 	}
 
-	.upload-helper {
-		color: var(--tone-muted);
-		font-size: 0.74rem;
-		line-height: 1.4;
+	.mode-switcher button,
+	.mockup-tabs button,
+	.mini-button,
+	.action-button {
+		padding: 0.62rem 0.92rem;
+		font-weight: 700;
+	}
+
+	.action-button {
+		min-width: 7.4rem;
+	}
+
+	.action-button.ghost {
+		color: var(--tone-soft);
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.mode-switcher button.active,
+	.mockup-tabs button.active,
+	.mode-switcher button:hover,
+	.mockup-tabs button:hover,
+	.mini-button:hover,
+	.action-button:hover,
+	.upload-meta button:hover,
+	.lightbox-nav:hover,
+	.lightbox-close:hover,
+	.sample-card:hover {
+		transform: translateY(-1px);
+		border-color: rgba(224, 205, 162, 0.28);
+		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+	}
+
+	.upload-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.8rem;
+	}
+
+	.upload-card {
+		display: grid;
+		gap: 0.55rem;
+		padding: 0.85rem;
+		border-radius: 1rem;
+		border: 1px solid rgba(224, 205, 162, 0.1);
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.hidden-input {
+		display: none;
 	}
 
 	.upload-meta {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 0.6rem;
+		gap: 0.55rem;
 	}
 
 	.upload-meta p {
-		font-size: 0.72rem;
-		color: var(--tone-muted);
+		min-width: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		font-size: 0.78rem;
+		color: var(--tone-muted);
 	}
 
 	.upload-meta button {
-		padding: 0.3rem 0.55rem;
-		border-radius: 999px;
-		border: 1px solid rgba(224, 205, 162, 0.12);
-		background: rgba(255, 255, 255, 0.04);
-		color: var(--tone-soft);
-	}
-
-	.toggle {
-		display: flex;
-		align-items: center;
-		gap: 0.55rem;
-		padding-top: 1.8rem;
-		color: var(--tone-soft);
-		font-weight: 700;
+		padding: 0.38rem 0.7rem;
 	}
 
 	.preview-stage {
 		position: relative;
-		padding: 0.35rem;
-		border-radius: 1.35rem;
+		padding: 0.4rem;
+		border-radius: 1.3rem;
 		background:
 			linear-gradient(
 				135deg,
@@ -873,13 +915,13 @@
 		justify-content: center;
 		width: 100%;
 		padding: 0;
-		background: transparent;
 		border: 0;
+		background: transparent;
 	}
 
 	.base-image {
 		display: block;
-		width: min(14rem, 100%);
+		width: min(16rem, 100%);
 		border-radius: 1rem;
 	}
 
@@ -900,8 +942,7 @@
 	}
 
 	.overlay-image {
-		inset: auto;
-		cursor: move;
+		cursor: grab;
 	}
 
 	.overlay-image.revealed,
@@ -913,57 +954,53 @@
 
 	.shimmer-band {
 		position: absolute;
-		inset: -18% auto -18% calc(var(--shimmer) - 78%);
-		width: 30%;
+		inset: -18% auto -18% -8%;
+		width: 24%;
 		background: linear-gradient(
 			90deg,
 			transparent,
-			rgba(255, 255, 255, 0.08),
+			rgba(255, 255, 255, 0.12),
 			rgba(255, 255, 255, 0.56),
-			rgba(255, 255, 255, 0.08),
+			rgba(255, 255, 255, 0.1),
 			transparent
 		);
 		transform: skewX(-18deg);
-		opacity: 0;
+		animation: shimmerPass 4.8s ease-in-out infinite;
 		pointer-events: none;
 	}
 
-	.shimmer-on .shimmer-band {
-		opacity: 1;
+	@keyframes shimmerPass {
+		0%,
+		18% {
+			transform: translateX(0) skewX(-18deg);
+			opacity: 0;
+		}
+
+		28%,
+		62% {
+			transform: translateX(380%) skewX(-18deg);
+			opacity: 1;
+		}
+
+		100% {
+			transform: translateX(460%) skewX(-18deg);
+			opacity: 0;
+		}
 	}
 
-	.spark {
-		position: absolute;
-		width: 1rem;
-		height: 1rem;
-		background: radial-gradient(circle, #fff 0%, rgba(255, 255, 255, 0) 70%);
-		filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
-	}
-
-	.spark-one {
-		top: 0.8rem;
-		right: 1.2rem;
-	}
-
-	.spark-two {
-		left: 1rem;
-		bottom: 1rem;
-	}
-
-	.slider {
-		width: 100%;
-	}
-
+	.control-row,
 	.sample-row,
-	.features,
-	.utility-grid,
-	.bottom-grid {
+	.feature-grid,
+	.utility-grid {
 		display: grid;
 		gap: 0.8rem;
 	}
 
-	.sample-row,
-	.features {
+	.control-row {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	.sample-row {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 
@@ -976,7 +1013,7 @@
 	.sample-card img {
 		display: block;
 		width: 100%;
-		height: 8rem;
+		height: 8.2rem;
 		object-fit: cover;
 		border-radius: 0.9rem;
 	}
@@ -985,15 +1022,22 @@
 		border-color: rgba(224, 205, 162, 0.26);
 	}
 
+	.feature-grid {
+		grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+	}
+
 	.compare-card,
-	.mockup-stage {
+	.story-card,
+	.bulk-card,
+	.mini-gallery,
+	.cta-card {
 		display: grid;
-		gap: 0.8rem;
+		gap: 0.85rem;
 	}
 
 	.compare-stage {
 		position: relative;
-		min-height: 18rem;
+		min-height: 19rem;
 		border-radius: 1rem;
 		overflow: hidden;
 		background: rgba(255, 255, 255, 0.03);
@@ -1016,9 +1060,10 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
+		left: 54%;
 		width: 18%;
 		transform: translateX(-50%);
-		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent);
 	}
 
 	.compare-line {
@@ -1030,13 +1075,23 @@
 		background: linear-gradient(180deg, transparent, var(--accent-soft), transparent);
 	}
 
-	.mockup-tabs {
-		margin-top: 0.2rem;
+	.slider {
+		width: 100%;
+	}
+
+	.story-panel {
+		display: grid;
+		gap: 0.5rem;
+		padding: 0.95rem;
+		border-radius: 1rem;
+		background: rgba(255, 255, 255, 0.03);
 	}
 
 	.mockup-stage {
-		min-height: 22rem;
+		display: grid;
 		place-items: center;
+		min-height: 22rem;
+		margin-top: 0.8rem;
 	}
 
 	.mockup-target {
@@ -1081,7 +1136,6 @@
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 0.8rem;
-		margin-top: 0.9rem;
 	}
 
 	.bulk-card label {
@@ -1089,20 +1143,28 @@
 		gap: 0.35rem;
 	}
 
-	.bulk-result {
-		margin-top: 0.9rem;
+	.bulk-card select {
+		width: 100%;
+		padding: 0.72rem 0.82rem;
+		border-radius: 0.9rem;
+		border: 1px solid rgba(224, 205, 162, 0.12);
+		background: rgba(255, 255, 255, 0.04);
+		color: var(--tone-strong);
 	}
 
-	.story-card,
-	.story-panel {
-		display: grid;
-		gap: 0.75rem;
+	.bulk-link {
+		justify-self: start;
 	}
 
-	.cta-card,
-	.lightbox-dialog {
-		display: grid;
-		gap: 1rem;
+	.mini-gallery ul {
+		padding-left: 1rem;
+		color: var(--tone-soft);
+		line-height: 1.8;
+	}
+
+	.cta-card {
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
 	}
 
 	.lightbox {
@@ -1112,22 +1174,24 @@
 		display: grid;
 		place-items: center;
 		padding: 1.2rem;
-		background: rgba(4, 4, 6, 0.82);
+		background: rgba(4, 4, 6, 0.84);
 		backdrop-filter: blur(10px);
 	}
 
 	.lightbox-dialog {
 		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 250px;
+		align-items: stretch;
+		gap: 1rem;
 		width: min(94vw, 1240px);
-		height: min(84vh, 900px);
+		height: min(82vh, 900px);
 		padding: 1rem;
 		border-radius: 1.5rem;
 		border: 1px solid var(--line);
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--panel);
 		box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
-		grid-template-columns: minmax(0, 1fr) 240px;
-		align-items: stretch;
 	}
 
 	.lightbox-media {
@@ -1153,7 +1217,7 @@
 		display: grid;
 		align-content: start;
 		gap: 0.85rem;
-		padding: 1.05rem;
+		padding: 1rem;
 		border-radius: 1.1rem;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
@@ -1191,25 +1255,14 @@
 	.lightbox-nav,
 	.lightbox-close {
 		position: absolute;
-		border-radius: 999px;
-		border: 1px solid rgba(224, 205, 162, 0.16);
-		background:
-			linear-gradient(
-				135deg,
-				rgba(240, 222, 192, 0.16),
-				rgba(199, 216, 255, 0.14),
-				rgba(242, 182, 223, 0.12)
-			),
-			rgba(10, 10, 13, 0.86);
-		color: var(--tone-strong);
 		box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
 	}
 
 	.lightbox-nav {
 		top: 50%;
 		transform: translateY(-50%);
-		width: 3.15rem;
-		height: 3.15rem;
+		width: 3.1rem;
+		height: 3.1rem;
 	}
 
 	.lightbox-nav-left {
@@ -1217,7 +1270,7 @@
 	}
 
 	.lightbox-nav-right {
-		right: 15.5rem;
+		right: 16rem;
 	}
 
 	.lightbox-close {
@@ -1227,18 +1280,24 @@
 	}
 
 	@media (max-width: 960px) {
-		.hero-grid,
+		.hero-wrap,
+		.feature-grid,
 		.utility-grid,
 		.upload-grid,
-		.features,
-		.sample-row {
+		.control-row,
+		.sample-row,
+		.bulk-controls,
+		.cta-card {
 			grid-template-columns: 1fr;
 		}
 
-		.upload-grid,
-		.control-grid,
-		.bulk-controls {
-			grid-template-columns: 1fr;
+		.hero-copy {
+			max-width: none;
+			margin: 0;
+		}
+
+		.control-row {
+			display: grid;
 		}
 
 		.lightbox-dialog {
@@ -1247,25 +1306,12 @@
 			max-height: 88vh;
 		}
 
-		.lightbox-nav {
-			top: auto;
-			bottom: 1rem;
-			transform: none;
-		}
-
 		.lightbox-nav-right {
 			right: 1rem;
 		}
-	}
 
-	@media (max-width: 640px) {
-		.base-image,
-		.mockup-target {
-			width: min(18rem, 100%);
-		}
-
-		.stage-card-medium {
-			display: none;
+		.lightbox-sidebar {
+			padding-top: 0.4rem;
 		}
 	}
 </style>
