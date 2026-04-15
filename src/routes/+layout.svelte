@@ -7,8 +7,6 @@
 
 	const navItems = [
 		{ href: '/', label: 'Home' },
-		{ href: '/technology', label: 'Product' },
-		{ href: '/formats', label: 'Options' },
 		{ href: '/gallery', label: 'Gallery' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
@@ -48,8 +46,6 @@
 			</p>
 		</div>
 		<div class="footer-links">
-			<a href={resolve('/technology')}>Product</a>
-			<a href={resolve('/formats')}>Personalization</a>
 			<a href={resolve('/gallery')}>Gallery</a>
 			<a href={resolve('/contact')}>Start your order</a>
 		</div>

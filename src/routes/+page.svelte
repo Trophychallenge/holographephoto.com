@@ -257,9 +257,9 @@
 
 				<div class="product-frame">
 					<div class="tool-head">
-						<p class="tool-kicker">Try your keepsake preview</p>
-						<h2>Practice your image here.</h2>
-						<p>Upload a main photo and, if you want, add a handwritten note or drawing over it.</p>
+						<p class="tool-kicker">Preview your keepsake</p>
+						<h2>See your image come to life.</h2>
+						<p>Upload a main photo and, if you want, layer in handwriting or artwork.</p>
 					</div>
 
 					<div class="interactive-tools">
@@ -341,7 +341,7 @@
 
 		<section class="gallery">
 			<div class="gallery-copy">
-				<p class="eyebrow">Preview options</p>
+				<p class="eyebrow">Preview gallery</p>
 				<h2>Choose a mood, then make it your own.</h2>
 			</div>
 
