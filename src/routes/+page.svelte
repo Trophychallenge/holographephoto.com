@@ -7,23 +7,26 @@
 
 	const useCases = [
 		{
-			title: 'Wedding favors',
-			copy: 'A polished gift for guests, bridal parties, and milestone tables.',
+			title: 'Wedding and event favors',
+			copy: 'Made for guest tables, bridal parties, welcome gifts, and premium small-batch runs.',
 			image: '/holographe/lydholowed.png',
 			alt: 'Wedding holographic keepsake magnet'
 		},
 		{
-			title: 'Family gifts',
-			copy: 'Made for Christmas, anniversaries, birthdays, and everyday memories.',
-			image: '/holographe/jessholo.png',
-			alt: 'Family holographic keepsake magnet'
-		},
-		{
-			title: 'Signature keepsakes',
-			copy: 'Layer handwritten notes, child art, or meaningful details over the photo.',
+			title: 'Family and signature pieces',
+			copy: 'Use a photo on its own or layer in a note, drawing, or handwriting overlay.',
 			image: '/holographe/leo.png',
 			alt: 'Signature holographic keepsake magnet'
 		}
+	];
+
+	const reelMoments = ['Live shimmer', 'Real movement', 'Deluxe finish'];
+	const promiseRail = [
+		'Premium holographic finish',
+		'Photo + handwriting overlays',
+		'Mobile-friendly customizer',
+		'Group order pricing',
+		'Gift-ready keepsake feel'
 	];
 </script>
 
@@ -60,19 +63,30 @@
 
 			<div class="hero-visual glass-card">
 				<div class="visual-stack">
+					<div class="visual-orb visual-orb-one"></div>
+					<div class="visual-orb visual-orb-two"></div>
+					<div class="visual-grid"></div>
 					<div class="visual-main">
-						<img src="/holographe/lydholowed.png" alt="Featured Holographe keepsake" />
+						<video
+							class="visual-video"
+							src="/holographe/hero-reel.mov"
+							autoplay
+							muted
+							loop
+							playsinline
+							preload="metadata"
+						></video>
 						<div class="visual-badge">From $25</div>
 					</div>
 
 					<div class="visual-card visual-card-left">
 						<p>Upload photo</p>
-						<span>Mobile ready</span>
+						<span>Built for mobile</span>
 					</div>
 
 					<div class="visual-card visual-card-right">
-						<p>Add overlay</p>
-						<span>Handwriting or art</span>
+						<p>Deluxe shimmer</p>
+						<span>Video preview</span>
 					</div>
 				</div>
 
@@ -83,6 +97,58 @@
 					</div>
 					<span>Open</span>
 				</a>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="page-wrap">
+			<div class="promise-rail" aria-hidden="true">
+				<div class="promise-track">
+					{#each [...promiseRail, ...promiseRail] as item, index (`${item}-${index}`)}
+						<span>{item}</span>
+					{/each}
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="page-wrap video-grid">
+			<div class="glass-card video-copy">
+				<p class="eyebrow">Live preview</p>
+				<h2>See the finish before you order.</h2>
+				<p>
+					This section is ready for the polished edited reel. Right now it uses the raw uploaded
+					clip so we can design the page around the final motion slot.
+				</p>
+				<div class="reel-tags">
+					{#each reelMoments as item}
+						<span>{item}</span>
+					{/each}
+				</div>
+				<div class="hero-actions">
+					<a class="button-primary" href="/customize">Customize yours</a>
+					<a class="button-secondary" href="/contact">Ask about custom work</a>
+				</div>
+			</div>
+
+			<div class="glass-card video-stage">
+				<div class="video-shell">
+					<video
+						class="hero-video"
+						src="/holographe/hero-reel.mov"
+						autoplay
+						muted
+						loop
+						playsinline
+						controls
+						preload="metadata"
+					>
+						<track kind="captions" />
+					</video>
+					<div class="video-glow"></div>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -105,7 +171,7 @@
 		<div class="page-wrap split-grid">
 			<div class="glass-card studio-promo">
 				<p class="eyebrow">Customize</p>
-				<h2>Upload, place, preview, order.</h2>
+				<h2>Upload, layer, preview, order.</h2>
 				<p>
 					The studio page is built for phones and larger screens, with direct upload actions and a
 					clear ordering path.
@@ -221,7 +287,9 @@
 	.hero-visual,
 	.use-card,
 	.studio-promo,
-	.bulk-card {
+	.bulk-card,
+	.video-copy,
+	.video-stage {
 		padding: 1.4rem;
 		border-radius: 1.6rem;
 		background:
@@ -251,16 +319,73 @@
 		overflow: hidden;
 	}
 
+	.visual-grid {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+		background-size: 24px 24px;
+		mask-image: radial-gradient(circle at center, black 40%, transparent 82%);
+		opacity: 0.35;
+		pointer-events: none;
+	}
+
+	.visual-orb {
+		position: absolute;
+		border-radius: 999px;
+		filter: blur(34px);
+		opacity: 0.72;
+		pointer-events: none;
+	}
+
+	.visual-orb-one {
+		top: -1rem;
+		right: 8%;
+		width: 8rem;
+		height: 8rem;
+		background: radial-gradient(circle, rgba(199, 216, 255, 0.9), transparent 68%);
+		animation: driftOne 7s ease-in-out infinite;
+	}
+
+	.visual-orb-two {
+		left: 8%;
+		bottom: 0.5rem;
+		width: 7rem;
+		height: 7rem;
+		background: radial-gradient(circle, rgba(242, 182, 223, 0.72), transparent 70%);
+		animation: driftTwo 8.5s ease-in-out infinite;
+	}
+
 	.visual-main {
 		position: relative;
 		width: min(19rem, 76%);
 	}
 
-	.visual-main img {
+	.visual-video {
 		display: block;
 		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
 		border-radius: 1.15rem;
 		box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
+		background: #08090d;
+	}
+
+	.visual-main::before {
+		content: '';
+		position: absolute;
+		inset: -0.45rem;
+		border-radius: 1.45rem;
+		background: linear-gradient(
+			135deg,
+			rgba(240, 222, 192, 0.18),
+			rgba(199, 216, 255, 0.22),
+			rgba(242, 182, 223, 0.16)
+		);
+		filter: blur(18px);
+		opacity: 0.8;
+		z-index: 0;
 	}
 
 	.visual-badge {
@@ -361,13 +486,152 @@
 	}
 
 	.use-grid,
+	.video-grid,
 	.split-grid {
 		display: grid;
 		gap: 1.2rem;
 	}
 
+	.video-grid {
+		grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+		align-items: center;
+	}
+
+	.video-copy,
+	.video-stage {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.reel-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+	}
+
+	.reel-tags span {
+		padding: 0.55rem 0.85rem;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background:
+			linear-gradient(
+				135deg,
+				rgba(240, 222, 192, 0.1),
+				rgba(199, 216, 255, 0.1),
+				rgba(242, 182, 223, 0.08)
+			),
+			rgba(255, 255, 255, 0.03);
+		color: var(--text);
+		font-size: 0.88rem;
+	}
+
+	.video-shell {
+		position: relative;
+		padding: 0.85rem;
+		border-radius: 1.4rem;
+		background: linear-gradient(145deg, rgba(18, 18, 24, 0.98), rgba(10, 10, 14, 0.94));
+		overflow: hidden;
+	}
+
+	.video-shell::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		padding: 1px;
+		border-radius: 1.4rem;
+		background: linear-gradient(
+			120deg,
+			rgba(240, 222, 192, 0.75),
+			rgba(199, 216, 255, 0.85),
+			rgba(242, 182, 223, 0.75),
+			rgba(240, 222, 192, 0.75)
+		);
+		background-size: 200% 100%;
+		animation: borderFlow 6s linear infinite;
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		mask-composite: exclude;
+		pointer-events: none;
+	}
+
+	.hero-video {
+		position: relative;
+		display: block;
+		width: 100%;
+		max-height: 42rem;
+		border-radius: 1rem;
+		background: #08090d;
+		object-fit: cover;
+		box-shadow: 0 26px 56px rgba(0, 0, 0, 0.34);
+		z-index: 1;
+	}
+
+	.video-glow {
+		position: absolute;
+		inset: auto 8% 4% 8%;
+		height: 18%;
+		border-radius: 999px;
+		background: linear-gradient(
+			90deg,
+			rgba(240, 222, 192, 0.18),
+			rgba(199, 216, 255, 0.28),
+			rgba(242, 182, 223, 0.18)
+		);
+		filter: blur(28px);
+		opacity: 0.8;
+	}
+
+	.promise-rail {
+		position: relative;
+		overflow: hidden;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		background:
+			linear-gradient(
+				135deg,
+				rgba(240, 222, 192, 0.06),
+				rgba(199, 216, 255, 0.08),
+				rgba(242, 182, 223, 0.06)
+			),
+			rgba(255, 255, 255, 0.03);
+	}
+
+	.promise-track {
+		display: flex;
+		gap: 2rem;
+		width: max-content;
+		padding: 0.9rem 1.2rem;
+		animation: railMove 24s linear infinite;
+	}
+
+	.promise-track span {
+		position: relative;
+		padding-left: 1rem;
+		color: var(--text);
+		font-size: 0.88rem;
+		letter-spacing: 0.03em;
+		white-space: nowrap;
+	}
+
+	.promise-track span::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.42rem;
+		width: 0.42rem;
+		height: 0.42rem;
+		border-radius: 999px;
+		background: linear-gradient(135deg, #f0dec0, #c7d8ff, #f2b6df);
+		box-shadow: 0 0 12px rgba(199, 216, 255, 0.34);
+	}
+
 	.use-grid {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.use-card {
@@ -378,7 +642,7 @@
 	.use-card img {
 		display: block;
 		width: 100%;
-		height: 13rem;
+		height: 14rem;
 		object-fit: cover;
 		border-radius: 1.1rem;
 	}
@@ -401,6 +665,7 @@
 
 	@media (max-width: 960px) {
 		.hero-wrap,
+		.video-grid,
 		.use-grid,
 		.split-grid {
 			grid-template-columns: 1fr;
@@ -416,6 +681,52 @@
 
 		.visual-stack {
 			min-height: 21rem;
+		}
+
+		.promise-track {
+			animation-duration: 30s;
+		}
+	}
+
+	@keyframes driftOne {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+
+		50% {
+			transform: translate3d(-14px, 10px, 0) scale(1.06);
+		}
+	}
+
+	@keyframes driftTwo {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+
+		50% {
+			transform: translate3d(16px, -12px, 0) scale(0.96);
+		}
+	}
+
+	@keyframes borderFlow {
+		from {
+			background-position: 0% 50%;
+		}
+
+		to {
+			background-position: 200% 50%;
+		}
+	}
+
+	@keyframes railMove {
+		from {
+			transform: translateX(0);
+		}
+
+		to {
+			transform: translateX(-50%);
 		}
 	}
 </style>
