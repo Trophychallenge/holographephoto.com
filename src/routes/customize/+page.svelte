@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
+
 	type Preview = {
 		id: string;
 		label: string;
@@ -209,8 +211,8 @@
 					<h2>$25</h2>
 				</div>
 				<div class="order-actions">
-					<a class="button-primary" href="https://www.amazon.com/dp/B0GWN48WZV">Order on Amazon</a>
-					<a class="button-secondary" href="/contact">Custom order</a>
+					<a class="button-primary" href={resolve('/prices')}>Buy on site</a>
+					<a class="button-secondary" href={resolve('/contact')}>Custom order</a>
 				</div>
 			</div>
 		</div>
@@ -531,9 +533,8 @@
 					<h2>{uploadedBaseName || activePreview.label}</h2>
 					<p>A closer look at the image, overlay, and final finish.</p>
 					<div class="order-actions">
-						<a class="button-primary" href="https://www.amazon.com/dp/B0GWN48WZV">Order on Amazon</a
-						>
-						<a class="button-secondary" href="/contact">Custom order</a>
+						<a class="button-primary" href={resolve('/prices')}>Buy on site</a>
+						<a class="button-secondary" href={resolve('/contact')}>Custom order</a>
 					</div>
 				</aside>
 			</div>

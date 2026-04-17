@@ -1,42 +1,32 @@
-# sv
+# Holographe Site
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+## Development
 
 ```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv create --template minimal --types ts --add eslint tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:node" prettier --install npm svelte@latest
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+npm install
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+## Stripe Checkout
 
-To create a production version of your app:
+The site now includes a server-side Stripe Checkout flow at `/checkout`.
+
+Set this environment variable before using payments locally or on Vercel:
 
 ```sh
-npm run build
+STRIPE_SECRET_KEY=sk_test_replace_me
 ```
 
-You can preview the production build with `npm run preview`.
+The pricing page now uses sale bundle pricing:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- `1`: `$14.99`
+- `3`: `$34.99`
+- `5`: `$59.99`
+- `10-40`: discounted fixed bundle pricing
+- `50+`: custom quote through `/contact`
+
+## Validation
+
+```sh
+npm run check
+```
