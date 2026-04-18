@@ -2,89 +2,133 @@
 	<title>Contact | Holographe</title>
 	<meta
 		name="description"
-		content="Contact Holographe to start an order for a personalized holographic photo magnet."
+		content="Contact Holographe with your photo, personalization ideas, and timing."
 	/>
 </svelte:head>
 
 <section class="section">
 	<div class="page-wrap contact-layout">
-		<div class="section-head">
+		<div class="section-head center">
 			<span class="eyebrow">Contact</span>
-			<h1>Start your order.</h1>
-			<p>Share the photo, the occasion, and any personal details you want added.</p>
-			<div class="contact-notes glass-card">
-				<p>Email: hello@holographephoto.com</p>
-				<p>Website: holographephoto.com</p>
-				<p>Best starting point: photo, occasion, and personalization.</p>
-			</div>
+			<h1>Send the essentials.</h1>
+			<p>Photo, occasion, and personalization idea. That is enough to start.</p>
 		</div>
 
-		<form class="glass-card contact-form">
-			<label>
-				Name
-				<input type="text" name="name" placeholder="Your name" />
-			</label>
-			<label>
-				Email
-				<input type="email" name="email" placeholder="you@example.com" />
-			</label>
-			<label>
-				Product type
-				<input
-					type="text"
-					name="project"
-					placeholder="Photo only, photo + handwriting, photo + drawing..."
-				/>
-			</label>
-			<label>
-				Order details
-				<textarea
-					name="details"
-					rows="6"
-					placeholder="Tell me about the photo, the occasion, the message or drawing you want added, and your timeline."
-				></textarea>
-			</label>
-			<button type="submit" class="button-primary">Send order inquiry</button>
-		</form>
+		<div class="contact-grid">
+			<div class="glass-card info-card">
+				<p class="info-kicker">Best way to start</p>
+				<h2>Email or message with the basics.</h2>
+				<div class="info-pills">
+					<span>Photo</span>
+					<span>Occasion</span>
+					<span>Name or date</span>
+					<span>Timeline</span>
+				</div>
+				<p class="contact-line">hello@holographephoto.com</p>
+			</div>
+
+			<form class="glass-card contact-form">
+				<label>
+					Name
+					<input type="text" name="name" placeholder="Your name" />
+				</label>
+				<label>
+					Email
+					<input type="email" name="email" placeholder="you@example.com" />
+				</label>
+				<label>
+					Idea
+					<input
+						type="text"
+						name="project"
+						placeholder="Couple photo, pet memorial, baby gift..."
+					/>
+				</label>
+				<label>
+					Notes
+					<textarea name="details" rows="5" placeholder="Short note, date, overlay idea, or timing."
+					></textarea>
+				</label>
+				<button type="submit" class="button-primary">Send inquiry</button>
+			</form>
+		</div>
 	</div>
 </section>
 
 <style>
-	h1 {
-		margin: 1rem 0 0.8rem;
-		line-height: 0.96;
-		letter-spacing: -0.04em;
+	h1,
+	h2,
+	p {
+		margin: 0;
+	}
+
+	h1,
+	h2 {
+		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
-		font-size: clamp(2.2rem, 5vw, 3.4rem);
+		letter-spacing: -0.04em;
+	}
+
+	h1 {
+		font-size: clamp(2.3rem, 5vw, 3.8rem);
+	}
+
+	h2 {
+		font-size: clamp(1.7rem, 4vw, 2.5rem);
 	}
 
 	p {
-		margin: 0;
 		color: var(--muted);
-		line-height: 1.6;
-		font-size: 0.95rem;
+		line-height: 1.65;
 	}
 
-	.contact-layout {
+	.center {
+		text-align: center;
+		margin-inline: auto;
+	}
+
+	.contact-layout,
+	.contact-grid,
+	.info-card,
+	.contact-form {
 		display: grid;
-		grid-template-columns: 0.95fr 1.05fr;
-		gap: 1.5rem;
+		gap: 1rem;
 	}
 
-	.contact-notes,
+	.contact-grid {
+		grid-template-columns: 0.9fr 1.1fr;
+	}
+
+	.info-card,
 	.contact-form {
 		padding: 1.2rem;
 	}
 
-	.contact-notes {
-		display: grid;
-		gap: 0.8rem;
-		margin-top: 1.2rem;
+	.info-kicker {
+		font-size: 0.76rem;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: var(--accent);
+		font-weight: 700;
 	}
 
-	.contact-form {
-		display: grid;
-		gap: 1rem;
+	.info-pills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.65rem;
+	}
+
+	.info-pills span {
+		padding: 0.65rem 0.85rem;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		color: var(--text);
+	}
+
+	.contact-line {
+		font-size: 1.1rem;
+		color: var(--text);
 	}
 
 	label {
@@ -105,7 +149,7 @@
 	}
 
 	@media (max-width: 900px) {
-		.contact-layout {
+		.contact-grid {
 			grid-template-columns: 1fr;
 		}
 	}

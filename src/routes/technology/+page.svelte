@@ -1,17 +1,8 @@
 <script lang="ts">
-	const systemCards = [
-		{
-			title: 'Holographic finish',
-			copy: 'Light-catching and more dimensional than a flat print.'
-		},
-		{
-			title: 'Photo-first',
-			copy: 'A strong image does most of the emotional work.'
-		},
-		{
-			title: 'Giftable quality',
-			copy: 'Premium, polished, and meant to stay on display.'
-		}
+	const highlights = [
+		{ title: 'Shimmer', copy: 'Light-catching finish with more personality than a flat print.' },
+		{ title: 'Color', copy: 'Brighter tone, playful glow, and a premium feel.' },
+		{ title: 'Personal detail', copy: 'Room for names, handwriting, art, and occasion dates.' }
 	];
 </script>
 
@@ -19,114 +10,87 @@
 	<title>Product | Holographe</title>
 	<meta
 		name="description"
-		content="See how Holographe positions its personalized holographic photo magnet as a premium, design-led keepsake product."
+		content="A short overview of what makes Holographe keepsakes feel premium: shimmer, color, and personal detail."
 	/>
 </svelte:head>
 
 <section class="section">
-	<div class="page-wrap">
-		<div class="section-head">
+	<div class="page-wrap product-layout">
+		<div class="section-head center">
 			<span class="eyebrow">Product</span>
-			<h1>A small keepsake with a bigger feeling.</h1>
-			<p>Premium holographic magnets made to feel personal, polished, and worth keeping.</p>
+			<h1>Small format. Big feeling.</h1>
+			<p>Holographe is built around shimmer, color, and one strong memory.</p>
 		</div>
-		<div class="tech-hero glass-card">
-			<div>
-				<p class="label">Core product idea</p>
-				<p>A personal photo with more glow, more presence, and a more finished feel.</p>
-			</div>
-			<div class="tech-grid">
-				<div>
-					<p class="metric">01</p>
-					<p>Premium holographic surface</p>
-				</div>
-				<div>
-					<p class="metric">02</p>
-					<p>Thoughtful photo selection</p>
-				</div>
-				<div>
-					<p class="metric">03</p>
-					<p>Personalized finishing options</p>
-				</div>
-			</div>
-		</div>
-	</div>
-</section>
 
-<section class="section">
-	<div class="page-wrap three-up">
-		{#each systemCards as card (card.title)}
-			<article class="glass-card panel">
-				<h2>{card.title}</h2>
-				<p>{card.copy}</p>
-			</article>
-		{/each}
-	</div>
-</section>
-
-<section class="section">
-	<div class="page-wrap glass-card technology-note">
-		<div>
-			<span class="eyebrow">Positioning</span>
-			<h2>Personal first. Beautiful throughout.</h2>
+		<div class="highlight-grid">
+			{#each highlights as item (item.title)}
+				<article class="glass-card highlight-card">
+					<div class="swatch"></div>
+					<h2>{item.title}</h2>
+					<p>{item.copy}</p>
+				</article>
+			{/each}
 		</div>
-		<p>A keepsake magnet with a premium holographic finish and room for personal detail.</p>
 	</div>
 </section>
 
 <style>
 	h1,
+	h2,
+	p {
+		margin: 0;
+	}
+
+	h1,
 	h2 {
-		margin: 1rem 0 0.8rem;
-		line-height: 0.96;
-		letter-spacing: -0.04em;
+		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
+		letter-spacing: -0.04em;
 	}
 
 	h1 {
-		font-size: clamp(2.2rem, 5vw, 3.6rem);
+		font-size: clamp(2.3rem, 5vw, 3.8rem);
 	}
 
 	h2 {
-		font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+		font-size: 1.6rem;
 	}
 
 	p {
-		margin: 0;
 		color: var(--muted);
-		line-height: 1.6;
-		font-size: 0.95rem;
+		line-height: 1.65;
 	}
 
-	.tech-hero,
-	.technology-note {
-		display: grid;
-		gap: 1.5rem;
-		padding: 1.3rem;
+	.center {
+		text-align: center;
+		margin-inline: auto;
 	}
 
-	.tech-grid,
-	.three-up {
+	.product-layout,
+	.highlight-grid {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1rem;
 	}
 
-	.label,
-	.metric {
-		font-size: 0.78rem;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: var(--accent-2);
+	.highlight-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 
-	.panel {
-		padding: 1.1rem;
+	.highlight-card {
+		display: grid;
+		gap: 0.7rem;
+		padding: 1.2rem;
+	}
+
+	.swatch {
+		width: 100%;
+		height: 0.9rem;
+		border-radius: 999px;
+		background: linear-gradient(90deg, #7af0ff, #ffd36d, #ff86a3);
 	}
 
 	@media (max-width: 900px) {
-		.tech-grid,
-		.three-up {
+		.highlight-grid {
 			grid-template-columns: 1fr;
 		}
 	}

@@ -7,12 +7,14 @@ function buildCheckoutParams({
 	origin,
 	quantity,
 	totalAmountCents,
-	offerLabel
+	offerLabel,
+	metadata
 }: {
 	origin: string;
 	quantity: number;
 	totalAmountCents: number;
 	offerLabel: string;
+	metadata?: Record<string, string>;
 }) {
 	const params = new URLSearchParams();
 	const itemLabel = `${quantity} custom holographic photo magnet${quantity === 1 ? '' : 's'}`;
@@ -41,6 +43,10 @@ function buildCheckoutParams({
 	params.set('metadata[offer]', offerLabel);
 	params.set('metadata[total_amount_cents]', String(totalAmountCents));
 
+	for (const [key, value] of Object.entries(metadata ?? {})) {
+		if (value) params.set(`metadata[${key}]`, value);
+	}
+
 	return params;
 }
 
@@ -56,6 +62,15 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 
 	const formData = await request.formData();
 	const quantity = parseCheckoutQuantity(formData.get('quantity'));
+	const metadata = {
+		source: String(formData.get('source') ?? ''),
+		base_name: String(formData.get('base_name') ?? ''),
+		overlay_name: String(formData.get('overlay_name') ?? ''),
+		base_blob_url: String(formData.get('base_blob_url') ?? ''),
+		overlay_blob_url: String(formData.get('overlay_blob_url') ?? ''),
+		view_mode: String(formData.get('view_mode') ?? ''),
+		gift_mode: String(formData.get('gift_mode') ?? '')
+	};
 
 	if (!quantity) {
 		return new Response('Select one of the available sale bundle sizes.', { status: 400 });
@@ -82,7 +97,8 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 			origin: url.origin,
 			quantity,
 			totalAmountCents: offer.totalAmountCents,
-			offerLabel: offer.label
+			offerLabel: offer.label,
+			metadata
 		})
 	});
 

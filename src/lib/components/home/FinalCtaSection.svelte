@@ -5,11 +5,11 @@
 <section class="section final-cta">
 	<div class="page-wrap">
 		<div class="cta-card">
-			<p class="eyebrow">Ready to order</p>
-			<h2>Pick a bundle, upload your image, and check out on-site.</h2>
+			<p class="eyebrow">Your viral gift moment</p>
+			<h2>Make the one people ask, “Wait, where did you get that?”</h2>
 			<div class="actions">
-				<a class="button-primary" href="#preview-builder">Preview Yours Now</a>
-				<a class="button-secondary" href={resolve('/prices')}>See sale pricing</a>
+				<a class="button-primary" href="#preview-builder">Create the keepsake</a>
+				<a class="button-secondary" href={resolve('/prices')}>Shop bundles</a>
 			</div>
 		</div>
 	</div>
@@ -23,11 +23,33 @@
 		border-radius: 1.9rem;
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		background:
-			radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 28%),
+			radial-gradient(circle at top, rgba(122, 240, 255, 0.12), transparent 28%),
 			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
 			linear-gradient(160deg, rgba(14, 14, 16, 0.95), rgba(8, 8, 10, 0.96));
 		box-shadow: 0 26px 60px rgba(0, 0, 0, 0.28);
 		text-align: center;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.cta-card::before {
+		content: '';
+		position: absolute;
+		inset: -30% auto auto -10%;
+		width: 38%;
+		height: 78%;
+		background: radial-gradient(circle, rgba(122, 240, 255, 0.18), transparent 72%);
+		pointer-events: none;
+	}
+
+	.cta-card::after {
+		content: '';
+		position: absolute;
+		inset: auto -8% -28% auto;
+		width: 36%;
+		height: 68%;
+		background: radial-gradient(circle, rgba(255, 111, 145, 0.15), transparent 72%);
+		pointer-events: none;
 	}
 
 	h2 {

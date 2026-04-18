@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { checkoutOffers } from '$lib/pricing';
 
 	type Preview = {
 		id: string;
@@ -63,6 +64,12 @@
 	let uploadedBaseName = $state('');
 	let uploadedOverlaySrc = $state('');
 	let uploadedOverlayName = $state('');
+	let uploadedBaseBlobUrl = $state('');
+	let uploadedOverlayBlobUrl = $state('');
+	let baseUploadState = $state<'idle' | 'uploading' | 'saved' | 'error'>('idle');
+	let overlayUploadState = $state<'idle' | 'uploading' | 'saved' | 'error'>('idle');
+	let baseUploadMessage = $state('');
+	let overlayUploadMessage = $state('');
 	let revealOverlay = $state(true);
 	let compareSplit = $state(52);
 	let activeMockup = $state<Mockup>('fridge');
@@ -79,6 +86,7 @@
 	let overlayCameraInput: HTMLInputElement | null = null;
 	let previewStage: HTMLDivElement | null = null;
 	let draggingOverlay = $state(false);
+	let selectedBundle = $state(String(checkoutOffers[0].quantity));
 
 	const currentMode = $derived(modes.find((mode) => mode.id === activeModeId) ?? modes[0]);
 	const currentBaseSrc = $derived(uploadedBaseSrc || activePreview.src);
@@ -93,7 +101,26 @@
 		activeModeId = preview.mode;
 	}
 
-	function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
+	async function persistDesignAsset(file: File, slot: 'base' | 'overlay') {
+		const payload = new FormData();
+		payload.set('file', file);
+		payload.set('slot', slot);
+
+		const response = await fetch('/api/upload-design', {
+			method: 'POST',
+			body: payload
+		});
+
+		const result = (await response.json()) as { error?: string; url?: string };
+
+		if (!response.ok || !result.url) {
+			throw new Error(result.error || 'Upload failed.');
+		}
+
+		return result.url;
+	}
+
+	async function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
 		const input = event.currentTarget as HTMLInputElement;
 		const file = input.files?.[0];
 		if (!file) return;
@@ -103,14 +130,42 @@
 			if (uploadedBaseSrc) URL.revokeObjectURL(uploadedBaseSrc);
 			uploadedBaseSrc = nextUrl;
 			uploadedBaseName = file.name;
+			uploadedBaseBlobUrl = '';
+			baseUploadState = 'uploading';
+			baseUploadMessage = 'Saving your photo...';
 		} else {
 			if (uploadedOverlaySrc) URL.revokeObjectURL(uploadedOverlaySrc);
 			uploadedOverlaySrc = nextUrl;
 			uploadedOverlayName = file.name;
+			uploadedOverlayBlobUrl = '';
+			overlayUploadState = 'uploading';
+			overlayUploadMessage = 'Saving your overlay...';
 			applySignaturePlacement();
 		}
 
 		input.value = '';
+
+		try {
+			const blobUrl = await persistDesignAsset(file, type);
+			if (type === 'base') {
+				uploadedBaseBlobUrl = blobUrl;
+				baseUploadState = 'saved';
+				baseUploadMessage = 'Photo saved with this design.';
+			} else {
+				uploadedOverlayBlobUrl = blobUrl;
+				overlayUploadState = 'saved';
+				overlayUploadMessage = 'Overlay saved with this design.';
+			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Upload failed.';
+			if (type === 'base') {
+				baseUploadState = 'error';
+				baseUploadMessage = message;
+			} else {
+				overlayUploadState = 'error';
+				overlayUploadMessage = message;
+			}
+		}
 	}
 
 	function clearUploadedImage(type: 'base' | 'overlay') {
@@ -118,12 +173,18 @@
 			URL.revokeObjectURL(uploadedBaseSrc);
 			uploadedBaseSrc = '';
 			uploadedBaseName = '';
+			uploadedBaseBlobUrl = '';
+			baseUploadState = 'idle';
+			baseUploadMessage = '';
 		}
 
 		if (type === 'overlay' && uploadedOverlaySrc) {
 			URL.revokeObjectURL(uploadedOverlaySrc);
 			uploadedOverlaySrc = '';
 			uploadedOverlayName = '';
+			uploadedOverlayBlobUrl = '';
+			overlayUploadState = 'idle';
+			overlayUploadMessage = '';
 		}
 	}
 
@@ -207,13 +268,37 @@
 
 			<div class="order-bar glass-card">
 				<div>
-					<p class="order-kicker">Starting price</p>
-					<h2>$25</h2>
+					<p class="order-kicker">Buy right after designing</p>
+					<h2>Personalize, then purchase here.</h2>
 				</div>
-				<div class="order-actions">
-					<a class="button-primary" href={resolve('/prices')}>Buy on site</a>
-					<a class="button-secondary" href={resolve('/contact')}>Custom order</a>
-				</div>
+				<form class="order-checkout" method="POST" action="/checkout">
+					<input type="hidden" name="source" value="customize-hero" />
+					<input type="hidden" name="base_name" value={uploadedBaseName} />
+					<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
+					<input type="hidden" name="base_blob_url" value={uploadedBaseBlobUrl} />
+					<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
+					<input type="hidden" name="gift_mode" value={activeModeId} />
+					<label>
+						<span>Bundle</span>
+						<select name="quantity" bind:value={selectedBundle}>
+							{#each checkoutOffers as offer (offer.quantity)}
+								<option value={offer.quantity}>{offer.quantity} for {offer.priceLabel}</option>
+							{/each}
+						</select>
+					</label>
+					<div class="order-actions">
+						<button
+							class="button-primary"
+							type="submit"
+							disabled={baseUploadState === 'uploading' || overlayUploadState === 'uploading'}
+						>
+							{baseUploadState === 'uploading' || overlayUploadState === 'uploading'
+								? 'Saving design...'
+								: 'Buy this design'}
+						</button>
+						<a class="button-secondary" href={resolve('/contact')}>Need help?</a>
+					</div>
+				</form>
 			</div>
 		</div>
 	</section>
@@ -359,6 +444,11 @@
 							<p>{uploadedBaseName}</p>
 							<button type="button" onclick={() => clearUploadedImage('base')}>Remove</button>
 						</div>
+						{#if baseUploadMessage}
+							<p class:upload-error={baseUploadState === 'error'} class="upload-note">
+								{baseUploadMessage}
+							</p>
+						{/if}
 					{:else}
 						<p class="helper">Use the main photo for the magnet.</p>
 					{/if}
@@ -399,6 +489,11 @@
 							<p>{uploadedOverlayName}</p>
 							<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button>
 						</div>
+						{#if overlayUploadMessage}
+							<p class:upload-error={overlayUploadState === 'error'} class="upload-note">
+								{overlayUploadMessage}
+							</p>
+						{/if}
 					{:else}
 						<p class="helper">Ideal for signatures, letters, notes, or child art.</p>
 					{/if}
@@ -533,8 +628,25 @@
 					<h2>{uploadedBaseName || activePreview.label}</h2>
 					<p>A closer look at the image, overlay, and final finish.</p>
 					<div class="order-actions">
-						<a class="button-primary" href={resolve('/prices')}>Buy on site</a>
-						<a class="button-secondary" href={resolve('/contact')}>Custom order</a>
+						<form class="lightbox-checkout" method="POST" action="/checkout">
+							<input type="hidden" name="source" value="customize-lightbox" />
+							<input type="hidden" name="base_name" value={uploadedBaseName} />
+							<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
+							<input type="hidden" name="base_blob_url" value={uploadedBaseBlobUrl} />
+							<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
+							<input type="hidden" name="gift_mode" value={activeModeId} />
+							<input type="hidden" name="quantity" value={selectedBundle} />
+							<button
+								class="button-primary"
+								type="submit"
+								disabled={baseUploadState === 'uploading' || overlayUploadState === 'uploading'}
+							>
+								{baseUploadState === 'uploading' || overlayUploadState === 'uploading'
+									? 'Saving design...'
+									: 'Buy this design'}
+							</button>
+						</form>
+						<a class="button-secondary" href={resolve('/contact')}>Need help?</a>
 					</div>
 				</aside>
 			</div>
@@ -569,18 +681,19 @@
 	}
 
 	h1 {
-		font-size: clamp(2.8rem, 5vw, 4.6rem);
-		line-height: 0.94;
+		font-size: clamp(2.2rem, 4vw, 3.45rem);
+		line-height: 0.98;
 	}
 
 	h2 {
-		font-size: clamp(1.35rem, 2.2vw, 2rem);
-		line-height: 1.08;
+		font-size: clamp(1.18rem, 1.9vw, 1.7rem);
+		line-height: 1.12;
 	}
 
 	p {
 		color: var(--muted);
-		line-height: 1.7;
+		line-height: 1.6;
+		font-size: 0.96rem;
 	}
 
 	.studio-head,
@@ -588,22 +701,24 @@
 	.studio-grid,
 	.lower-grid {
 		display: grid;
-		gap: 1.3rem;
+		gap: 1rem;
 	}
 
 	.studio-head {
-		grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+		grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
 		align-items: end;
 	}
 
 	.studio-copy {
 		display: grid;
-		gap: 0.9rem;
-		max-width: 36rem;
+		gap: 0.75rem;
+		max-width: 33rem;
+		justify-self: center;
+		text-align: center;
 	}
 
 	.reel-grid {
-		grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+		grid-template-columns: minmax(250px, 0.76fr) minmax(0, 1.16fr);
 		align-items: center;
 	}
 
@@ -614,8 +729,8 @@
 	.action-card,
 	.compare-card,
 	.mockup-card {
-		padding: 1.3rem;
-		border-radius: 1.55rem;
+		padding: 1.05rem;
+		border-radius: 1.28rem;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
 			linear-gradient(160deg, rgba(14, 14, 18, 0.9), rgba(10, 10, 14, 0.82));
@@ -635,24 +750,64 @@
 	.mockup-tabs {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.75rem;
+		gap: 0.65rem;
 	}
 
 	.order-bar {
 		flex-direction: column;
-		align-items: flex-start;
+		align-items: center;
 		justify-content: space-between;
+		text-align: center;
+	}
+
+	.order-checkout,
+	.lightbox-checkout {
+		display: grid;
+		gap: 0.8rem;
+		width: 100%;
+	}
+
+	.order-checkout label {
+		display: grid;
+		gap: 0.45rem;
+		color: var(--text);
+		width: 100%;
+	}
+
+	.order-checkout span {
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+
+	.order-checkout select {
+		padding: 0.8rem 0.95rem;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		background: rgba(255, 255, 255, 0.05);
+		color: var(--text);
+	}
+
+	.upload-note {
+		font-size: 0.82rem;
+		color: rgba(122, 240, 255, 0.82);
+	}
+
+	.upload-error {
+		color: #ff9bb1;
 	}
 
 	.reel-card,
 	.reel-video-card {
 		display: grid;
-		gap: 0.95rem;
+		gap: 0.82rem;
 	}
 
 	.order-kicker,
 	.card-kicker {
-		font-size: 0.72rem;
+		font-size: 0.68rem;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
 		color: var(--accent);
@@ -660,12 +815,12 @@
 	}
 
 	.studio-grid {
-		grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+		grid-template-columns: minmax(0, 1.08fr) minmax(290px, 0.82fr);
 		align-items: start;
 	}
 
 	.reel-tags span {
-		padding: 0.55rem 0.85rem;
+		padding: 0.48rem 0.75rem;
 		border-radius: 999px;
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		background:
@@ -677,13 +832,13 @@
 			),
 			rgba(255, 255, 255, 0.03);
 		color: var(--text);
-		font-size: 0.88rem;
+		font-size: 0.8rem;
 	}
 
 	.reel-shell {
 		position: relative;
-		padding: 0.85rem;
-		border-radius: 1.4rem;
+		padding: 0.7rem;
+		border-radius: 1.2rem;
 		background: linear-gradient(145deg, rgba(18, 18, 24, 0.98), rgba(10, 10, 14, 0.94));
 		overflow: hidden;
 	}
@@ -693,7 +848,7 @@
 		position: absolute;
 		inset: 0;
 		padding: 1px;
-		border-radius: 1.4rem;
+		border-radius: 1.2rem;
 		background: linear-gradient(
 			120deg,
 			rgba(240, 222, 192, 0.75),
@@ -718,8 +873,8 @@
 		position: relative;
 		display: block;
 		width: 100%;
-		max-height: 38rem;
-		border-radius: 1rem;
+		max-height: 31rem;
+		border-radius: 0.9rem;
 		background: #08090d;
 		object-fit: cover;
 		box-shadow: 0 26px 56px rgba(0, 0, 0, 0.34);
@@ -747,7 +902,7 @@
 	.compare-card,
 	.mockup-card {
 		display: grid;
-		gap: 1rem;
+		gap: 0.85rem;
 	}
 
 	.mode-switcher button,
@@ -772,7 +927,7 @@
 	.upload-meta button,
 	.lightbox-nav,
 	.lightbox-close {
-		padding: 0.68rem 0.95rem;
+		padding: 0.6rem 0.88rem;
 		border-radius: 999px;
 		border: 1px solid rgba(255, 255, 255, 0.11);
 		background:
@@ -818,8 +973,8 @@
 
 	.preview-stage {
 		position: relative;
-		padding: 0.6rem;
-		border-radius: 1.5rem;
+		padding: 0.52rem;
+		border-radius: 1.22rem;
 		background:
 			radial-gradient(circle at top, rgba(199, 216, 255, 0.18), transparent 24%),
 			linear-gradient(
@@ -844,8 +999,8 @@
 
 	.base-image {
 		display: block;
-		width: min(19rem, 100%);
-		border-radius: 1.1rem;
+		width: min(16rem, 100%);
+		border-radius: 0.95rem;
 		box-shadow: 0 24px 50px rgba(0, 0, 0, 0.34);
 	}
 
@@ -915,15 +1070,15 @@
 	.sample-row {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.8rem;
+		gap: 0.68rem;
 	}
 
 	.sample-card {
 		display: grid;
-		gap: 0.55rem;
-		padding: 0.65rem;
+		gap: 0.48rem;
+		padding: 0.55rem;
 		text-align: left;
-		border-radius: 1rem;
+		border-radius: 0.88rem;
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		background: rgba(255, 255, 255, 0.03);
 	}
@@ -931,9 +1086,9 @@
 	.sample-card img {
 		display: block;
 		width: 100%;
-		height: 7.5rem;
+		height: 6.35rem;
 		object-fit: cover;
-		border-radius: 0.85rem;
+		border-radius: 0.74rem;
 	}
 
 	.sample-card.active {
@@ -942,7 +1097,7 @@
 
 	.side-stack {
 		display: grid;
-		gap: 1rem;
+		gap: 0.85rem;
 	}
 
 	.upload-meta {
@@ -954,21 +1109,21 @@
 
 	.upload-meta p {
 		min-width: 0;
-		font-size: 0.78rem;
+		font-size: 0.72rem;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 
 	.lower-grid {
-		grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
+		grid-template-columns: minmax(0, 1.02fr) minmax(280px, 0.92fr);
 		align-items: start;
 	}
 
 	.compare-stage {
 		position: relative;
-		min-height: 19rem;
-		border-radius: 1.2rem;
+		min-height: 15.5rem;
+		border-radius: 1rem;
 		overflow: hidden;
 		background: rgba(255, 255, 255, 0.03);
 	}
@@ -1012,15 +1167,15 @@
 	.mockup-stage {
 		display: grid;
 		place-items: center;
-		min-height: 22rem;
-		border-radius: 1.2rem;
+		min-height: 18rem;
+		border-radius: 1rem;
 	}
 
 	.mockup-target {
 		position: relative;
-		width: min(16rem, 70vw);
+		width: min(13.5rem, 70vw);
 		aspect-ratio: 0.82;
-		border-radius: 1.2rem;
+		border-radius: 1rem;
 		overflow: hidden;
 		box-shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
 	}
@@ -1056,7 +1211,7 @@
 		z-index: 50;
 		display: grid;
 		place-items: center;
-		padding: 1.2rem;
+		padding: 1rem;
 		background: rgba(4, 4, 6, 0.84);
 		backdrop-filter: blur(10px);
 	}
@@ -1064,12 +1219,12 @@
 	.lightbox-dialog {
 		position: relative;
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 260px;
-		gap: 1rem;
-		width: min(94vw, 1240px);
-		height: min(84vh, 900px);
-		padding: 1rem;
-		border-radius: 1.5rem;
+		grid-template-columns: minmax(0, 1fr) 240px;
+		gap: 0.9rem;
+		width: min(92vw, 1120px);
+		height: min(80vh, 820px);
+		padding: 0.9rem;
+		border-radius: 1.2rem;
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
@@ -1093,15 +1248,15 @@
 		height: 100%;
 		max-height: 80vh;
 		object-fit: contain;
-		border-radius: 1rem;
+		border-radius: 0.88rem;
 	}
 
 	.lightbox-sidebar {
 		display: grid;
 		align-content: start;
-		gap: 0.85rem;
-		padding: 1rem;
-		border-radius: 1.1rem;
+		gap: 0.72rem;
+		padding: 0.9rem;
+		border-radius: 0.96rem;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
 			linear-gradient(
@@ -1121,8 +1276,8 @@
 	.lightbox-nav {
 		top: 50%;
 		transform: translateY(-50%);
-		width: 3.1rem;
-		height: 3.1rem;
+		width: 2.7rem;
+		height: 2.7rem;
 	}
 
 	.lightbox-nav-left {
@@ -1145,6 +1300,12 @@
 		.lower-grid,
 		.sample-row {
 			grid-template-columns: 1fr;
+		}
+
+		.studio-copy,
+		.order-bar {
+			justify-items: center;
+			text-align: center;
 		}
 
 		.lightbox-dialog {

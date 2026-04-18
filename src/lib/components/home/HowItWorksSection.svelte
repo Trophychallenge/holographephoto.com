@@ -2,22 +2,24 @@
 	<div class="page-wrap how-layout">
 		<div class="heading">
 			<p class="eyebrow">How it works</p>
-			<h2>Simple from the start.</h2>
-			<p>Photo in, preview on, order placed.</p>
+			<h2>Three simple steps.</h2>
 		</div>
 
 		<ol class="steps">
 			<li>
 				<span>01</span>
-				<h3>Upload your photo</h3>
+				<h3>Pick a photo</h3>
+				<p>Use your favorite shot.</p>
 			</li>
 			<li>
 				<span>02</span>
-				<h3>Preview the shimmer</h3>
+				<h3>Make it yours</h3>
+				<p>Add a name, date, or overlay.</p>
 			</li>
 			<li>
 				<span>03</span>
-				<h3>Receive your keepsake</h3>
+				<h3>Order the bundle</h3>
+				<p>Checkout on-site with the sale pricing.</p>
 			</li>
 		</ol>
 	</div>
@@ -55,18 +57,24 @@
 		line-height: 0.98;
 	}
 
+	h3 {
+		font-size: 1.45rem;
+	}
+
 	p {
-		color: rgba(234, 234, 230, 0.68);
+		color: rgba(234, 234, 230, 0.7);
+		line-height: 1.65;
 	}
 
 	.steps {
 		padding: 0;
 		list-style: none;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 
 	.steps li {
 		display: grid;
-		gap: 0.45rem;
+		gap: 0.55rem;
 		padding: 1.15rem;
 		border-radius: 1.5rem;
 		border: 1px solid rgba(255, 255, 255, 0.08);
@@ -74,6 +82,27 @@
 			linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
 			linear-gradient(160deg, rgba(15, 15, 17, 0.95), rgba(8, 8, 10, 0.95));
 		text-align: center;
+		position: relative;
+		overflow: hidden;
+		transition:
+			transform 220ms ease,
+			box-shadow 220ms ease,
+			border-color 220ms ease;
+	}
+
+	.steps li:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 28px 58px rgba(0, 0, 0, 0.3);
+		border-color: rgba(255, 255, 255, 0.12);
+	}
+
+	.steps li::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 34%);
+		opacity: 0.6;
+		pointer-events: none;
 	}
 
 	.steps span {
@@ -81,16 +110,12 @@
 		font-weight: 700;
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
-		color: rgba(236, 236, 232, 0.56);
+		color: var(--accent);
 	}
 
-	h3 {
-		font-size: 1.35rem;
-	}
-
-	@media (min-width: 860px) {
+	@media (max-width: 860px) {
 		.steps {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

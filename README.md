@@ -15,7 +15,10 @@ Set this environment variable before using payments locally or on Vercel:
 
 ```sh
 STRIPE_SECRET_KEY=sk_test_replace_me
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_token_replace_me
 ```
+
+`BLOB_READ_WRITE_TOKEN` is required for storing uploaded customer design files in Vercel Blob so they can be tied to checkout metadata.
 
 The pricing page now uses sale bundle pricing:
 

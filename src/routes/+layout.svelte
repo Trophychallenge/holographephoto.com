@@ -9,6 +9,7 @@
 		{ href: '/', label: 'Home' },
 		{ href: '/customize', label: 'Customize' },
 		{ href: '/prices', label: 'Prices' },
+		{ href: '/gallery', label: 'Gallery' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
 </script>
@@ -26,13 +27,14 @@
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
 			<span class="brand-kicker">Holographe</span>
-			<span class="brand-name">Personalized Holographic Photo Magnets</span>
+			<span class="brand-name">Colorful custom keepsakes</span>
 		</a>
 		<nav class="site-nav" aria-label="Main navigation">
 			{#each navItems as item (item.href)}
 				<a href={resolve(item.href)}>{item.label}</a>
 			{/each}
 		</nav>
+		<a class="button-primary header-cta" href={resolve('/prices')}>Shop Sale</a>
 	</header>
 
 	<main>
@@ -43,12 +45,13 @@
 		<div>
 			<p class="footer-title">Holographe</p>
 			<p class="footer-copy">
-				Premium holographic photo magnets made to feel personal, giftable, and worth keeping.
+				Premium, playful photo magnets with shimmer, color, and room to personalize.
 			</p>
 		</div>
 		<div class="footer-links">
 			<a href={resolve('/customize')}>Customize</a>
 			<a href={resolve('/prices')}>Prices</a>
+			<a href={resolve('/gallery')}>Gallery</a>
 			<a href={resolve('/contact')}>Start your order</a>
 		</div>
 		<p class="footer-meta">holographephoto.com</p>

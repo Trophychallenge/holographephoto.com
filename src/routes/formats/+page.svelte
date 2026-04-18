@@ -1,21 +1,8 @@
 <script lang="ts">
-	const formats = [
-		{
-			name: 'Photo only',
-			copy: 'A clean keepsake built from one photo.'
-		},
-		{
-			name: 'Photo + handwriting',
-			copy: 'Add a note, date, or signature.'
-		},
-		{
-			name: 'Photo + custom drawing',
-			copy: 'Layer in a drawing or traced artwork.'
-		},
-		{
-			name: 'Full custom keepsake',
-			copy: 'Combine photo, writing, and artwork together.'
-		}
+	const options = [
+		{ name: 'Clean', copy: 'Photo only, polished fast, minimal look.' },
+		{ name: 'Signature', copy: 'Add handwriting, a date, or a name.' },
+		{ name: 'Layered', copy: 'Photo plus drawing, art, or footprint overlay.' }
 	];
 </script>
 
@@ -23,22 +10,24 @@
 	<title>Personalization | Holographe</title>
 	<meta
 		name="description"
-		content="Explore Holographe personalization options including photo-only, handwriting add-ons, custom drawing add-ons, and fully customized keepsakes."
+		content="Choose a simple Holographe personalization style: clean, signature, or layered."
 	/>
 </svelte:head>
 
 <section class="section">
-	<div class="page-wrap">
-		<div class="section-head">
+	<div class="page-wrap format-layout">
+		<div class="section-head center">
 			<span class="eyebrow">Personalization</span>
-			<h1>Choose your level of personalization.</h1>
-			<p>Keep it minimal or layer in more meaning.</p>
+			<h1>Three clear ways to personalize.</h1>
+			<p>Simple options. No confusing menu.</p>
 		</div>
+
 		<div class="format-grid">
-			{#each formats as format (format.name)}
+			{#each options as option (option.name)}
 				<article class="glass-card format-card">
-					<h2>{format.name}</h2>
-					<p>{format.copy}</p>
+					<p class="tag">{option.name}</p>
+					<h2>{option.name}</h2>
+					<p>{option.copy}</p>
 				</article>
 			{/each}
 		</div>
@@ -47,37 +36,58 @@
 
 <style>
 	h1,
+	h2,
+	p {
+		margin: 0;
+	}
+
+	h1,
 	h2 {
-		margin: 1rem 0 0.8rem;
-		line-height: 0.96;
-		letter-spacing: -0.04em;
+		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
+		letter-spacing: -0.04em;
 	}
 
 	h1 {
-		font-size: clamp(2.2rem, 5vw, 3.5rem);
+		font-size: clamp(2.3rem, 5vw, 3.8rem);
 	}
 
 	h2 {
-		font-size: 1.3rem;
+		font-size: 1.7rem;
 	}
 
 	p {
-		margin: 0;
 		color: var(--muted);
-		line-height: 1.6;
-		font-size: 0.95rem;
+		line-height: 1.65;
 	}
 
+	.center {
+		text-align: center;
+		margin-inline: auto;
+	}
+
+	.format-layout,
 	.format-grid {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 1rem;
 	}
 
+	.format-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
 	.format-card {
-		padding: 1.15rem;
-		min-height: 11rem;
+		display: grid;
+		gap: 0.6rem;
+		padding: 1.2rem;
+	}
+
+	.tag {
+		font-size: 0.76rem;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: var(--accent);
+		font-weight: 700;
 	}
 
 	@media (max-width: 900px) {

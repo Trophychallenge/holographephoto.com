@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
+	import { featuredCheckoutOffers } from '$lib/pricing';
 
 	type ViewMode = 'original' | 'holographic' | 'overlay';
 
@@ -14,11 +14,18 @@
 	let uploadedBaseName = $state('');
 	let uploadedOverlaySrc = $state('');
 	let uploadedOverlayName = $state('');
+	let uploadedBaseBlobUrl = $state('');
+	let uploadedOverlayBlobUrl = $state('');
+	let baseUploadState = $state<'idle' | 'uploading' | 'saved' | 'error'>('idle');
+	let overlayUploadState = $state<'idle' | 'uploading' | 'saved' | 'error'>('idle');
+	let baseUploadMessage = $state('');
+	let overlayUploadMessage = $state('');
 	let overlayEnabled = $state(true);
 	let overlayX = $state(50);
 	let overlayY = $state(52);
 	let overlayScale = $state(64);
 	let draggingOverlay = $state(false);
+	let selectedBundle = $state(String(featuredCheckoutOffers[0].quantity));
 
 	let baseUploadInput: HTMLInputElement | null = null;
 	let baseCameraInput: HTMLInputElement | null = null;
@@ -36,7 +43,26 @@
 		selectedView === 'overlay' && overlayEnabled && Boolean(currentOverlaySrc)
 	);
 
-	function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
+	async function persistDesignAsset(file: File, slot: 'base' | 'overlay') {
+		const payload = new FormData();
+		payload.set('file', file);
+		payload.set('slot', slot);
+
+		const response = await fetch('/api/upload-design', {
+			method: 'POST',
+			body: payload
+		});
+
+		const result = (await response.json()) as { error?: string; url?: string };
+
+		if (!response.ok || !result.url) {
+			throw new Error(result.error || 'Upload failed.');
+		}
+
+		return result.url;
+	}
+
+	async function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
 		const input = event.currentTarget as HTMLInputElement;
 		const file = input.files?.[0];
 		if (!file) return;
@@ -46,10 +72,16 @@
 			if (uploadedBaseSrc) URL.revokeObjectURL(uploadedBaseSrc);
 			uploadedBaseSrc = nextUrl;
 			uploadedBaseName = file.name;
+			uploadedBaseBlobUrl = '';
+			baseUploadState = 'uploading';
+			baseUploadMessage = 'Saving your photo...';
 		} else {
 			if (uploadedOverlaySrc) URL.revokeObjectURL(uploadedOverlaySrc);
 			uploadedOverlaySrc = nextUrl;
 			uploadedOverlayName = file.name;
+			uploadedOverlayBlobUrl = '';
+			overlayUploadState = 'uploading';
+			overlayUploadMessage = 'Saving your overlay...';
 			selectedView = 'overlay';
 			overlayEnabled = true;
 			overlayX = 50;
@@ -58,6 +90,28 @@
 		}
 
 		input.value = '';
+
+		try {
+			const blobUrl = await persistDesignAsset(file, type);
+			if (type === 'base') {
+				uploadedBaseBlobUrl = blobUrl;
+				baseUploadState = 'saved';
+				baseUploadMessage = 'Photo saved with your design.';
+			} else {
+				uploadedOverlayBlobUrl = blobUrl;
+				overlayUploadState = 'saved';
+				overlayUploadMessage = 'Overlay saved with your design.';
+			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Upload failed.';
+			if (type === 'base') {
+				baseUploadState = 'error';
+				baseUploadMessage = message;
+			} else {
+				overlayUploadState = 'error';
+				overlayUploadMessage = message;
+			}
+		}
 	}
 
 	function clearUploadedImage(type: 'base' | 'overlay') {
@@ -65,6 +119,9 @@
 			URL.revokeObjectURL(uploadedBaseSrc);
 			uploadedBaseSrc = '';
 			uploadedBaseName = '';
+			uploadedBaseBlobUrl = '';
+			baseUploadState = 'idle';
+			baseUploadMessage = '';
 		}
 
 		if (type === 'overlay' && uploadedOverlaySrc) {
@@ -72,6 +129,9 @@
 			uploadedOverlaySrc = '';
 			uploadedOverlayName = '';
 			overlayEnabled = false;
+			uploadedOverlayBlobUrl = '';
+			overlayUploadState = 'idle';
+			overlayUploadMessage = '';
 			if (selectedView === 'overlay') selectedView = 'holographic';
 		}
 	}
@@ -144,6 +204,11 @@
 								<span>{uploadedBaseName}</span>
 								<button type="button" onclick={() => clearUploadedImage('base')}>Remove</button>
 							</div>
+							{#if baseUploadMessage}
+								<p class:upload-error={baseUploadState === 'error'} class="upload-note">
+									{baseUploadMessage}
+								</p>
+							{/if}
 						{:else}
 							<p class="helper">Start with the photo you want to keep.</p>
 						{/if}
@@ -179,6 +244,11 @@
 								<span>{uploadedOverlayName}</span>
 								<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button>
 							</div>
+							{#if overlayUploadMessage}
+								<p class:upload-error={overlayUploadState === 'error'} class="upload-note">
+									{overlayUploadMessage}
+								</p>
+							{/if}
 						{:else}
 							<p class="helper">Perfect for handwriting, footprints, paw prints, or child art.</p>
 						{/if}
@@ -238,7 +308,31 @@
 							Preview modes help you get close before ordering. Final shimmer can vary slightly in
 							real light.
 						</p>
-						<a class="button-primary order-button" href={resolve('/prices')}>Shop sale pricing</a>
+						<form class="checkout-inline" method="POST" action="/checkout">
+							<input type="hidden" name="source" value="home-preview-builder" />
+							<input type="hidden" name="base_name" value={uploadedBaseName} />
+							<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
+							<input type="hidden" name="base_blob_url" value={uploadedBaseBlobUrl} />
+							<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
+							<input type="hidden" name="view_mode" value={selectedView} />
+							<label class="checkout-pick">
+								<span>Bundle</span>
+								<select name="quantity" bind:value={selectedBundle}>
+									{#each featuredCheckoutOffers as offer (offer.quantity)}
+										<option value={offer.quantity}>{offer.quantity} for {offer.priceLabel}</option>
+									{/each}
+								</select>
+							</label>
+							<button
+								class="button-primary order-button"
+								type="submit"
+								disabled={baseUploadState === 'uploading' || overlayUploadState === 'uploading'}
+							>
+								{baseUploadState === 'uploading' || overlayUploadState === 'uploading'
+									? 'Saving design...'
+									: 'Buy this design'}
+							</button>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -380,6 +474,15 @@
 		white-space: nowrap;
 	}
 
+	.upload-note {
+		font-size: 0.88rem;
+		color: rgba(122, 240, 255, 0.82);
+	}
+
+	.upload-error {
+		color: #ff9bb1;
+	}
+
 	.helper,
 	.preview-footer p {
 		color: rgba(226, 226, 222, 0.62);
@@ -475,8 +578,40 @@
 		text-align: center;
 	}
 
+	.checkout-inline {
+		display: grid;
+		gap: 0.7rem;
+	}
+
+	.checkout-pick {
+		display: grid;
+		gap: 0.45rem;
+		color: rgba(244, 244, 240, 0.82);
+		text-align: left;
+	}
+
+	.checkout-pick span {
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+	}
+
+	.checkout-pick select {
+		padding: 0.85rem 1rem;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.05);
+		color: var(--text);
+	}
+
 	.order-button {
 		width: 100%;
+	}
+
+	.order-button:disabled {
+		opacity: 0.7;
+		cursor: progress;
 	}
 
 	@keyframes lightPass {
@@ -507,6 +642,11 @@
 		.preview-footer {
 			grid-template-columns: minmax(0, 1fr) auto;
 			align-items: center;
+		}
+
+		.checkout-inline {
+			grid-template-columns: auto auto;
+			align-items: end;
 		}
 
 		.order-button {

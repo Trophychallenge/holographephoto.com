@@ -1,11 +1,25 @@
 <script lang="ts">
-	const galleryItems = [
-		'Couple portrait magnet with anniversary date',
-		'Pet photo magnet with handwritten note',
-		'Baby photo keepsake with custom illustration',
-		'Travel memory magnet with location script',
-		'Memorial magnet with signature detail',
-		'Minimal portrait magnet in premium packaging'
+	const descriptions = [
+		{
+			title: 'For the photo they still stop and stare at',
+			note: 'Turn one unforgettable moment into a keepsake that catches the light and brings the feeling back instantly.'
+		},
+		{
+			title: 'A gift that feels intimate, not generic',
+			note: 'More personal than flowers, more lasting than a card, and designed to feel chosen with real care.'
+		},
+		{
+			title: 'Made for names, dates, vows, and little details',
+			note: 'Layer in the handwriting, the anniversary, the nickname, or the tiny detail that makes it theirs.'
+		},
+		{
+			title: 'For the memories people never want to put away',
+			note: 'The kind of piece that lives on the fridge, the desk, or the mirror because it means too much to store.'
+		},
+		{
+			title: 'Premium enough to impress, emotional enough to keep',
+			note: 'A polished holographic finish turns a simple photo into something giftable, display-worthy, and deeply sentimental.'
+		}
 	];
 </script>
 
@@ -13,93 +27,132 @@
 	<title>Gallery | Holographe</title>
 	<meta
 		name="description"
-		content="Explore the visual direction for Holographe personalized holographic photo magnets and custom keepsake variations."
+		content="Quick visual inspiration for Holographe keepsakes, from family photos to weddings and pets."
 	/>
 </svelte:head>
 
 <section class="section">
-	<div class="page-wrap">
-		<div class="section-head">
+	<div class="page-wrap gallery-layout">
+		<div class="section-head center">
 			<span class="eyebrow">Gallery</span>
-			<h1>Visual directions for different keepsake moments.</h1>
-			<p>Simple ideas for gifting, family, and custom versions.</p>
+			<h1>Sentimental gifting with main-character energy.</h1>
+			<p>
+				Five premium product stories built to make the gift feel emotional, polished, and worth
+				keeping and posting about.
+			</p>
 		</div>
-		<div class="gallery-grid">
-			{#each galleryItems as item, index (item)}
-				<article class="glass-card gallery-card">
-					<div class="art art-{index + 1}"></div>
-					<p>{item}</p>
-				</article>
-			{/each}
+
+		<div class="feature-panel glass-card">
+			<div class="feature-copy">
+				<p class="panel-kicker">Why it works online</p>
+				<h2>The best gifts feel emotional in person and irresistible on camera.</h2>
+				<p>These descriptions are written to feel premium, sentimental, and socially magnetic.</p>
+			</div>
+			<div class="idea-grid">
+				{#each descriptions as item (item.title)}
+					<article class="idea-card">
+						<div class="idea-orb"></div>
+						<h3>{item.title}</h3>
+						<p>{item.note}</p>
+					</article>
+				{/each}
+			</div>
 		</div>
 	</div>
 </section>
 
 <style>
-	h1 {
-		margin: 1rem 0 0.8rem;
-		line-height: 0.96;
-		letter-spacing: -0.04em;
+	h1,
+	h2,
+	h3,
+	p {
+		margin: 0;
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
-		font-size: clamp(2.2rem, 5vw, 3.5rem);
+		letter-spacing: -0.04em;
+	}
+
+	h1 {
+		font-size: clamp(2.3rem, 5vw, 3.8rem);
+	}
+
+	h2 {
+		font-size: clamp(1.8rem, 4vw, 2.7rem);
+	}
+
+	h3 {
+		font-size: 1.2rem;
 	}
 
 	p {
-		margin: 0;
 		color: var(--muted);
-		line-height: 1.6;
-		font-size: 0.95rem;
+		line-height: 1.65;
 	}
 
-	.gallery-grid {
+	.gallery-layout,
+	.feature-panel,
+	.feature-copy,
+	.idea-grid {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1rem;
 	}
 
-	.gallery-card {
-		padding: 0.9rem;
+	.center {
+		text-align: center;
+		margin-inline: auto;
 	}
 
-	.art {
-		min-height: 12rem;
-		border-radius: 1.2rem;
-		margin-bottom: 1rem;
-		background: repeating-linear-gradient(
-			90deg,
-			rgba(255, 255, 255, 0.08),
-			rgba(255, 255, 255, 0.08) 1px,
-			transparent 1px,
-			transparent 16px
-		);
+	.feature-panel {
+		padding: 1.2rem;
 	}
 
-	.art-1,
-	.art-4 {
-		background-color: #122336;
-		background-image:
-			radial-gradient(circle at 30% 20%, rgba(159, 232, 255, 0.36), transparent 24%),
-			linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(7, 17, 26, 0.3));
+	.feature-copy {
+		max-width: 36rem;
 	}
 
-	.art-2,
-	.art-5 {
-		background-color: #1b1728;
-		background-image:
-			radial-gradient(circle at 70% 22%, rgba(255, 202, 135, 0.28), transparent 28%),
-			linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(7, 17, 26, 0.22));
+	.panel-kicker {
+		font-size: 0.75rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--accent);
+		font-weight: 700;
 	}
 
-	.art-3,
-	.art-6 {
-		background-color: #101c2c;
-		background-image:
-			radial-gradient(circle at 50% 18%, rgba(129, 150, 255, 0.28), transparent 26%),
-			linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(7, 17, 26, 0.24));
+	.idea-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.idea-card {
+		display: grid;
+		gap: 0.6rem;
+		padding: 1.15rem;
+		border-radius: 1.3rem;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.idea-orb {
+		width: 3rem;
+		height: 3rem;
+		border-radius: 999px;
+		background:
+			radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7), transparent 30%),
+			linear-gradient(
+				135deg,
+				rgba(122, 240, 255, 0.8),
+				rgba(255, 111, 145, 0.7),
+				rgba(255, 182, 92, 0.8)
+			);
+		box-shadow: 0 10px 30px rgba(122, 240, 255, 0.2);
 	}
 
 	@media (max-width: 900px) {
-		.gallery-grid {
+		.idea-grid {
 			grid-template-columns: 1fr;
 		}
 	}
