@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { removeLightBackgroundFromFile } from '$lib/browser/overlay-tools';
 	import { checkoutOffers } from '$lib/pricing';
 
 	type Preview = {
@@ -66,10 +67,11 @@
 	let uploadedOverlayName = $state('');
 	let uploadedBaseBlobUrl = $state('');
 	let uploadedOverlayBlobUrl = $state('');
-	let baseUploadState = $state<'idle' | 'uploading' | 'saved' | 'error'>('idle');
-	let overlayUploadState = $state<'idle' | 'uploading' | 'saved' | 'error'>('idle');
+	let baseUploadState = $state<'idle' | 'uploading' | 'saved' | 'local' | 'error'>('idle');
+	let overlayUploadState = $state<'idle' | 'uploading' | 'saved' | 'local' | 'error'>('idle');
 	let baseUploadMessage = $state('');
 	let overlayUploadMessage = $state('');
+	let overlayProcessing = $state(false);
 	let revealOverlay = $state(true);
 	let compareSplit = $state(52);
 	let activeMockup = $state<Mockup>('fridge');
@@ -94,6 +96,10 @@
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
 	const activePreviewIndex = $derived(
 		previews.findIndex((preview) => preview.id === activePreview.id)
+	);
+	const hasUnsavedDesign = $derived(
+		(Boolean(uploadedBaseName) && !uploadedBaseBlobUrl) ||
+			(Boolean(uploadedOverlayName) && !uploadedOverlayBlobUrl)
 	);
 
 	function setPreview(preview: Preview) {
@@ -120,9 +126,7 @@
 		return result.url;
 	}
 
-	async function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
-		const input = event.currentTarget as HTMLInputElement;
-		const file = input.files?.[0];
+	async function applyUploadedFile(file: File, type: 'base' | 'overlay') {
 		if (!file) return;
 
 		const nextUrl = URL.createObjectURL(file);
@@ -143,8 +147,6 @@
 			applySignaturePlacement();
 		}
 
-		input.value = '';
-
 		try {
 			const blobUrl = await persistDesignAsset(file, type);
 			if (type === 'base') {
@@ -157,14 +159,47 @@
 				overlayUploadMessage = 'Overlay saved with this design.';
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Upload failed.';
+			const message =
+				error instanceof Error ? error.message : 'Cloud save is unavailable right now.';
 			if (type === 'base') {
-				baseUploadState = 'error';
-				baseUploadMessage = message;
+				baseUploadState = 'local';
+				baseUploadMessage = `Preview ready on this device. ${message} Order stays disabled until cloud save works.`;
 			} else {
-				overlayUploadState = 'error';
-				overlayUploadMessage = message;
+				overlayUploadState = 'local';
+				overlayUploadMessage = `Overlay preview ready on this device. ${message} Order stays disabled until cloud save works.`;
 			}
+		}
+	}
+
+	async function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+		input.value = '';
+		await applyUploadedFile(file, type);
+	}
+
+	async function cleanOverlayBackground() {
+		if (!uploadedOverlaySrc) return;
+
+		overlayProcessing = true;
+		overlayUploadState = 'uploading';
+		overlayUploadMessage = 'Cleaning the background for a smoother overlay...';
+
+		try {
+			const response = await fetch(uploadedOverlaySrc);
+			const blob = await response.blob();
+			const sourceFile = new File([blob], uploadedOverlayName || 'overlay.png', {
+				type: blob.type || 'image/png'
+			});
+			const cleanedFile = await removeLightBackgroundFromFile(sourceFile);
+			await applyUploadedFile(cleanedFile, 'overlay');
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Cleanup failed.';
+			overlayUploadState = 'error';
+			overlayUploadMessage = message;
+		} finally {
+			overlayProcessing = false;
 		}
 	}
 
@@ -290,15 +325,25 @@
 						<button
 							class="button-primary"
 							type="submit"
-							disabled={baseUploadState === 'uploading' || overlayUploadState === 'uploading'}
+							disabled={
+								baseUploadState === 'uploading' ||
+								overlayUploadState === 'uploading' ||
+								overlayProcessing ||
+								hasUnsavedDesign
+							}
 						>
-							{baseUploadState === 'uploading' || overlayUploadState === 'uploading'
+							{baseUploadState === 'uploading' || overlayUploadState === 'uploading' || overlayProcessing
 								? 'Saving design...'
 								: 'Buy this design'}
 						</button>
 						<a class="button-secondary" href={resolve('/contact')}>Need help?</a>
 					</div>
 				</form>
+				{#if hasUnsavedDesign}
+					<p class="upload-note checkout-note">
+						Finish cloud save before ordering so your uploaded design is attached to the payment.
+					</p>
+				{/if}
 			</div>
 		</div>
 	</section>
@@ -487,7 +532,12 @@
 					{#if uploadedOverlayName}
 						<div class="upload-meta">
 							<p>{uploadedOverlayName}</p>
-							<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button>
+							<div class="upload-actions">
+								<button type="button" onclick={cleanOverlayBackground} disabled={overlayProcessing}>
+									{overlayProcessing ? 'Cleaning...' : 'Clean background'}
+								</button>
+								<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button>
+							</div>
 						</div>
 						{#if overlayUploadMessage}
 							<p class:upload-error={overlayUploadState === 'error'} class="upload-note">
@@ -639,13 +689,23 @@
 							<button
 								class="button-primary"
 								type="submit"
-								disabled={baseUploadState === 'uploading' || overlayUploadState === 'uploading'}
+								disabled={
+									baseUploadState === 'uploading' ||
+									overlayUploadState === 'uploading' ||
+									overlayProcessing ||
+									hasUnsavedDesign
+								}
 							>
-								{baseUploadState === 'uploading' || overlayUploadState === 'uploading'
+								{baseUploadState === 'uploading' || overlayUploadState === 'uploading' || overlayProcessing
 									? 'Saving design...'
 									: 'Buy this design'}
 							</button>
 						</form>
+						{#if hasUnsavedDesign}
+							<p class="upload-note checkout-note">
+								Finish cloud save before ordering so your uploaded design is attached to the payment.
+							</p>
+						{/if}
 						<a class="button-secondary" href={resolve('/contact')}>Need help?</a>
 					</div>
 				</aside>
@@ -1113,6 +1173,16 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	.upload-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+	}
+
+	.checkout-note {
+		color: #ffd9a0;
 	}
 
 	.lower-grid {

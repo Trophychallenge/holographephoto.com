@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { removeLightBackgroundFromFile } from '$lib/browser/overlay-tools';
 	import { featuredCheckoutOffers } from '$lib/pricing';
 
 	type ViewMode = 'original' | 'holographic' | 'overlay';
@@ -16,10 +17,11 @@
 	let uploadedOverlayName = $state('');
 	let uploadedBaseBlobUrl = $state('');
 	let uploadedOverlayBlobUrl = $state('');
-	let baseUploadState = $state<'idle' | 'uploading' | 'saved' | 'error'>('idle');
-	let overlayUploadState = $state<'idle' | 'uploading' | 'saved' | 'error'>('idle');
+	let baseUploadState = $state<'idle' | 'uploading' | 'saved' | 'local' | 'error'>('idle');
+	let overlayUploadState = $state<'idle' | 'uploading' | 'saved' | 'local' | 'error'>('idle');
 	let baseUploadMessage = $state('');
 	let overlayUploadMessage = $state('');
+	let overlayProcessing = $state(false);
 	let overlayEnabled = $state(true);
 	let overlayX = $state(50);
 	let overlayY = $state(52);
@@ -42,6 +44,10 @@
 	const showOverlay = $derived(
 		selectedView === 'overlay' && overlayEnabled && Boolean(currentOverlaySrc)
 	);
+	const hasUnsavedDesign = $derived(
+		(Boolean(uploadedBaseName) && !uploadedBaseBlobUrl) ||
+			(Boolean(uploadedOverlayName) && !uploadedOverlayBlobUrl)
+	);
 
 	async function persistDesignAsset(file: File, slot: 'base' | 'overlay') {
 		const payload = new FormData();
@@ -62,9 +68,7 @@
 		return result.url;
 	}
 
-	async function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
-		const input = event.currentTarget as HTMLInputElement;
-		const file = input.files?.[0];
+	async function applyUploadedFile(file: File, type: 'base' | 'overlay') {
 		if (!file) return;
 
 		const nextUrl = URL.createObjectURL(file);
@@ -89,8 +93,6 @@
 			overlayScale = 64;
 		}
 
-		input.value = '';
-
 		try {
 			const blobUrl = await persistDesignAsset(file, type);
 			if (type === 'base') {
@@ -103,14 +105,47 @@
 				overlayUploadMessage = 'Overlay saved with your design.';
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Upload failed.';
+			const message =
+				error instanceof Error ? error.message : 'Cloud save is unavailable right now.';
 			if (type === 'base') {
-				baseUploadState = 'error';
-				baseUploadMessage = message;
+				baseUploadState = 'local';
+				baseUploadMessage = `Preview ready on this device. ${message} Order stays disabled until cloud save works.`;
 			} else {
-				overlayUploadState = 'error';
-				overlayUploadMessage = message;
+				overlayUploadState = 'local';
+				overlayUploadMessage = `Overlay preview ready on this device. ${message} Order stays disabled until cloud save works.`;
 			}
+		}
+	}
+
+	async function updateUploadedImage(event: Event, type: 'base' | 'overlay') {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+		input.value = '';
+		await applyUploadedFile(file, type);
+	}
+
+	async function cleanOverlayBackground() {
+		if (!uploadedOverlaySrc) return;
+
+		overlayProcessing = true;
+		overlayUploadState = 'uploading';
+		overlayUploadMessage = 'Cleaning the background for a smoother overlay...';
+
+		try {
+			const response = await fetch(uploadedOverlaySrc);
+			const blob = await response.blob();
+			const sourceFile = new File([blob], uploadedOverlayName || 'overlay.png', {
+				type: blob.type || 'image/png'
+			});
+			const cleanedFile = await removeLightBackgroundFromFile(sourceFile);
+			await applyUploadedFile(cleanedFile, 'overlay');
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Cleanup failed.';
+			overlayUploadState = 'error';
+			overlayUploadMessage = message;
+		} finally {
+			overlayProcessing = false;
 		}
 	}
 
@@ -242,7 +277,12 @@
 						{#if uploadedOverlayName}
 							<div class="file-meta">
 								<span>{uploadedOverlayName}</span>
-								<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button>
+								<div class="file-actions">
+									<button type="button" onclick={cleanOverlayBackground} disabled={overlayProcessing}>
+										{overlayProcessing ? 'Cleaning...' : 'Clean background'}
+									</button>
+									<button type="button" onclick={() => clearUploadedImage('overlay')}>Remove</button>
+								</div>
 							</div>
 							{#if overlayUploadMessage}
 								<p class:upload-error={overlayUploadState === 'error'} class="upload-note">
@@ -326,13 +366,23 @@
 							<button
 								class="button-primary order-button"
 								type="submit"
-								disabled={baseUploadState === 'uploading' || overlayUploadState === 'uploading'}
+								disabled={
+									baseUploadState === 'uploading' ||
+									overlayUploadState === 'uploading' ||
+									overlayProcessing ||
+									hasUnsavedDesign
+								}
 							>
-								{baseUploadState === 'uploading' || overlayUploadState === 'uploading'
+								{baseUploadState === 'uploading' || overlayUploadState === 'uploading' || overlayProcessing
 									? 'Saving design...'
 									: 'Buy this design'}
 							</button>
 						</form>
+						{#if hasUnsavedDesign}
+							<p class="checkout-note">
+								Finish cloud save before ordering so your uploaded design is attached to the payment.
+							</p>
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -474,6 +524,12 @@
 		white-space: nowrap;
 	}
 
+	.file-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+	}
+
 	.upload-note {
 		font-size: 0.88rem;
 		color: rgba(122, 240, 255, 0.82);
@@ -484,10 +540,15 @@
 	}
 
 	.helper,
-	.preview-footer p {
+	.preview-footer p,
+	.checkout-note {
 		color: rgba(226, 226, 222, 0.62);
 		line-height: 1.6;
 		font-size: 0.94rem;
+	}
+
+	.checkout-note {
+		color: #ffd9a0;
 	}
 
 	.toggle {
