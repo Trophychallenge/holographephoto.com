@@ -2,56 +2,91 @@
 	<title>Contact | Holographe</title>
 	<meta
 		name="description"
-		content="Contact Holographe with your photo, personalization ideas, and timing."
+		content="Contact Holographe for custom quotes, event gifting, and higher-touch personalization requests."
 	/>
 </svelte:head>
 
-<section class="section">
+<section class="section contact-page">
 	<div class="page-wrap contact-layout">
-		<div class="section-head center">
-			<span class="eyebrow">Contact</span>
-			<h1>Send the essentials.</h1>
-			<p>Photo, occasion, and personalization idea. That is enough to start.</p>
-		</div>
+		<section class="contact-hero glass-card">
+			<div class="hero-copy">
+				<p class="eyebrow">Private contact</p>
+				<h1>Start with the essentials, and we can shape the rest around the moment.</h1>
+				<p class="hero-subcopy">
+					For larger orders, custom sentimental requests, or event gifting, this page should feel
+					like a clean concierge entry point, not a clunky form dump.
+				</p>
 
-		<div class="contact-grid">
-			<div class="glass-card info-card">
-				<p class="info-kicker">Best way to start</p>
-				<h2>Email or message with the basics.</h2>
-				<div class="info-pills">
-					<span>Photo</span>
-					<span>Occasion</span>
-					<span>Name or date</span>
-					<span>Timeline</span>
+				<div class="hero-points">
+					<div class="hero-point">
+						<h2>What to send</h2>
+						<p>Photo, occasion, name or date, timing, and anything emotionally important.</p>
+					</div>
+					<div class="hero-point">
+						<h2>Best for</h2>
+						<p>Weddings, memorials, holiday sets, milestone gifts, and larger curated bundles.</p>
+					</div>
+					<div class="hero-point">
+						<h2>Response style</h2>
+						<p>Clean, direct, and tailored to what you actually need instead of generic back-and-forth.</p>
+					</div>
 				</div>
-				<p class="contact-line">hello@holographephoto.com</p>
 			</div>
 
-			<form class="glass-card contact-form">
+			<div class="contact-card">
+				<p class="card-kicker">Direct line</p>
+				<h2>hello@holographephoto.com</h2>
+				<p>
+					Send the essentials and we can guide the best format, quantity, and customization level
+					for your order.
+				</p>
+				<div class="pill-row">
+					<span>Photo</span>
+					<span>Occasion</span>
+					<span>Timeline</span>
+					<span>Personal detail</span>
+				</div>
+			</div>
+		</section>
+
+		<section class="form-band glass-card">
+			<div class="form-copy">
+				<p class="eyebrow">Inquiry form</p>
+				<h2>Keep it simple. We only need the right details.</h2>
+				<p>
+					This form is designed to feel polished and fast, with just enough structure to start a
+					high-touch order.
+				</p>
+			</div>
+
+			<form class="contact-form">
 				<label>
-					Name
+					<span>Name</span>
 					<input type="text" name="name" placeholder="Your name" />
 				</label>
 				<label>
-					Email
+					<span>Email</span>
 					<input type="email" name="email" placeholder="you@example.com" />
 				</label>
 				<label>
-					Idea
+					<span>Project type</span>
 					<input
 						type="text"
 						name="project"
-						placeholder="Couple photo, pet memorial, baby gift..."
+						placeholder="Wedding favors, memorial gift, anniversary set..."
 					/>
 				</label>
 				<label>
-					Notes
-					<textarea name="details" rows="5" placeholder="Short note, date, overlay idea, or timing."
+					<span>Notes</span>
+					<textarea
+						name="details"
+						rows="5"
+						placeholder="Photo idea, quantity, personalization notes, deadline, or anything meaningful."
 					></textarea>
 				</label>
 				<button type="submit" class="button-primary">Send inquiry</button>
 			</form>
-		</div>
+		</section>
 	</div>
 </section>
 
@@ -67,75 +102,119 @@
 		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
 		letter-spacing: -0.04em;
+		color: #f8f8f5;
 	}
 
 	h1 {
-		font-size: clamp(2.3rem, 5vw, 3.8rem);
+		font-size: clamp(2.3rem, 5vw, 3.9rem);
+		line-height: 0.95;
+		max-width: 12ch;
 	}
 
 	h2 {
-		font-size: clamp(1.7rem, 4vw, 2.5rem);
+		font-size: clamp(1.65rem, 3vw, 2.45rem);
+		line-height: 0.98;
 	}
 
 	p {
 		color: var(--muted);
-		line-height: 1.65;
+		line-height: 1.6;
+		font-size: 0.95rem;
 	}
 
-	.center {
-		text-align: center;
-		margin-inline: auto;
+	.contact-page {
+		padding-top: 1.2rem;
 	}
 
 	.contact-layout,
-	.contact-grid,
-	.info-card,
+	.contact-hero,
+	.hero-copy,
+	.hero-points,
+	.contact-card,
+	.form-band,
+	.form-copy,
 	.contact-form {
 		display: grid;
 		gap: 1rem;
 	}
 
-	.contact-grid {
-		grid-template-columns: 0.9fr 1.1fr;
+	.contact-layout {
+		gap: 1.15rem;
 	}
 
-	.info-card,
-	.contact-form {
-		padding: 1.2rem;
+	.contact-hero,
+	.form-band {
+		grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+		padding: 1.15rem;
 	}
 
-	.info-kicker {
-		font-size: 0.76rem;
-		text-transform: uppercase;
-		letter-spacing: 0.18em;
-		color: var(--accent);
+	.hero-subcopy {
+		max-width: 36rem;
+		font-size: 1rem;
+	}
+
+	.hero-points {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.hero-point,
+	.contact-card {
+		padding: 0.95rem;
+		border-radius: 1rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.hero-point h2 {
+		font-size: 1rem;
+	}
+
+	.hero-point p {
+		font-size: 0.88rem;
+	}
+
+	.contact-card {
+		align-content: start;
+		background:
+			radial-gradient(circle at top left, rgba(122, 240, 255, 0.16), transparent 34%),
+			radial-gradient(circle at bottom right, rgba(255, 111, 145, 0.14), transparent 36%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+			rgba(8, 16, 30, 0.76);
+		border-color: rgba(255, 255, 255, 0.1);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	.card-kicker,
+	.contact-form span {
+		font-size: 0.72rem;
 		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--accent);
 	}
 
-	.info-pills {
+	.pill-row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.65rem;
+		gap: 0.55rem;
 	}
 
-	.info-pills span {
-		padding: 0.65rem 0.85rem;
+	.pill-row span {
+		padding: 0.55rem 0.76rem;
 		border-radius: 999px;
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid rgba(255, 255, 255, 0.08);
-		color: var(--text);
+		font-size: 0.78rem;
+		color: rgba(248, 248, 244, 0.86);
 	}
 
-	.contact-line {
-		font-size: 1.1rem;
-		color: var(--text);
+	.form-copy {
+		align-content: start;
 	}
 
-	label {
+	.contact-form label {
 		display: grid;
-		gap: 0.55rem;
-		font-size: 0.95rem;
-		color: var(--text);
+		gap: 0.5rem;
 	}
 
 	input,
@@ -148,9 +227,26 @@
 		color: var(--text);
 	}
 
-	@media (max-width: 900px) {
-		.contact-grid {
+	@media (max-width: 960px) {
+		.contact-hero,
+		.form-band,
+		.hero-points {
 			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 640px) {
+		h1 {
+			font-size: clamp(2rem, 9vw, 2.8rem);
+		}
+
+		h2 {
+			font-size: clamp(1.45rem, 6vw, 2rem);
+		}
+
+		.contact-hero,
+		.form-band {
+			padding: 0.9rem;
 		}
 	}
 </style>

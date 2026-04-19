@@ -1,36 +1,56 @@
 <script lang="ts">
 	const options = [
-		{ name: 'Clean', copy: 'Photo only, polished fast, minimal look.' },
-		{ name: 'Signature', copy: 'Add handwriting, a date, or a name.' },
-		{ name: 'Layered', copy: 'Photo plus drawing, art, or footprint overlay.' }
-	];
+		{
+			name: 'Clean',
+			copy: 'Photo only, polished fast, and intentionally minimal for a refined keepsake feel.'
+		},
+		{
+			name: 'Signature',
+			copy: 'Add a name, date, or handwritten detail to make the memory feel more intimate.'
+		},
+		{
+			name: 'Layered',
+			copy: 'Pair the photo with artwork, footprints, or custom overlays for a richer story.'
+		}
+	] as const;
 </script>
 
 <svelte:head>
 	<title>Personalization | Holographe</title>
 	<meta
 		name="description"
-		content="Choose a simple Holographe personalization style: clean, signature, or layered."
+		content="Luxury personalization styles for Holographe keepsakes: clean, signature, and layered."
 	/>
 </svelte:head>
 
-<section class="section">
-	<div class="page-wrap format-layout">
-		<div class="section-head center">
-			<span class="eyebrow">Personalization</span>
-			<h1>Three clear ways to personalize.</h1>
-			<p>Simple options. No confusing menu.</p>
-		</div>
+<section class="section formats-page">
+	<div class="page-wrap formats-layout">
+		<section class="formats-hero glass-card">
+			<div class="hero-copy">
+				<p class="eyebrow">Personalization styles</p>
+				<h1>Three clean ways to make the keepsake feel personal.</h1>
+				<p class="hero-subcopy">
+					The point is clarity. These options keep the buying experience simple while still feeling
+					luxurious and custom.
+				</p>
+			</div>
 
-		<div class="format-grid">
+			<div class="hero-card">
+				<p class="hero-kicker">Choose your vibe</p>
+				<h2>Minimal, sentimental, or layered.</h2>
+				<p>Each option is built to feel premium without overwhelming the customer.</p>
+			</div>
+		</section>
+
+		<section class="option-grid">
 			{#each options as option (option.name)}
-				<article class="glass-card format-card">
-					<p class="tag">{option.name}</p>
+				<article class="option-card glass-card">
+					<p class="option-tag">{option.name}</p>
 					<h2>{option.name}</h2>
 					<p>{option.copy}</p>
 				</article>
 			{/each}
-		</div>
+		</section>
 	</div>
 </section>
 
@@ -46,53 +66,113 @@
 		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
 		letter-spacing: -0.04em;
+		color: #f8f8f5;
 	}
 
 	h1 {
 		font-size: clamp(2.3rem, 5vw, 3.8rem);
+		line-height: 0.95;
+		max-width: 12ch;
 	}
 
 	h2 {
-		font-size: 1.7rem;
+		font-size: clamp(1.45rem, 2.6vw, 2.2rem);
+		line-height: 0.98;
 	}
 
 	p {
 		color: var(--muted);
-		line-height: 1.65;
+		line-height: 1.6;
+		font-size: 0.95rem;
 	}
 
-	.center {
-		text-align: center;
-		margin-inline: auto;
+	.formats-page {
+		padding-top: 1.2rem;
 	}
 
-	.format-layout,
-	.format-grid {
+	.formats-layout,
+	.formats-hero,
+	.hero-copy,
+	.hero-card,
+	.option-grid,
+	.option-card {
 		display: grid;
 		gap: 1rem;
 	}
 
-	.format-grid {
+	.formats-layout {
+		gap: 1.15rem;
+	}
+
+	.formats-hero {
+		grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+		padding: 1.15rem;
+	}
+
+	.hero-subcopy {
+		max-width: 34rem;
+		font-size: 1rem;
+	}
+
+	.hero-card {
+		align-content: start;
+		padding: 1rem;
+		border-radius: 1.5rem;
+		background:
+			radial-gradient(circle at top left, rgba(122, 240, 255, 0.16), transparent 34%),
+			radial-gradient(circle at bottom right, rgba(255, 111, 145, 0.14), transparent 36%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+			rgba(8, 16, 30, 0.76);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	.hero-kicker,
+	.option-tag {
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+
+	.option-grid {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 
-	.format-card {
-		display: grid;
-		gap: 0.6rem;
-		padding: 1.2rem;
+	.option-card {
+		padding: 1rem;
+		transition:
+			transform 180ms ease,
+			border-color 180ms ease,
+			box-shadow 180ms ease;
 	}
 
-	.tag {
-		font-size: 0.76rem;
-		text-transform: uppercase;
-		letter-spacing: 0.18em;
-		color: var(--accent);
-		font-weight: 700;
+	.option-card:hover {
+		transform: translateY(-3px);
+		border-color: rgba(255, 255, 255, 0.12);
+		box-shadow: 0 24px 52px rgba(4, 10, 22, 0.22);
 	}
 
-	@media (max-width: 900px) {
-		.format-grid {
+	@media (max-width: 960px) {
+		.formats-hero,
+		.option-grid {
 			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 640px) {
+		h1 {
+			font-size: clamp(2rem, 9vw, 2.8rem);
+		}
+
+		h2 {
+			font-size: clamp(1.35rem, 6vw, 1.9rem);
+		}
+
+		.formats-hero,
+		.option-card {
+			padding: 0.9rem;
 		}
 	}
 </style>

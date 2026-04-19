@@ -1319,6 +1319,130 @@
 		}
 	}
 
+	@media (max-width: 640px) {
+		h1 {
+			font-size: clamp(1.9rem, 9vw, 2.65rem);
+		}
+
+		h2 {
+			font-size: clamp(1.08rem, 5.2vw, 1.45rem);
+		}
+
+		p {
+			font-size: 0.92rem;
+		}
+
+		.order-bar,
+		.reel-card,
+		.reel-video-card,
+		.preview-card,
+		.action-card,
+		.compare-card,
+		.mockup-card {
+			padding: 0.9rem;
+			border-radius: 1.05rem;
+		}
+
+		.order-actions,
+		.mode-switcher,
+		.action-row,
+		.control-row,
+		.mockup-tabs {
+			gap: 0.5rem;
+		}
+
+		.order-checkout select,
+		.mode-switcher button,
+		.mockup-tabs button,
+		.action-button,
+		.mini-button,
+		.upload-meta button,
+		.lightbox-nav,
+		.lightbox-close {
+			min-height: 2.8rem;
+		}
+
+		.reel-video {
+			max-height: 22rem;
+		}
+
+		.base-image {
+			width: min(13rem, 100%);
+		}
+
+		.sample-row {
+			gap: 0.55rem;
+		}
+
+		.sample-card {
+			padding: 0.45rem;
+		}
+
+		.sample-card img {
+			height: 5.25rem;
+		}
+
+		.upload-meta {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.upload-meta p {
+			text-align: center;
+			white-space: normal;
+		}
+
+		.compare-stage {
+			min-height: 12.5rem;
+		}
+
+		.mockup-stage {
+			min-height: 14rem;
+		}
+
+		.mockup-target {
+			width: min(11rem, 70vw);
+		}
+
+		.lightbox {
+			padding: 0.65rem;
+		}
+
+		.lightbox-dialog {
+			width: 100%;
+			max-height: 92vh;
+			padding: 0.7rem;
+			gap: 0.7rem;
+			border-radius: 1rem;
+		}
+
+		.lightbox-sidebar {
+			padding: 0.78rem;
+			gap: 0.62rem;
+		}
+
+		.lightbox-nav {
+			top: auto;
+			bottom: 0.75rem;
+			transform: none;
+			width: 2.4rem;
+			height: 2.4rem;
+		}
+
+		.lightbox-nav-left {
+			left: 0.75rem;
+		}
+
+		.lightbox-nav-right {
+			right: 0.75rem;
+		}
+
+		.lightbox-close {
+			top: 0.7rem;
+			right: 0.7rem;
+		}
+	}
+
 	@keyframes borderFlow {
 		from {
 			background-position: 0% 50%;

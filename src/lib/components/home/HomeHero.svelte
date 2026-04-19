@@ -506,4 +506,121 @@
 			max-width: 13ch;
 		}
 	}
+
+	@media (max-width: 640px) {
+		.hero {
+			padding-top: 0.9rem;
+		}
+
+		.hero-layout {
+			gap: 1.15rem;
+		}
+
+		.hero-copy {
+			gap: 0.72rem;
+		}
+
+		h1 {
+			max-width: 11ch;
+			font-size: clamp(1.85rem, 9vw, 2.55rem);
+		}
+
+		h2 {
+			font-size: clamp(1.3rem, 6vw, 1.8rem);
+		}
+
+		.subhead {
+			max-width: 23rem;
+			font-size: 0.88rem;
+			line-height: 1.5;
+		}
+
+		.creator-row,
+		.hero-points,
+		.actions {
+			gap: 0.55rem;
+		}
+
+		.creator-row span,
+		.hero-points li {
+			padding: 0.5rem 0.7rem;
+			font-size: 0.72rem;
+		}
+
+		.sale-card {
+			gap: 0.8rem;
+			padding: 0.88rem;
+			border-radius: 1.3rem;
+		}
+
+		.sale-offer {
+			padding: 0.7rem;
+			text-align: center;
+		}
+
+		.sale-offer strong {
+			font-size: 1.2rem;
+		}
+
+		.sale-head {
+			text-align: center;
+			align-items: center;
+		}
+
+		.sale-shipping {
+			align-self: center;
+			padding: 0.62rem 0.82rem;
+		}
+
+		.hero-visual {
+			width: 100%;
+		}
+
+		.visual-stage {
+			min-height: 15.5rem;
+			padding: 0.75rem;
+			border-radius: 1.35rem;
+		}
+
+		.ambient-one {
+			width: 5.5rem;
+			height: 5.5rem;
+		}
+
+		.ambient-two {
+			width: 4.5rem;
+			height: 4.5rem;
+		}
+
+		.image-frame {
+			border-radius: 1rem;
+		}
+
+		.image-back {
+			inset: 20% auto auto 4%;
+			width: 44%;
+		}
+
+		.image-front {
+			inset: 10% 4% auto auto;
+			width: 58%;
+		}
+
+		.hero-note {
+			position: static;
+			margin-top: 0.55rem;
+			padding: 0.62rem 0.72rem;
+			border-radius: 0.9rem;
+			text-align: center;
+		}
+
+		.hero-note span {
+			font-size: 0.74rem;
+		}
+
+		.note-top,
+		.note-bottom {
+			max-width: none;
+		}
+	}
 </style>
