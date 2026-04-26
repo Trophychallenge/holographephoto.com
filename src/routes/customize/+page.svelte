@@ -295,16 +295,13 @@
 			<div class="studio-copy">
 				<p class="eyebrow">Interactive customizer</p>
 				<h1>Build your keepsake.</h1>
-				<p>
-					Upload a photo, add an overlay, and preview the final piece before ordering. Built to work
-					cleanly on mobile.
-				</p>
+				<p>Upload. Adjust. Order.</p>
 			</div>
 
 			<div class="order-bar glass-card">
 				<div>
 					<p class="order-kicker">Buy right after designing</p>
-					<h2>Personalize, then purchase here.</h2>
+					<h2>Buy it here.</h2>
 				</div>
 				<form class="order-checkout" method="POST" action="/checkout">
 					<input type="hidden" name="source" value="customize-hero" />

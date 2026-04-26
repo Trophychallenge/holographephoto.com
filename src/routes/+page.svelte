@@ -1,8 +1,10 @@
 <script lang="ts">
 	import HomeHero from '$lib/components/home/HomeHero.svelte';
 	import PreviewBuilder from '$lib/components/home/PreviewBuilder.svelte';
-	import GiftabilitySection from '$lib/components/home/GiftabilitySection.svelte';
+	import WhyDifferentSection from '$lib/components/home/WhyDifferentSection.svelte';
+	import GiftingSection from '$lib/components/home/GiftingSection.svelte';
 	import HowItWorksSection from '$lib/components/home/HowItWorksSection.svelte';
+	import ValueSection from '$lib/components/home/ValueSection.svelte';
 	import FinalCtaSection from '$lib/components/home/FinalCtaSection.svelte';
 </script>
 
@@ -17,8 +19,10 @@
 <div class="page-shell">
 	<HomeHero />
 	<PreviewBuilder />
-	<GiftabilitySection />
+	<WhyDifferentSection />
+	<GiftingSection />
 	<HowItWorksSection />
+	<ValueSection />
 	<FinalCtaSection />
 </div>
 

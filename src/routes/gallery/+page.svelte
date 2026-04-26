@@ -57,12 +57,9 @@
 	<div class="page-wrap gallery-layout">
 		<section class="gallery-hero glass-card">
 			<div class="hero-copy">
-				<p class="eyebrow">Gallery direction</p>
-				<h1>Sentimental gifting, styled like a luxury brand and shared like a creator favorite.</h1>
-				<p class="hero-subcopy">
-					This page is built to make the product feel aspirational, emotional, and instantly worth
-					exploring further.
-				</p>
+				<p class="eyebrow">Gallery</p>
+				<h1>Made to feel personal.</h1>
+				<p class="hero-subcopy">A keepsake with shine.</p>
 
 				<div class="hero-notes">
 					{#each galleryNotes as note (note.title)}
@@ -75,12 +72,9 @@
 			</div>
 
 			<div class="showcase-card">
-				<p class="showcase-kicker">Gallery mood</p>
-				<h2>Polished, emotional, display-worthy.</h2>
-				<p>
-					The right memory, the right shine, and a premium finish that feels more like a keepsake
-					object than a basic print.
-				</p>
+				<p class="showcase-kicker">Mood</p>
+				<h2>Polished. Personal.</h2>
+				<p>A photo with presence.</p>
 				<div class="showcase-tags">
 					<span>Giftable</span>
 					<span>Glossy</span>
@@ -94,11 +88,8 @@
 		<section class="stories-stage">
 			<div class="section-head">
 				<span class="eyebrow">Product stories</span>
-				<h2>Five ways to make the product feel irresistible.</h2>
-				<p>
-					These are emotional angles that frame the holographic magnet as a premium keepsake, not a
-					commodity.
-				</p>
+				<h2>Five ways it can feel.</h2>
+				<p>Short. Emotional. Easy to picture.</p>
 			</div>
 
 			<div class="stories-grid">
@@ -117,12 +108,9 @@
 
 		<section class="cta-band glass-card">
 			<div class="cta-copy">
-				<p class="eyebrow">Next step</p>
-				<h2>See the feeling in your own photo.</h2>
-				<p>
-					Upload a memory, personalize it, and go straight into checkout without leaving the
-					experience.
-				</p>
+				<p class="eyebrow">Next</p>
+				<h2>See yours.</h2>
+				<p>Upload. Preview. Order.</p>
 			</div>
 			<div class="cta-actions">
 				<a class="button-primary" href={resolve('/customize')}>Customize now</a>

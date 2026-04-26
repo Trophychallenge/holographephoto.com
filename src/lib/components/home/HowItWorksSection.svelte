@@ -1,4 +1,4 @@
-<section class="section how-section">
+<section class="section how-section" id="how-it-works">
 	<div class="page-wrap how-layout">
 		<div class="heading">
 			<p class="eyebrow">How it works</p>
@@ -7,19 +7,16 @@
 
 		<ol class="steps">
 			<li>
-				<span>01</span>
-				<h3>Pick a photo</h3>
-				<p>Use your favorite shot.</p>
+				<div class="icon-shell">01</div>
+				<h3>Upload your photo</h3>
 			</li>
 			<li>
-				<span>02</span>
-				<h3>Make it yours</h3>
-				<p>Add a name, date, or overlay.</p>
+				<div class="icon-shell">02</div>
+				<h3>Add holographic magic</h3>
 			</li>
 			<li>
-				<span>03</span>
-				<h3>Order the bundle</h3>
-				<p>Checkout on-site with the sale pricing.</p>
+				<div class="icon-shell">03</div>
+				<h3>Receive gift-ready magnet</h3>
 			</li>
 		</ol>
 	</div>
@@ -40,7 +37,6 @@
 
 	h2,
 	h3,
-	p,
 	ol {
 		margin: 0;
 	}
@@ -53,17 +49,13 @@
 	}
 
 	h2 {
-		font-size: clamp(2rem, 5vw, 3rem);
+		font-size: clamp(1.9rem, 5vw, 2.8rem);
 		line-height: 0.98;
 	}
 
 	h3 {
-		font-size: 1.45rem;
-	}
-
-	p {
-		color: rgba(234, 234, 230, 0.7);
-		line-height: 1.65;
+		font-size: 1.1rem;
+		line-height: 1.1;
 	}
 
 	.steps {
@@ -74,43 +66,29 @@
 
 	.steps li {
 		display: grid;
-		gap: 0.55rem;
-		padding: 1.15rem;
-		border-radius: 1.5rem;
+		justify-items: center;
+		gap: 0.75rem;
+		padding: 1rem;
+		border-radius: 1.4rem;
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
 			linear-gradient(160deg, rgba(15, 15, 17, 0.95), rgba(8, 8, 10, 0.95));
 		text-align: center;
-		position: relative;
-		overflow: hidden;
-		transition:
-			transform 220ms ease,
-			box-shadow 220ms ease,
-			border-color 220ms ease;
 	}
 
-	.steps li:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 28px 58px rgba(0, 0, 0, 0.3);
-		border-color: rgba(255, 255, 255, 0.12);
-	}
-
-	.steps li::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 34%);
-		opacity: 0.6;
-		pointer-events: none;
-	}
-
-	.steps span {
+	.icon-shell {
+		display: grid;
+		place-items: center;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 999px;
+		background: linear-gradient(135deg, rgba(122, 240, 255, 0.18), rgba(255, 255, 255, 0.06));
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		color: #fff;
 		font-size: 0.8rem;
 		font-weight: 700;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		color: var(--accent);
+		letter-spacing: 0.12em;
 	}
 
 	@media (max-width: 860px) {

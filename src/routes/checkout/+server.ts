@@ -69,7 +69,13 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 		base_blob_url: String(formData.get('base_blob_url') ?? ''),
 		overlay_blob_url: String(formData.get('overlay_blob_url') ?? ''),
 		view_mode: String(formData.get('view_mode') ?? ''),
-		gift_mode: String(formData.get('gift_mode') ?? '')
+		gift_mode: String(formData.get('gift_mode') ?? ''),
+		overlay_text: String(formData.get('overlay_text') ?? ''),
+		overlay_text_style: String(formData.get('overlay_text_style') ?? ''),
+		gift_message: String(formData.get('gift_message') ?? ''),
+		ship_direct: String(formData.get('ship_direct') ?? ''),
+		brightness_level: String(formData.get('brightness_level') ?? ''),
+		shimmer_intensity: String(formData.get('shimmer_intensity') ?? '')
 	};
 
 	if (!quantity) {

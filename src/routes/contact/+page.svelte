@@ -10,25 +10,22 @@
 	<div class="page-wrap contact-layout">
 		<section class="contact-hero glass-card">
 			<div class="hero-copy">
-				<p class="eyebrow">Private contact</p>
-				<h1>Start with the essentials, and we can shape the rest around the moment.</h1>
-				<p class="hero-subcopy">
-					For larger orders, custom sentimental requests, or event gifting, this page should feel
-					like a clean concierge entry point, not a clunky form dump.
-				</p>
+				<p class="eyebrow">Contact</p>
+				<h1>Send the basics.</h1>
+				<p class="hero-subcopy">Photo, occasion, timing.</p>
 
 				<div class="hero-points">
 					<div class="hero-point">
 						<h2>What to send</h2>
-						<p>Photo, occasion, name or date, timing, and anything emotionally important.</p>
+						<p>Photo, date, notes.</p>
 					</div>
 					<div class="hero-point">
 						<h2>Best for</h2>
-						<p>Weddings, memorials, holiday sets, milestone gifts, and larger curated bundles.</p>
+						<p>Events and larger orders.</p>
 					</div>
 					<div class="hero-point">
 						<h2>Response style</h2>
-						<p>Clean, direct, and tailored to what you actually need instead of generic back-and-forth.</p>
+						<p>Clear and direct.</p>
 					</div>
 				</div>
 			</div>
@@ -36,10 +33,7 @@
 			<div class="contact-card">
 				<p class="card-kicker">Direct line</p>
 				<h2>hello@holographephoto.com</h2>
-				<p>
-					Send the essentials and we can guide the best format, quantity, and customization level
-					for your order.
-				</p>
+				<p>We’ll guide the rest.</p>
 				<div class="pill-row">
 					<span>Photo</span>
 					<span>Occasion</span>
@@ -52,11 +46,8 @@
 		<section class="form-band glass-card">
 			<div class="form-copy">
 				<p class="eyebrow">Inquiry form</p>
-				<h2>Keep it simple. We only need the right details.</h2>
-				<p>
-					This form is designed to feel polished and fast, with just enough structure to start a
-					high-touch order.
-				</p>
+				<h2>Keep it simple.</h2>
+				<p>Just the details that matter.</p>
 			</div>
 
 			<form class="contact-form">

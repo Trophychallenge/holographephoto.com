@@ -28,17 +28,14 @@
 		<section class="formats-hero glass-card">
 			<div class="hero-copy">
 				<p class="eyebrow">Personalization styles</p>
-				<h1>Three clean ways to make the keepsake feel personal.</h1>
-				<p class="hero-subcopy">
-					The point is clarity. These options keep the buying experience simple while still feeling
-					luxurious and custom.
-				</p>
+				<h1>Three ways to personalize.</h1>
+				<p class="hero-subcopy">Simple and clear.</p>
 			</div>
 
 			<div class="hero-card">
-				<p class="hero-kicker">Choose your vibe</p>
-				<h2>Minimal, sentimental, or layered.</h2>
-				<p>Each option is built to feel premium without overwhelming the customer.</p>
+				<p class="hero-kicker">Choose</p>
+				<h2>Clean, signature, or layered.</h2>
+				<p>Pick the feel you want.</p>
 			</div>
 		</section>
 

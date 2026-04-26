@@ -12,10 +12,7 @@
 		<div class="glass-card status-card">
 			<p class="eyebrow">Checkout canceled</p>
 			<h1>No payment was taken.</h1>
-			<p>
-				Your order was not completed. You can return to pricing and try again, or contact Holographe
-				if you need a custom quote.
-			</p>
+			<p>You can try again or ask for a quote.</p>
 			<div class="button-row">
 				<a class="button-primary" href={resolve('/prices')}>Back to checkout</a>
 				<a class="button-secondary" href={resolve('/contact')}>Request a quote</a>

@@ -16,11 +16,8 @@
 		<section class="hero-band glass-card">
 			<div class="hero-copy">
 				<p class="eyebrow">Luxury pricing, simplified</p>
-				<h1>Choose the bundle that makes the gift feel unforgettable.</h1>
-				<p class="hero-subcopy">
-					Start with one photo or choose a larger gift set. The page is intentionally simple so the
-					right bundle is easy to pick.
-				</p>
+				<h1>Choose your bundle.</h1>
+				<p class="hero-subcopy">One photo or a full set.</p>
 			</div>
 
 			<div class="spotlight-card">
@@ -29,7 +26,7 @@
 					<span>Starting at</span>
 					<strong>$14.99</strong>
 				</div>
-				<p class="spotlight-copy">Free shipping, premium finish, and a fast path from design to checkout.</p>
+				<p class="spotlight-copy">Free shipping. Easy checkout.</p>
 				<div class="spotlight-tags">
 					<span>Free shipping</span>
 					<span>Premium finish</span>
@@ -42,10 +39,8 @@
 		<section class="bundle-stage" id="bundle-shop">
 			<div class="section-head">
 				<span class="eyebrow">Bundle shop</span>
-				<h2>Shop by moment, not just by quantity.</h2>
-				<p>
-					Choose the size that fits your gift and check out directly.
-				</p>
+				<h2>Pick a size.</h2>
+				<p>Check out right away.</p>
 			</div>
 
 			<div class="bundle-grid">
@@ -53,7 +48,7 @@
 					<div class="bundle-top">
 						<div>
 							<p class="kicker">Most-loved bundles</p>
-							<h3>Small sets with the strongest emotional impact</h3>
+							<h3>Small gift sets</h3>
 						</div>
 						<div class="bundle-chip">Free shipping</div>
 					</div>
@@ -66,10 +61,10 @@
 									<h4>{offer.quantity} for {offer.priceLabel}</h4>
 									<p>
 										{offer.quantity === 1
-											? 'For one magnetic memory that feels intimate and elevated.'
+											? 'One keepsake.'
 											: offer.quantity === 3
-												? 'The sweetest set for parents, grandparents, or closest family.'
-												: 'A fuller gift set with a richer presentation for multiple moments.'}
+												? 'A small gift set.'
+												: 'A fuller set.'}
 									</p>
 								</div>
 								<div class="bundle-side">
@@ -82,7 +77,7 @@
 
 					<form class="checkout-form" method="POST" action="/checkout">
 						<label>
-							<span>Choose your featured bundle</span>
+							<span>Featured bundle</span>
 							<select name="quantity">
 								{#each featuredCheckoutOffers as offer (offer.quantity)}
 									<option value={offer.quantity}>
@@ -91,7 +86,7 @@
 								{/each}
 							</select>
 						</label>
-						<button class="button-primary" type="submit">Checkout this bundle</button>
+						<button class="button-primary" type="submit">Order now</button>
 					</form>
 				</article>
 
@@ -99,7 +94,7 @@
 					<div class="bundle-top">
 						<div>
 							<p class="kicker">Larger gifting moments</p>
-							<h3>Premium sets for events, family circles, and meaningful occasions</h3>
+							<h3>Larger sets</h3>
 						</div>
 						<div class="bundle-chip warm">Occasion-ready</div>
 					</div>
@@ -112,11 +107,11 @@
 									<h4>{offer.quantity} for {offer.priceLabel}</h4>
 									<p>
 										{offer.quantity === 10
-											? 'Great for a polished small-batch order with strong visual impact.'
+											? 'Small batch.'
 											: offer.quantity === 20
-												? 'For larger family gifting and milestone celebrations.'
+												? 'Larger gifting.'
 												: offer.quantity === 40
-													? 'A statement-making keepsake order for the biggest moments.'
+													? 'Big event set.'
 													: offer.subtitle}
 									</p>
 								</div>
@@ -130,7 +125,7 @@
 
 					<form class="checkout-form" method="POST" action="/checkout">
 						<label>
-							<span>Choose your larger bundle</span>
+							<span>Larger bundle</span>
 							<select name="quantity">
 								{#each largerCheckoutOffers as offer (offer.quantity)}
 									<option value={offer.quantity}>
@@ -139,7 +134,7 @@
 								{/each}
 							</select>
 						</label>
-						<button class="button-primary" type="submit">Checkout larger bundle</button>
+						<button class="button-primary" type="submit">Order now</button>
 					</form>
 				</article>
 			</div>
@@ -148,17 +143,14 @@
 		<section class="concierge-band glass-card">
 			<div class="concierge-copy">
 				<p class="eyebrow">Concierge option</p>
-				<h2>Need 50+ pieces, event help, or something more custom?</h2>
-				<p>
-					For larger orders or higher-touch sentimental requests, we can quote a more private,
-					white-glove package.
-				</p>
+				<h2>Need 50+ or custom?</h2>
+				<p>Ask for a private quote.</p>
 			</div>
 
 			<div class="concierge-actions">
 				<div class="concierge-note">
 					<p class="kicker">Private quote</p>
-					<p>Best for wedding favors, memorial sets, branded gifting, and curated event bundles.</p>
+					<p>Best for events and larger orders.</p>
 				</div>
 				<a class="button-secondary" href={resolve('/contact')}>Request a custom quote</a>
 			</div>

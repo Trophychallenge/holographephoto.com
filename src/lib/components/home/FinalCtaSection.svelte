@@ -5,11 +5,11 @@
 <section class="section final-cta">
 	<div class="page-wrap">
 		<div class="cta-card">
-			<p class="eyebrow">Your viral gift moment</p>
-			<h2>Make the one people ask, “Wait, where did you get that?”</h2>
+			<p class="eyebrow">Start now</p>
+			<h2>Create yours in seconds.</h2>
 			<div class="actions">
-				<a class="button-primary" href="#preview-builder">Create the keepsake</a>
-				<a class="button-secondary" href={resolve('/prices')}>Shop bundles</a>
+				<a class="button-primary" href="#preview-builder">Start Now</a>
+				<a class="button-secondary" href={resolve('/prices')}>View bundles</a>
 			</div>
 		</div>
 	</div>

@@ -28,20 +28,14 @@
 		<section class="product-hero glass-card">
 			<div class="hero-copy">
 				<p class="eyebrow">What makes it different</p>
-				<h1>Small format. Bigger feeling. Far more presence than a basic print.</h1>
-				<p class="hero-subcopy">
-					This page explains the product in a cleaner, more premium way so the value feels obvious
-					without reading like technical filler.
-				</p>
+				<h1>Small format. Big feeling.</h1>
+				<p class="hero-subcopy">More than a flat print.</p>
 			</div>
 
 			<div class="hero-card">
-				<p class="hero-kicker">Product feel</p>
-				<h2>Glossy, colorful, and emotionally charged.</h2>
-				<p>
-					The combination of shimmer, saturated color, and personal detail is what makes the gift
-					feel elevated.
-				</p>
+				<p class="hero-kicker">Feel</p>
+				<h2>Glossy. Colorful. Personal.</h2>
+				<p>That’s the difference.</p>
 			</div>
 		</section>
 

@@ -15,10 +15,7 @@
 		<div class="glass-card status-card">
 			<p class="eyebrow">Payment received</p>
 			<h1>Your order is in.</h1>
-			<p>
-				Stripe confirmed the payment. If we do not already have your photo and notes, send them
-				through the contact page so production can start.
-			</p>
+			<p>If we still need your photo or notes, send them now.</p>
 			<div class="button-row">
 				<a class="button-primary" href={resolve('/contact')}>Send photo details</a>
 				<a class="button-secondary" href={resolve('/gallery')}>See examples</a>
