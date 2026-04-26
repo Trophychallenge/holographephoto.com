@@ -10,7 +10,7 @@
 	<div class="page-wrap why-layout">
 		<div class="section-head">
 			<p class="eyebrow">Why it feels different</p>
-			<h2>Quiet, personal, easy to keep.</h2>
+			<h2>Quietly more personal.</h2>
 		</div>
 
 		<div class="why-grid">
@@ -38,21 +38,25 @@
 	h3 {
 		margin: 0;
 		font-family: 'Georgia', 'Iowan Old Style', serif;
-		font-size: 1.2rem;
+		font-size: 1.12rem;
 		line-height: 1.12;
 		letter-spacing: -0.04em;
-		color: #f8f8f4;
+		color: #f6f0e9;
 	}
 
 	.why-card {
 		display: grid;
 		gap: 0.8rem;
-		padding: 1rem;
+		padding: 1.05rem;
+		text-align: center;
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+			linear-gradient(160deg, rgba(14, 14, 16, 0.9), rgba(9, 9, 11, 0.94));
 	}
 
 	.mark {
-		font-size: 1.2rem;
-		color: var(--accent);
+		font-size: 1rem;
+		color: #f2d2a8;
 	}
 
 	@media (max-width: 860px) {

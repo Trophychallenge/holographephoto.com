@@ -14,10 +14,10 @@
 		</div>
 
 		<div class="gift-copy">
-			<p class="eyebrow">Ready to give</p>
-			<h2>No wrapping needed.</h2>
-			<p>A photo you don’t just keep… you see every day.</p>
-			<p>Turn memories into something you actually experience.</p>
+			<p class="eyebrow">Already gift-ready</p>
+			<h2>Finished with a black envelope and white ribbon.</h2>
+			<p>Ready to give.</p>
+			<p>No wrapping needed.</p>
 
 			<label class="gift-toggle">
 				<input type="checkbox" bind:checked={sendAsGift} />
@@ -57,11 +57,11 @@
 		font-size: clamp(1.9rem, 5vw, 2.8rem);
 		line-height: 0.98;
 		letter-spacing: -0.04em;
-		color: #f8f8f4;
+		color: #f6f0e9;
 	}
 
 	p {
-		color: rgba(236, 236, 232, 0.72);
+		color: rgba(236, 228, 216, 0.72);
 	}
 
 	.gift-visual {
@@ -80,7 +80,7 @@
 		position: absolute;
 		inset: 24% 18% 18% 18%;
 		border-radius: 1rem;
-		background: linear-gradient(180deg, #101113, #07080a);
+		background: linear-gradient(180deg, #101113, #050506);
 		box-shadow: 0 24px 44px rgba(0, 0, 0, 0.28);
 	}
 
@@ -114,7 +114,7 @@
 		transform: translateX(-50%) rotate(-3deg);
 		border-radius: 1rem;
 		background:
-			linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(211, 220, 255, 0.18), rgba(255, 255, 255, 0.08)),
+			linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(241, 218, 186, 0.18), rgba(207, 220, 255, 0.14)),
 			url('/holographe/jessholo.png') center / cover no-repeat;
 		border: 1px solid rgba(255, 255, 255, 0.18);
 		box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);

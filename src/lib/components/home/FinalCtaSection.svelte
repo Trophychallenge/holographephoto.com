@@ -5,10 +5,10 @@
 <section class="section final-cta">
 	<div class="page-wrap">
 		<div class="cta-card">
-			<p class="eyebrow">Start now</p>
-			<h2>Create yours in seconds.</h2>
+			<p class="eyebrow">Almost yours</p>
+			<h2>Start with a memory.</h2>
 			<div class="actions">
-				<a class="button-primary" href="#preview-builder">Start Now</a>
+				<a class="button-primary" href="#preview-builder">Create Yours</a>
 				<a class="button-secondary" href={resolve('/prices')}>View bundles</a>
 			</div>
 		</div>

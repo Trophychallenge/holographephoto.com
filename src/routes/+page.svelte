@@ -9,10 +9,10 @@
 </script>
 
 <svelte:head>
-	<title>Holographe | A Photo You Don’t Just See — You Feel</title>
+	<title>Holographe | Your Favorite Photo, Reimagined In Light</title>
 	<meta
 		name="description"
-		content="Turn your favorite memory into a shimmering custom keepsake with a live preview builder, optional overlays, and an easy order flow."
+		content="Upload a photo, preview a premium holographic keepsake in real time, add a personal overlay, and order in seconds."
 	/>
 </svelte:head>
 
@@ -29,10 +29,10 @@
 <style>
 	:global(body) {
 		background:
-			radial-gradient(circle at top left, rgba(122, 240, 255, 0.16), transparent 22%),
-			radial-gradient(circle at 80% 10%, rgba(255, 111, 145, 0.14), transparent 20%),
-			radial-gradient(circle at bottom right, rgba(255, 182, 92, 0.12), transparent 24%),
-			linear-gradient(180deg, #08111d 0%, #0f1c31 48%, #08111d 100%);
+			radial-gradient(circle at top left, rgba(226, 205, 175, 0.12), transparent 22%),
+			radial-gradient(circle at 84% 12%, rgba(196, 212, 255, 0.08), transparent 22%),
+			radial-gradient(circle at bottom right, rgba(247, 230, 209, 0.06), transparent 26%),
+			linear-gradient(180deg, #050506 0%, #0b0b0d 38%, #060607 100%);
 	}
 
 	.page-shell {
@@ -48,8 +48,8 @@
 		inset: 0;
 		pointer-events: none;
 		background:
-			linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent),
-			linear-gradient(180deg, transparent, rgba(122, 240, 255, 0.02), transparent);
+			linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.025), transparent),
+			linear-gradient(180deg, transparent, rgba(232, 217, 191, 0.02), transparent);
 		mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
 	}
 
@@ -59,9 +59,9 @@
 		inset: 0;
 		pointer-events: none;
 		background:
-			radial-gradient(circle at 20% 18%, rgba(122, 240, 255, 0.06), transparent 16%),
-			radial-gradient(circle at 80% 42%, rgba(255, 111, 145, 0.05), transparent 14%),
-			radial-gradient(circle at 50% 78%, rgba(255, 182, 92, 0.05), transparent 18%);
-		opacity: 0.85;
+			radial-gradient(circle at 20% 18%, rgba(232, 217, 191, 0.05), transparent 16%),
+			radial-gradient(circle at 80% 42%, rgba(198, 213, 255, 0.04), transparent 14%),
+			radial-gradient(circle at 50% 78%, rgba(255, 255, 255, 0.03), transparent 18%);
+		opacity: 0.72;
 	}
 </style>
