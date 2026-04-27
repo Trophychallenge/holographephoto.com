@@ -10,45 +10,75 @@
 			muted
 			loop
 			playsinline
+			preload="metadata"
 			poster="/holographe/jessholo.png"
 		>
-			<source src="/holographe/hero-reel.mov" type="video/mp4" />
+			<source src="/holographe/dishwasherview.mp4" type="video/mp4" />
+			<source src="/holographe/dishwasherview.mov" type="video/quicktime" />
 		</video>
 		<div class="hero-overlay"></div>
 		<div class="hero-glow"></div>
 	</div>
 
 	<div class="page-wrap hero-shell">
-		<div class="hero-copy">
-			<p class="eyebrow">{isTikTokVisitor ? 'Made for your camera roll' : 'Holographe'}</p>
-			<h1>
-				{isTikTokVisitor
-					? 'The photo is cute. The light makes it unforgettable.'
-					: 'Your favorite photo, reimagined in light.'}
-			</h1>
-			<p class="subcopy">
-				{isTikTokVisitor
-					? 'Try it with your own photo. Add a note, a drawing, or handwriting they would know instantly.'
-					: 'A custom holographic keepsake made to be seen every day.'}
-			</p>
+		<div class="hero-stage">
+			<div class="hero-copy-wrap">
+				<div class="hero-copy">
+					<p class="eyebrow">{isTikTokVisitor ? 'Made for your camera roll' : 'Holographe'}</p>
+					<h1>
+						{isTikTokVisitor
+							? 'The photo is cute. The light makes it unforgettable.'
+							: 'Your favorite photo, reimagined in light.'}
+					</h1>
+					<p class="subcopy">
+						{isTikTokVisitor
+							? 'Try it with your own photo. Add a note, a drawing, or handwriting they would know instantly.'
+							: 'A custom holographic keepsake made to be seen every day.'}
+					</p>
 
-			<div class="microcopy" aria-label="Product details">
-				<span>Premium holographic finish</span>
-				<span>Personal overlays welcome</span>
-				<span>Gift-ready from the start</span>
+					<div class="microcopy" aria-label="Product details">
+						<span>Subtle holographic finish</span>
+						<span>Gift-ready from the start</span>
+						<span>Made for meaningful details</span>
+					</div>
+
+					<div class="actions">
+						<a class="button-primary" href="#preview-builder">
+							{isTikTokVisitor ? 'Try Your Photo' : 'Create Yours'}
+						</a>
+						<a class="button-secondary" href="#how-it-works">
+							{isTikTokVisitor ? 'See the flow' : 'See How It Works'}
+						</a>
+					</div>
+				</div>
+
+				<div class="hero-note">
+					<span class="hero-note-line"></span>
+					<p>A photo you already love, made to catch the light every time you pass it.</p>
+				</div>
 			</div>
 
-			<div class="actions">
-				<a class="button-primary" href="#preview-builder">
-					{isTikTokVisitor ? 'Try Your Photo' : 'Create Yours'}
-				</a>
-				<a class="button-secondary" href="#how-it-works">
-					{isTikTokVisitor ? 'See the flow' : 'See How It Works'}
-				</a>
-			</div>
+			{#if !isTikTokVisitor}
+				<aside class="hero-specimen glass-card" aria-label="Featured keepsake preview">
+					<div class="specimen-image-wrap">
+						<img class="specimen-image" src="/holographe/jessholo.png" alt="Holographe keepsake detail" />
+					</div>
+					<div class="specimen-copy">
+						<p class="specimen-label">In the light</p>
+						<strong>Quiet shimmer. Real detail.</strong>
+						<span>Upload the photo. Add the part only they would understand.</span>
+					</div>
+				</aside>
+			{/if}
 		</div>
 	</div>
-</section>
+
+	<div class="hero-bottom-fade" aria-hidden="true"></div>
+
+	<a class="scroll-cue" href="#preview-builder">
+		<span>Preview your photo</span>
+	</a>
+ </section>
 
 <style>
 	.hero {
@@ -56,7 +86,7 @@
 		min-height: 100vh;
 		display: grid;
 		align-items: end;
-		padding: 6.5rem 0 4rem;
+		padding: 7rem 0 4.5rem;
 		overflow: clip;
 	}
 
@@ -78,14 +108,15 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		filter: saturate(0.82) contrast(1.02) brightness(0.54);
+		transform: scale(1.02);
+		filter: saturate(0.78) contrast(1.02) brightness(0.58);
 	}
 
 	.hero-overlay {
 		background:
-			linear-gradient(180deg, rgba(7, 7, 7, 0.16), rgba(7, 7, 7, 0.54) 54%, rgba(7, 7, 7, 0.84)),
-			radial-gradient(circle at 50% 24%, rgba(255, 236, 214, 0.1), transparent 24%),
-			linear-gradient(90deg, rgba(0, 0, 0, 0.22), transparent 44%, rgba(0, 0, 0, 0.28));
+			linear-gradient(180deg, rgba(7, 7, 7, 0.18), rgba(7, 7, 7, 0.32) 26%, rgba(7, 7, 7, 0.62) 58%, rgba(7, 7, 7, 0.88)),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.44), rgba(0, 0, 0, 0.08) 34%, rgba(0, 0, 0, 0.22) 68%, rgba(0, 0, 0, 0.46)),
+			radial-gradient(circle at 54% 24%, rgba(255, 236, 214, 0.12), transparent 24%);
 	}
 
 	.hero-glow {
@@ -99,11 +130,29 @@
 		z-index: 1;
 	}
 
+	.hero-stage {
+		display: grid;
+		align-items: end;
+		gap: 1rem;
+	}
+
+	.hero-copy-wrap {
+		display: grid;
+		gap: 1rem;
+	}
+
 	.hero-copy {
 		display: grid;
 		gap: 1rem;
 		max-width: 35rem;
-		padding-bottom: 0.5rem;
+		padding: 1.2rem;
+		border-radius: 1.8rem;
+		background:
+			linear-gradient(180deg, rgba(8, 8, 8, 0.48), rgba(8, 8, 8, 0.18)),
+			radial-gradient(circle at top left, rgba(234, 211, 182, 0.08), transparent 34%);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		backdrop-filter: blur(12px);
+		box-shadow: 0 28px 70px rgba(0, 0, 0, 0.18);
 	}
 
 	h1,
@@ -144,10 +193,129 @@
 		color: rgba(244, 240, 234, 0.8);
 	}
 
+	.hero-note {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		max-width: 26rem;
+		color: rgba(247, 243, 238, 0.72);
+		font-size: 0.82rem;
+		line-height: 1.55;
+	}
+
+	.hero-note p {
+		max-width: 22rem;
+	}
+
+	.hero-note-line {
+		width: 2.5rem;
+		height: 1px;
+		margin-top: 0.75rem;
+		background: linear-gradient(90deg, rgba(234, 211, 182, 0.9), rgba(234, 211, 182, 0));
+		flex: 0 0 auto;
+	}
+
+	.hero-specimen {
+		align-self: end;
+		justify-self: end;
+		width: min(20rem, 100%);
+		padding: 0.9rem;
+		background:
+			linear-gradient(160deg, rgba(15, 15, 15, 0.8), rgba(8, 8, 8, 0.74)),
+			radial-gradient(circle at top, rgba(234, 211, 182, 0.08), transparent 42%);
+	}
+
+	.specimen-image-wrap {
+		padding: 0.7rem;
+		border-radius: 1.35rem;
+		background:
+			linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+			radial-gradient(circle at 28% 20%, rgba(234, 211, 182, 0.12), transparent 32%);
+	}
+
+	.specimen-image {
+		display: block;
+		width: 100%;
+		border-radius: 1rem;
+		box-shadow: 0 20px 44px rgba(0, 0, 0, 0.24);
+	}
+
+	.specimen-copy {
+		display: grid;
+		gap: 0.35rem;
+		padding: 0.85rem 0.35rem 0.2rem;
+	}
+
+	.specimen-label {
+		font-size: 0.68rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: rgba(241, 220, 194, 0.76);
+	}
+
+	.specimen-copy strong {
+		font-family: 'Georgia', 'Iowan Old Style', serif;
+		font-size: 1.25rem;
+		line-height: 1;
+		letter-spacing: -0.04em;
+		color: #f7f3ee;
+	}
+
+	.specimen-copy span {
+		color: rgba(247, 243, 238, 0.7);
+		font-size: 0.84rem;
+		line-height: 1.45;
+	}
+
+	.hero-bottom-fade {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 10rem;
+		background: linear-gradient(180deg, rgba(6, 6, 6, 0), rgba(6, 6, 6, 0.92));
+		pointer-events: none;
+	}
+
+	.scroll-cue {
+		position: absolute;
+		left: 50%;
+		bottom: 1.4rem;
+		z-index: 1;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+		transform: translateX(-50%);
+		padding: 0.5rem 0.75rem;
+		border-radius: 999px;
+		background: rgba(12, 12, 12, 0.42);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		backdrop-filter: blur(12px);
+		font-size: 0.72rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: rgba(247, 243, 238, 0.78);
+	}
+
+	.scroll-cue::after {
+		content: '';
+		width: 0.42rem;
+		height: 0.42rem;
+		border-right: 1px solid currentColor;
+		border-bottom: 1px solid currentColor;
+		transform: rotate(45deg) translateY(-1px);
+	}
+
+	@media (min-width: 920px) {
+		.hero-stage {
+			grid-template-columns: minmax(0, 1fr) minmax(14rem, 20rem);
+		}
+	}
+
 	@media (max-width: 640px) {
 		.hero {
 			min-height: 92svh;
-			padding: 5.8rem 0 2.5rem;
+			padding: 5.8rem 0 3rem;
 		}
 
 		.hero.tiktok-hero {
@@ -167,6 +335,25 @@
 		.actions {
 			display: grid;
 			grid-template-columns: 1fr;
+		}
+
+		.hero-copy {
+			padding: 1rem;
+		}
+
+		.hero-note {
+			font-size: 0.78rem;
+		}
+
+		.scroll-cue {
+			bottom: 1rem;
+		}
+	}
+
+	@media (max-width: 919px) {
+		.hero-specimen {
+			justify-self: start;
+			max-width: 16rem;
 		}
 	}
 </style>
