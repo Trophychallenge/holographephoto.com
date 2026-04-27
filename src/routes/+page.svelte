@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import HomeHero from '$lib/components/home/HomeHero.svelte';
 	import PreviewBuilder from '$lib/components/home/PreviewBuilder.svelte';
 	import WhyDifferentSection from '$lib/components/home/WhyDifferentSection.svelte';
@@ -6,6 +7,14 @@
 	import HowItWorksSection from '$lib/components/home/HowItWorksSection.svelte';
 	import ValueSection from '$lib/components/home/ValueSection.svelte';
 	import FinalCtaSection from '$lib/components/home/FinalCtaSection.svelte';
+
+	let isTikTokVisitor = $state(false);
+
+	onMount(() => {
+		const params = new URLSearchParams(window.location.search);
+		const source = `${params.get('utm_source') ?? ''} ${params.get('ref') ?? ''} ${document.referrer}`.toLowerCase();
+		isTikTokVisitor = source.includes('tiktok');
+	});
 </script>
 
 <svelte:head>
@@ -17,8 +26,13 @@
 </svelte:head>
 
 <div class="page-shell">
-	<HomeHero />
-	<PreviewBuilder />
+	{#if isTikTokVisitor}
+		<PreviewBuilder {isTikTokVisitor} />
+		<HomeHero {isTikTokVisitor} />
+	{:else}
+		<HomeHero {isTikTokVisitor} />
+		<PreviewBuilder {isTikTokVisitor} />
+	{/if}
 	<WhyDifferentSection />
 	<GiftingSection />
 	<HowItWorksSection />
@@ -29,10 +43,10 @@
 <style>
 	:global(body) {
 		background:
-			radial-gradient(circle at top left, rgba(226, 205, 175, 0.12), transparent 22%),
-			radial-gradient(circle at 84% 12%, rgba(196, 212, 255, 0.08), transparent 22%),
-			radial-gradient(circle at bottom right, rgba(247, 230, 209, 0.06), transparent 26%),
-			linear-gradient(180deg, #050506 0%, #0b0b0d 38%, #060607 100%);
+			radial-gradient(circle at 8% 6%, rgba(231, 206, 173, 0.12), transparent 20%),
+			radial-gradient(circle at 82% 16%, rgba(225, 236, 255, 0.08), transparent 18%),
+			radial-gradient(circle at 50% 100%, rgba(240, 220, 188, 0.06), transparent 24%),
+			linear-gradient(180deg, #050505 0%, #090909 42%, #060606 100%);
 	}
 
 	.page-shell {
@@ -49,7 +63,7 @@
 		pointer-events: none;
 		background:
 			linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.025), transparent),
-			linear-gradient(180deg, transparent, rgba(232, 217, 191, 0.02), transparent);
+			linear-gradient(180deg, transparent, rgba(232, 217, 191, 0.025), transparent);
 		mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
 	}
 

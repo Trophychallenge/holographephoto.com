@@ -72,7 +72,9 @@
 		position: relative;
 		min-height: 18rem;
 		border-radius: 1.4rem;
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+		background:
+			radial-gradient(circle at top, rgba(234, 211, 182, 0.08), transparent 34%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
 		overflow: hidden;
 	}
 

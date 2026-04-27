@@ -75,7 +75,10 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 		gift_message: String(formData.get('gift_message') ?? ''),
 		ship_direct: String(formData.get('ship_direct') ?? ''),
 		brightness_level: String(formData.get('brightness_level') ?? ''),
-		shimmer_intensity: String(formData.get('shimmer_intensity') ?? '')
+		shimmer_intensity: String(formData.get('shimmer_intensity') ?? ''),
+		effect_mode: String(formData.get('effect_mode') ?? ''),
+		overlay_position: String(formData.get('overlay_position') ?? ''),
+		text_position: String(formData.get('text_position') ?? '')
 	};
 
 	if (!quantity) {

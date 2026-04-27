@@ -1,22 +1,34 @@
 <section class="section how-section" id="how-it-works">
 	<div class="page-wrap how-layout">
 		<div class="heading">
-			<p class="eyebrow">How it works</p>
-			<h2>Three simple steps.</h2>
+			<p class="eyebrow">How it flows</p>
+			<h2>See it. Upload it. Personalize it. Order it.</h2>
 		</div>
 
 		<ol class="steps">
 			<li>
 				<div class="icon-shell">01</div>
-				<h3>Upload your photo</h3>
+				<h3>See what it is</h3>
 			</li>
 			<li>
 				<div class="icon-shell">02</div>
-				<h3>Add holographic magic</h3>
+				<h3>Upload your photo</h3>
 			</li>
 			<li>
 				<div class="icon-shell">03</div>
-				<h3>Receive gift-ready magnet</h3>
+				<h3>Preview the light</h3>
+			</li>
+			<li>
+				<div class="icon-shell">04</div>
+				<h3>Add a personal touch</h3>
+			</li>
+			<li>
+				<div class="icon-shell">05</div>
+				<h3>Choose your set</h3>
+			</li>
+			<li>
+				<div class="icon-shell">06</div>
+				<h3>Order gift-ready</h3>
 			</li>
 		</ol>
 	</div>

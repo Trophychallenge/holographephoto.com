@@ -19,7 +19,7 @@
 	<title>Holographe</title>
 	<meta
 		name="description"
-		content="Holographe creates premium personalized holographic photo magnets with optional handwritten or illustrated add-ons."
+		content="Create a premium holographic keepsake from your favorite photo, add a personal overlay, and order it gift-ready in minutes."
 	/>
 </svelte:head>
 
@@ -27,14 +27,14 @@
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
 			<span class="brand-kicker">Holographe</span>
-			<span class="brand-name">Colorful custom keepsakes</span>
+			<span class="brand-name">Custom keepsakes in light</span>
 		</a>
 		<nav class="site-nav" aria-label="Main navigation">
 			{#each navItems as item (item.href)}
 				<a href={resolve(item.href)}>{item.label}</a>
 			{/each}
 		</nav>
-		<a class="button-primary header-cta" href={resolve('/prices')}>Shop Sale</a>
+		<a class="button-primary header-cta" href="/#preview-builder">Create Yours</a>
 	</header>
 
 	<main>
@@ -45,7 +45,7 @@
 		<div>
 			<p class="footer-title">Holographe</p>
 			<p class="footer-copy">
-				Premium, playful photo magnets with shimmer, color, and room to personalize.
+				Quietly luxurious holographic keepsakes for the photos you keep returning to.
 			</p>
 		</div>
 		<div class="footer-links">

@@ -1,6 +1,6 @@
 <script lang="ts">
 	const items = [
-		{ title: 'Feels like a memory, not a product', mark: '●' },
+		{ title: 'Feels like a memory, not a product', mark: '◌' },
 		{ title: 'Made to be seen every day', mark: '◐' },
 		{ title: 'More personal than a frame', mark: '✦' }
 	];
@@ -51,12 +51,12 @@
 		text-align: center;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
-			linear-gradient(160deg, rgba(14, 14, 16, 0.9), rgba(9, 9, 11, 0.94));
+			linear-gradient(160deg, rgba(16, 16, 16, 0.92), rgba(8, 8, 8, 0.95));
 	}
 
 	.mark {
 		font-size: 1rem;
-		color: #f2d2a8;
+		color: #ead3b6;
 	}
 
 	@media (max-width: 860px) {

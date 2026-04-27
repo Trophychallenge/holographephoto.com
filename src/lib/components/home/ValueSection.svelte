@@ -36,7 +36,7 @@
 	.value-card {
 		display: grid;
 		gap: 0.35rem;
-		padding: 1rem;
+		padding: 1.1rem;
 		text-align: center;
 	}
 
@@ -45,6 +45,15 @@
 		text-transform: uppercase;
 		letter-spacing: 0.14em;
 		color: rgba(236, 228, 216, 0.58);
+	}
+
+	.value-card::before {
+		content: '';
+		display: block;
+		width: 3rem;
+		height: 1px;
+		margin: 0 auto 0.15rem;
+		background: linear-gradient(90deg, transparent, rgba(234, 211, 182, 0.8), transparent);
 	}
 
 	.value-card strong {
