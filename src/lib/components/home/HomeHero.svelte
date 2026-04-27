@@ -109,14 +109,14 @@
 		height: 100%;
 		object-fit: cover;
 		transform: scale(1.02);
-		filter: saturate(0.78) contrast(1.02) brightness(0.58);
+		filter: saturate(0.92) contrast(1.05) brightness(0.76);
 	}
 
 	.hero-overlay {
 		background:
-			linear-gradient(180deg, rgba(7, 7, 7, 0.18), rgba(7, 7, 7, 0.32) 26%, rgba(7, 7, 7, 0.62) 58%, rgba(7, 7, 7, 0.88)),
-			linear-gradient(90deg, rgba(0, 0, 0, 0.44), rgba(0, 0, 0, 0.08) 34%, rgba(0, 0, 0, 0.22) 68%, rgba(0, 0, 0, 0.46)),
-			radial-gradient(circle at 54% 24%, rgba(255, 236, 214, 0.12), transparent 24%);
+			linear-gradient(180deg, rgba(7, 7, 7, 0.1), rgba(7, 7, 7, 0.18) 24%, rgba(7, 7, 7, 0.42) 58%, rgba(7, 7, 7, 0.72)),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.04) 34%, rgba(0, 0, 0, 0.14) 68%, rgba(0, 0, 0, 0.34)),
+			radial-gradient(circle at 54% 24%, rgba(255, 236, 214, 0.14), transparent 26%);
 	}
 
 	.hero-glow {
@@ -148,8 +148,8 @@
 		padding: 1.2rem;
 		border-radius: 1.8rem;
 		background:
-			linear-gradient(180deg, rgba(8, 8, 8, 0.48), rgba(8, 8, 8, 0.18)),
-			radial-gradient(circle at top left, rgba(234, 211, 182, 0.08), transparent 34%);
+			linear-gradient(180deg, rgba(8, 8, 8, 0.34), rgba(8, 8, 8, 0.12)),
+			radial-gradient(circle at top left, rgba(234, 211, 182, 0.1), transparent 34%);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		backdrop-filter: blur(12px);
 		box-shadow: 0 28px 70px rgba(0, 0, 0, 0.18);
@@ -273,7 +273,7 @@
 		right: 0;
 		bottom: 0;
 		height: 10rem;
-		background: linear-gradient(180deg, rgba(6, 6, 6, 0), rgba(6, 6, 6, 0.92));
+		background: linear-gradient(180deg, rgba(6, 6, 6, 0), rgba(6, 6, 6, 0.82));
 		pointer-events: none;
 	}
 
