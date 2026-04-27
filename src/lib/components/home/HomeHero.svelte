@@ -14,7 +14,6 @@
 			poster="/holographe/jessholo.png"
 		>
 			<source src="/holographe/dishwasherview.mp4" type="video/mp4" />
-			<source src="/holographe/dishwasherview.mov" type="video/quicktime" />
 		</video>
 		<div class="hero-video-focus-frame">
 			<video
@@ -27,7 +26,6 @@
 				poster="/holographe/jessholo.png"
 			>
 				<source src="/holographe/dishwasherview.mp4" type="video/mp4" />
-				<source src="/holographe/dishwasherview.mov" type="video/quicktime" />
 			</video>
 		</div>
 		<div class="hero-overlay"></div>
