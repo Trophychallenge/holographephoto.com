@@ -41,6 +41,13 @@
 		'5': 'Family Set'
 	};
 
+	const sizeOptions = [
+		{ value: '4x6', label: '4 x 6' },
+		{ value: '5x7', label: '5 x 7' },
+		{ value: '8x10', label: '8 x 10' },
+		{ value: '11x14', label: '11 x 14' }
+	] as const;
+
 	const mockupScenes: {
 		id: MockupScene;
 		label: string;
@@ -86,7 +93,9 @@
 	let textSize = $state(28);
 	let textX = $state(50);
 	let textY = $state(84);
-	let photoSize = $state('classic');
+	let roundedEdges = $state('yes');
+	let frameOption = $state('no');
+	let printSize = $state('8x10');
 	let personalRequest = $state('');
 	let giftMode = $state(false);
 	let giftMessage = $state('');
@@ -740,7 +749,9 @@
 							<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
 							<input type="hidden" name="view_mode" value="compare" />
 							<input type="hidden" name="gift_mode" value={giftMode ? 'gift' : 'standard'} />
-							<input type="hidden" name="photo_size" value={photoSize} />
+							<input type="hidden" name="rounded_edges" value={roundedEdges} />
+							<input type="hidden" name="frame_option" value={frameOption} />
+							<input type="hidden" name="print_size" value={printSize} />
 							<input type="hidden" name="personal_request" value={personalRequest} />
 							<input type="hidden" name="overlay_text" value={textOverlay} />
 							<input type="hidden" name="overlay_text_style" value={textStyle} />
@@ -972,11 +983,25 @@
 						<h3>Choose the basics.</h3>
 						<div class="slider-grid">
 							<label class="slider-wrap">
-								<span>Photo size</span>
-								<select bind:value={photoSize} class="simple-select">
-									<option value="classic">Classic</option>
-									<option value="close-up">Close-up</option>
-									<option value="full-frame">Full frame</option>
+								<span>Rounded edges</span>
+								<select bind:value={roundedEdges} class="simple-select">
+									<option value="yes">Yes</option>
+									<option value="no">No</option>
+								</select>
+							</label>
+							<label class="slider-wrap">
+								<span>Frame</span>
+								<select bind:value={frameOption} class="simple-select">
+									<option value="no">No</option>
+									<option value="yes">Yes</option>
+								</select>
+							</label>
+							<label class="slider-wrap">
+								<span>Size</span>
+								<select bind:value={printSize} class="simple-select">
+									{#each sizeOptions as option (option.value)}
+										<option value={option.value}>{option.label}</option>
+									{/each}
 								</select>
 							</label>
 							<label class="slider-wrap">
@@ -1320,7 +1345,7 @@
 	}
 
 	.preview-image-finished {
-		transform: scale(1.11);
+		transform: scale(1.5);
 	}
 
 	.compare-line {

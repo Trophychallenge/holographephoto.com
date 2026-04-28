@@ -3,9 +3,10 @@
 	import { featuredCheckoutOffers, largerCheckoutOffers } from '$lib/pricing';
 
 	const sizeOptions = [
-		{ value: 'classic', label: 'Classic' },
-		{ value: 'close-up', label: 'Close-up' },
-		{ value: 'full-frame', label: 'Full frame' }
+		{ value: '4x6', label: '4 x 6' },
+		{ value: '5x7', label: '5 x 7' },
+		{ value: '8x10', label: '8 x 10' },
+		{ value: '11x14', label: '11 x 14' }
 	] as const;
 </script>
 
@@ -19,10 +20,24 @@
 
 <section class="section prices-page">
 	<div class="page-wrap prices-layout" id="secure-checkout">
+		<section class="bulk-hero glass-card">
+			<div class="bulk-hero-photo">
+				<img
+					src="/holographe/bulk.jpg"
+					alt="Wrapped bulk Holographe orders with pink ribbon"
+				/>
+			</div>
+			<div class="bulk-hero-copy">
+				<p class="eyebrow">Bulk and gifting</p>
+				<h1>Small sets to full table gifts.</h1>
+				<p class="hero-subcopy">Easy bundles. Simple options. Ready to order.</p>
+			</div>
+		</section>
+
 		<section class="hero-band glass-card">
 			<div class="hero-copy">
 				<p class="eyebrow">Simple pricing</p>
-				<h1>Pick your set.</h1>
+				<h2>Pick your set.</h2>
 				<p class="hero-subcopy">One keepsake or a family bundle.</p>
 			</div>
 
@@ -93,8 +108,22 @@
 							</select>
 						</label>
 						<label>
-							<span>Photo size</span>
-							<select name="photo_size">
+							<span>Rounded edges</span>
+							<select name="rounded_edges">
+								<option value="yes">Yes</option>
+								<option value="no">No</option>
+							</select>
+						</label>
+						<label>
+							<span>Frame</span>
+							<select name="frame_option">
+								<option value="no">No</option>
+								<option value="yes">Yes</option>
+							</select>
+						</label>
+						<label>
+							<span>Size</span>
+							<select name="print_size">
 								{#each sizeOptions as option (option.value)}
 									<option value={option.value}>{option.label}</option>
 								{/each}
@@ -153,8 +182,22 @@
 							</select>
 						</label>
 						<label>
-							<span>Photo size</span>
-							<select name="photo_size">
+							<span>Rounded edges</span>
+							<select name="rounded_edges">
+								<option value="yes">Yes</option>
+								<option value="no">No</option>
+							</select>
+						</label>
+						<label>
+							<span>Frame</span>
+							<select name="frame_option">
+								<option value="no">No</option>
+								<option value="yes">Yes</option>
+							</select>
+						</label>
+						<label>
+							<span>Size</span>
+							<select name="print_size">
 								{#each sizeOptions as option (option.value)}
 									<option value={option.value}>{option.label}</option>
 								{/each}
@@ -178,12 +221,6 @@
 			</div>
 
 			<div class="concierge-actions">
-				<div class="bulk-photo-card">
-					<img
-						src="/holographe/bulk.jpg"
-						alt="Wrapped bulk Holographe orders with pink ribbon"
-					/>
-				</div>
 				<div class="concierge-note">
 					<p class="kicker">Private quote</p>
 					<p>Best for events, gifts, and larger orders.</p>
@@ -214,23 +251,23 @@
 	}
 
 	h1 {
-		font-size: clamp(1.9rem, 3.8vw, 3rem);
+		font-size: clamp(1.7rem, 3.2vw, 2.55rem);
 		line-height: 0.98;
 		max-width: 11ch;
 	}
 
 	h2 {
-		font-size: clamp(1.35rem, 2.1vw, 1.95rem);
+		font-size: clamp(1.2rem, 1.9vw, 1.7rem);
 		line-height: 1.02;
 	}
 
 	h3 {
-		font-size: clamp(1.05rem, 1.45vw, 1.35rem);
+		font-size: clamp(0.98rem, 1.3vw, 1.18rem);
 		line-height: 1.06;
 	}
 
 	h4 {
-		font-size: 0.98rem;
+		font-size: 0.92rem;
 		line-height: 1.08;
 	}
 
@@ -246,15 +283,44 @@
 
 	.prices-layout {
 		display: grid;
-		gap: 0.8rem;
+		gap: 0.7rem;
+	}
+
+	.bulk-hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
+		gap: 0.75rem;
+		padding: 0.72rem;
+		align-items: center;
+	}
+
+	.bulk-hero-photo {
+		overflow: hidden;
+		border-radius: 1.1rem;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.08),
+			0 24px 50px rgba(4, 10, 22, 0.2);
+	}
+
+	.bulk-hero-photo img {
+		display: block;
+		width: 100%;
+		height: 15rem;
+		object-fit: cover;
+	}
+
+	.bulk-hero-copy {
+		display: grid;
+		gap: 0.45rem;
 	}
 
 	.hero-band,
 	.concierge-band {
 		display: grid;
 		grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
-		gap: 0.8rem;
-		padding: 0.82rem;
+		gap: 0.65rem;
+		padding: 0.72rem;
 	}
 
 	.hero-copy,
@@ -269,13 +335,13 @@
 
 	.hero-subcopy {
 		max-width: 30rem;
-		font-size: 0.92rem;
+		font-size: 0.84rem;
 	}
 
 	.spotlight-card {
 		align-content: start;
-		padding: 0.82rem;
-		border-radius: 1.15rem;
+		padding: 0.72rem;
+		border-radius: 1rem;
 		background:
 			radial-gradient(circle at top left, rgba(122, 240, 255, 0.16), transparent 34%),
 			radial-gradient(circle at bottom right, rgba(255, 111, 145, 0.14), transparent 36%),
@@ -313,7 +379,7 @@
 
 	.spotlight-price strong {
 		font-family: 'Georgia', 'Iowan Old Style', serif;
-		font-size: clamp(1.9rem, 4.2vw, 2.8rem);
+		font-size: clamp(1.55rem, 3.3vw, 2.15rem);
 		line-height: 0.92;
 		letter-spacing: -0.05em;
 		color: #fff5de;
@@ -342,7 +408,7 @@
 	.bundle-grid,
 	.bundle-list {
 		display: grid;
-		gap: 0.75rem;
+		gap: 0.62rem;
 	}
 
 	.bundle-grid {
@@ -350,8 +416,8 @@
 	}
 
 	.bundle-card {
-		padding: 0.82rem;
-		border-radius: 1.18rem;
+		padding: 0.7rem;
+		border-radius: 1rem;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
 			linear-gradient(160deg, rgba(9, 18, 34, 0.92), rgba(8, 13, 24, 0.9));
@@ -374,7 +440,7 @@
 		display: flex;
 		align-items: start;
 		justify-content: space-between;
-		gap: 0.7rem;
+		gap: 0.55rem;
 	}
 
 	.bundle-chip {
@@ -396,9 +462,9 @@
 	.bundle-row {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 0.75rem;
-		padding: 0.72rem;
-		border-radius: 0.85rem;
+		gap: 0.6rem;
+		padding: 0.6rem;
+		border-radius: 0.8rem;
 		background: rgba(255, 255, 255, 0.03);
 		border: 1px solid rgba(255, 255, 255, 0.07);
 		transition:
@@ -453,22 +519,28 @@
 
 	.checkout-form {
 		display: grid;
-		gap: 0.58rem;
+		gap: 0.5rem;
 		margin-top: 0.25rem;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	.checkout-form label {
 		display: grid;
-		gap: 0.48rem;
+		gap: 0.4rem;
+	}
+
+	.checkout-form button {
+		grid-column: 1 / -1;
 	}
 
 	.checkout-form select,
 	.checkout-form input {
-		padding: 0.75rem 0.85rem;
-		border-radius: 0.85rem;
+		padding: 0.68rem 0.78rem;
+		border-radius: 0.78rem;
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		background: rgba(255, 255, 255, 0.05);
 		color: var(--text);
+		font-size: 0.88rem;
 	}
 
 	.concierge-actions {
@@ -478,35 +550,21 @@
 	}
 
 	.concierge-note {
-		padding: 0.75rem;
-		border-radius: 0.85rem;
+		padding: 0.68rem;
+		border-radius: 0.8rem;
 		background: rgba(255, 255, 255, 0.03);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
-	.bulk-photo-card {
-		overflow: hidden;
-		border-radius: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
-			rgba(255, 255, 255, 0.02);
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.08),
-			0 24px 50px rgba(4, 10, 22, 0.22);
-	}
-
-	.bulk-photo-card img {
-		display: block;
-		width: 100%;
-		height: 13rem;
-		object-fit: cover;
-	}
-
 	@media (max-width: 960px) {
+		.bulk-hero,
 		.hero-band,
 		.concierge-band,
 		.bundle-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.checkout-form {
 			grid-template-columns: 1fr;
 		}
 	}
@@ -524,10 +582,11 @@
 			font-size: 1rem;
 		}
 
+		.bulk-hero,
 		.hero-band,
 		.concierge-band,
 		.bundle-card {
-			padding: 0.72rem;
+			padding: 0.68rem;
 		}
 
 		.bundle-top,
