@@ -18,7 +18,7 @@
 </script>
 
 <svelte:head>
-	<title>Holographe | Your Favorite Photo, Reimagined In Light</title>
+	<title>Holograph | Your Favorite Photo, Reimagined In Light</title>
 	<meta
 		name="description"
 		content="Upload a photo, see the glow, and make it yours."

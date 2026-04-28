@@ -11,22 +11,22 @@
 </script>
 
 <svelte:head>
-	<title>Prices | Holographe</title>
+	<title>Prices | Holograph</title>
 	<meta
 		name="description"
-		content="Simple bundle pricing for your Holographe keepsakes."
+		content="Simple bundle pricing for your Holograph keepsakes."
 	/>
 </svelte:head>
 
 <section class="section prices-page">
 	<div class="page-wrap prices-layout" id="secure-checkout">
 		<section class="bulk-hero glass-card">
-			<div class="bulk-hero-photo">
+			<a class="bulk-hero-photo" href="#bulk-photo-lightbox">
 				<img
 					src="/holographe/bulk.jpg"
-					alt="Wrapped bulk Holographe orders with pink ribbon"
+					alt="Wrapped bulk Holograph orders with pink ribbon"
 				/>
-			</div>
+			</a>
 			<div class="bulk-hero-copy">
 				<p class="eyebrow">Bulk and gifting</p>
 				<h1>Small sets to full table gifts.</h1>
@@ -225,11 +225,19 @@
 					<p class="kicker">Private quote</p>
 					<p>Best for events, gifts, and larger orders.</p>
 				</div>
-				<a class="button-secondary" href="tel:3479960205">Call Christina For A Quote</a>
+				<a class="button-secondary" href="#contact-modal">Call Christina For A Quote</a>
 			</div>
 		</section>
 	</div>
 </section>
+
+<div class="lightbox-shell" id="bulk-photo-lightbox">
+	<a class="lightbox-backdrop" href="#secure-checkout" aria-label="Close bulk photo"></a>
+	<div class="lightbox-card">
+		<a class="lightbox-close" href="#secure-checkout" aria-label="Close bulk photo">Close</a>
+		<img src="/holographe/bulk.jpg" alt="Wrapped bulk Holograph orders with pink ribbon" />
+	</div>
+</div>
 
 <style>
 	h1,
@@ -295,6 +303,7 @@
 	}
 
 	.bulk-hero-photo {
+		display: block;
 		overflow: hidden;
 		border-radius: 1.1rem;
 		border: 1px solid rgba(255, 255, 255, 0.1);
@@ -308,6 +317,57 @@
 		width: 100%;
 		height: 15rem;
 		object-fit: cover;
+	}
+
+	.lightbox-shell {
+		position: fixed;
+		inset: 0;
+		z-index: 65;
+		display: grid;
+		place-items: center;
+		padding: 1rem;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 180ms ease;
+	}
+
+	.lightbox-shell:target {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	.lightbox-backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(4, 4, 6, 0.84);
+		backdrop-filter: blur(16px);
+	}
+
+	.lightbox-card {
+		position: relative;
+		z-index: 1;
+		width: min(78rem, calc(100vw - 2rem));
+		display: grid;
+		gap: 0.75rem;
+		justify-items: end;
+	}
+
+	.lightbox-card img {
+		display: block;
+		width: 100%;
+		max-height: calc(100vh - 4rem);
+		object-fit: contain;
+		border-radius: 1.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: 0 32px 90px rgba(0, 0, 0, 0.42);
+		background: rgba(8, 8, 10, 0.9);
+	}
+
+	.lightbox-close {
+		font-size: 0.76rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: rgba(248, 244, 238, 0.72);
 	}
 
 	.bulk-hero-copy {

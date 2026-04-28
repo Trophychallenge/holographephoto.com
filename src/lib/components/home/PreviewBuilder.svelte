@@ -36,7 +36,7 @@
 	];
 
 	const bundleLabels: Record<string, string> = {
-		'1': '1 Holographe',
+		'1': '1 Holograph',
 		'3': 'Set of 3',
 		'5': 'Family Set'
 	};
@@ -120,12 +120,12 @@
 	let overlayImageElement = $state<HTMLImageElement | null>(null);
 
 	const currentBaseSrc = $derived(uploadedBaseSrc || demoBeforeSrc);
-	const currentBaseAlt = $derived(uploadedBaseName || 'Before photo preview for a Holographe keepsake');
+	const currentBaseAlt = $derived(uploadedBaseName || 'Before photo preview for a Holograph keepsake');
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
 	const currentFinishedSrc = $derived(uploadedBaseSrc ? '' : demoAfterSrc);
 	const currentMockupSrc = $derived(uploadedBaseSrc ? currentBaseSrc : demoAfterSrc);
 	const currentMockupAlt = $derived(
-		uploadedBaseSrc ? currentBaseAlt : 'Finished holographic Holographe sample on a surface mockup'
+		uploadedBaseSrc ? currentBaseAlt : 'Finished holographic Holograph sample on a surface mockup'
 	);
 	const currentBundlePrice = $derived(
 		featuredCheckoutOffers.find((offer) => String(offer.quantity) === selectedBundle)?.priceLabel ?? '$14.99'
@@ -694,7 +694,7 @@
 						bind:this={previewStage}
 						class="preview-stage"
 						role="application"
-						aria-label="Interactive Holographe preview comparing the original photo and the finished holographic effect"
+						aria-label="Interactive Holograph preview comparing the original photo and the finished holographic effect"
 						style={stageStyle}
 						onpointerdown={beginPointerInteraction}
 						onpointermove={handlePointerMove}
@@ -727,7 +727,7 @@
 
 					<div class="compare-head">
 						<strong>{uploadedBaseSrc ? 'See your photo catch the light.' : 'From quiet photo to full shimmer.'}</strong>
-						<span>{uploadedBaseSrc ? 'Your photo / Live glow preview' : 'A real Holographe finish from the original photo'}</span>
+						<span>{uploadedBaseSrc ? 'Your photo / Live glow preview' : 'A real Holograph finish from the original photo'}</span>
 					</div>
 
 					<label class="compare-control">
@@ -770,7 +770,7 @@
 									<select name="quantity" bind:value={selectedBundle}>
 										{#each featuredCheckoutOffers as offer (offer.quantity)}
 											<option value={offer.quantity}>
-												{bundleLabels[String(offer.quantity)] ?? `${offer.quantity} Holographes`} · {offer.priceLabel}
+												{bundleLabels[String(offer.quantity)] ?? `${offer.quantity} Holographs`} · {offer.priceLabel}
 											</option>
 										{/each}
 									</select>
@@ -1338,14 +1338,20 @@
 		display: block;
 		height: auto;
 		object-fit: cover;
-		object-position: center 42%;
+		object-position: center 34%;
+		background: rgba(4, 4, 5, 0.82);
+		border: 1px solid rgba(255, 255, 255, 0.08);
 		box-shadow:
-			0 16px 40px rgba(0, 0, 0, 0.28),
-			0 0 0 1px rgba(255, 255, 255, 0.08);
+			0 24px 52px rgba(0, 0, 0, 0.34),
+			0 0 0 1px rgba(255, 255, 255, 0.05);
 	}
 
 	.preview-image-finished {
-		transform: scale(1.5);
+		object-position: center 22%;
+		transform: scale(1.86) translateY(-3%);
+		box-shadow:
+			0 28px 64px rgba(0, 0, 0, 0.42),
+			0 0 0 1px rgba(255, 255, 255, 0.06);
 	}
 
 	.compare-line {

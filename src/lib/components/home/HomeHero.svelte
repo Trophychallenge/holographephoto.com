@@ -33,7 +33,11 @@
 		<div class="hero-stage">
 			<div class="hero-copy-wrap">
 				<div class="hero-copy">
-					<p class="eyebrow">{isTikTokVisitor ? 'Made for your camera roll' : 'Holographe'}</p>
+					{#if isTikTokVisitor}
+						<p class="eyebrow">Made for your camera roll</p>
+					{:else}
+						<img class="hero-logo" src="/holographe/brand-logo.png" alt="Holographe logo" />
+					{/if}
 					<h1>Your photo, glowing back at you.</h1>
 					<p class="subcopy">
 						{isTikTokVisitor
@@ -64,7 +68,7 @@
 
 				<div class="hero-contact glass-contact">
 					<p>Feel free to reach out for any feedback.</p>
-					<a href="tel:3479960205">Contact Christina at 347-996-0205</a>
+					<a href="#contact-modal">Contact Christina at 347-996-0205</a>
 				</div>
 			</div>
 		</div>
@@ -186,6 +190,14 @@
 		font-size: 0.98rem;
 		line-height: 1.5;
 		color: rgba(247, 243, 238, 0.8);
+	}
+
+	.hero-logo {
+		display: block;
+		width: clamp(12rem, 28vw, 18rem);
+		height: auto;
+		margin-bottom: 0.1rem;
+		filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.28));
 	}
 
 	.microcopy,

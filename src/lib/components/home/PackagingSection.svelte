@@ -8,13 +8,13 @@
 
 		<div class="gallery">
 			<div class="pack-shot large">
-				<img src="/holographe/packaging-front.png" alt="Holographe premium card front packaging" />
+				<img src="/holographe/packaging-front.png" alt="Holograph premium card front packaging" />
 			</div>
 			<div class="pack-shot">
-				<img src="/holographe/packaging-back.png" alt="Holographe premium card back packaging" />
+				<img src="/holographe/packaging-back.png" alt="Holograph premium card back packaging" />
 			</div>
 			<div class="pack-shot">
-				<img src="/holographe/packaging-insert.png" alt="Holographe insert packaging card" />
+				<img src="/holographe/packaging-insert.png" alt="Holograph insert packaging card" />
 			</div>
 		</div>
 	</div>

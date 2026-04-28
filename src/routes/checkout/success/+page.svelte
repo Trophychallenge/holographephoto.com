@@ -3,10 +3,10 @@
 </script>
 
 <svelte:head>
-	<title>Payment Received | Holographe</title>
+	<title>Payment Received | Holograph</title>
 	<meta
 		name="description"
-		content="Your Holographe payment was received. Next, send your photo and customization details if needed."
+		content="Your Holograph payment was received. Next, send your photo and customization details if needed."
 	/>
 </svelte:head>
 
@@ -17,7 +17,7 @@
 			<h1>Your order is in.</h1>
 			<p>If we still need your photo or notes, send them now.</p>
 			<div class="button-row">
-				<a class="button-primary" href="tel:3479960205">Call Christina</a>
+				<a class="button-primary" href="#contact-modal">Call Christina</a>
 				<a class="button-secondary" href={resolve('/gallery')}>See examples</a>
 			</div>
 		</div>

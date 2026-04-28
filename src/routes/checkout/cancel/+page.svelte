@@ -3,8 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Checkout Canceled | Holographe</title>
-	<meta name="description" content="Your Holographe checkout was canceled. No payment was taken." />
+	<title>Checkout Canceled | Holograph</title>
+	<meta name="description" content="Your Holograph checkout was canceled. No payment was taken." />
 </svelte:head>
 
 <section class="section">
@@ -15,7 +15,7 @@
 			<p>You can try again or ask for a quote.</p>
 			<div class="button-row">
 				<a class="button-primary" href={resolve('/prices')}>Back to checkout</a>
-				<a class="button-secondary" href="tel:3479960205">Call Christina</a>
+				<a class="button-secondary" href="#contact-modal">Call Christina</a>
 			</div>
 		</div>
 	</div>

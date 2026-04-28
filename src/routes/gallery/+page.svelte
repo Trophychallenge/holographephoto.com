@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Gallery | Holographe</title>
+	<title>Gallery | Holograph</title>
 	<meta
 		name="description"
 		content="A simple gallery space for the photos and keepsakes coming soon."

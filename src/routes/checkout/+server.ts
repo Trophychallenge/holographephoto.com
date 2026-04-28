@@ -17,7 +17,7 @@ function buildCheckoutParams({
 	metadata?: Record<string, string>;
 }) {
 	const params = new URLSearchParams();
-	const itemLabel = `${quantity} custom holographic photo magnet${quantity === 1 ? '' : 's'}`;
+	const itemLabel = `${quantity} custom Holograph magnet${quantity === 1 ? '' : 's'}`;
 
 	params.set('mode', 'payment');
 	params.set('success_url', `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`);

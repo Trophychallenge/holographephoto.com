@@ -16,10 +16,10 @@
 </script>
 
 <svelte:head>
-	<title>Product | Holographe</title>
+	<title>Product | Holograph</title>
 	<meta
 		name="description"
-		content="See what gives Holographe its glow."
+		content="See what gives Holograph its glow."
 	/>
 </svelte:head>
 

@@ -282,10 +282,10 @@
 </script>
 
 <svelte:head>
-	<title>Customize | Holographe</title>
+	<title>Customize | Holograph</title>
 	<meta
 		name="description"
-		content="Use the Holographe customizer to upload your photo, add an overlay, preview the keepsake, and order."
+		content="Use the Holograph customizer to upload your photo, add an overlay, preview the keepsake, and order."
 	/>
 </svelte:head>
 
@@ -333,7 +333,7 @@
 								? 'Saving design...'
 								: 'Buy this design'}
 						</button>
-						<a class="button-secondary" href="tel:3479960205">Call Christina</a>
+						<a class="button-secondary" href="#contact-modal">Call Christina</a>
 					</div>
 				</form>
 				{#if hasUnsavedDesign}
@@ -703,7 +703,7 @@
 								Finish cloud save before ordering so your uploaded design is attached to the payment.
 							</p>
 						{/if}
-						<a class="button-secondary" href="tel:3479960205">Call Christina</a>
+						<a class="button-secondary" href="#contact-modal">Call Christina</a>
 					</div>
 				</aside>
 			</div>

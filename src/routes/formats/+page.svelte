@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>Personalization | Holographe</title>
+	<title>Personalization | Holograph</title>
 	<meta
 		name="description"
 		content="Choose the style that fits your photo best."
