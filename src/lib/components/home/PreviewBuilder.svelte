@@ -16,7 +16,6 @@
 		| 'gym-locker'
 		| 'car';
 
-	const demoBeforeSrc = '/holographe/jess-before-hero.webp';
 	const demoAfterSrc = '/holographe/jess-holo-hero.webp';
 
 	const textStyles: { id: TextStyle; label: string }[] = [
@@ -86,7 +85,6 @@
 	let overlayY = $state(52);
 	let brightness = $state(100);
 	let shimmer = $state(50);
-	let compareSplit = $state(52);
 	let textOverlay = $state('');
 	let textStyle = $state<TextStyle>('handwritten');
 	let textTone = $state<TextTone>('ivory');
@@ -110,15 +108,12 @@
 	let overlayUploadInput: HTMLInputElement | null = null;
 	let overlayCameraInput: HTMLInputElement | null = null;
 	let originalCanvas = $state<HTMLCanvasElement | null>(null);
-	let effectCanvas = $state<HTMLCanvasElement | null>(null);
-
 	let baseImageElement = $state<HTMLImageElement | null>(null);
 	let overlayImageElement = $state<HTMLImageElement | null>(null);
 
-	const currentBaseSrc = $derived(uploadedBaseSrc || demoBeforeSrc);
-	const currentBaseAlt = $derived(uploadedBaseName || 'Before photo preview for a Holograph keepsake');
+	const currentBaseSrc = $derived(uploadedBaseSrc || demoAfterSrc);
+	const currentBaseAlt = $derived(uploadedBaseName || 'Holograph sample preview');
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
-	const currentFinishedSrc = $derived(uploadedBaseSrc ? '' : demoAfterSrc);
 	const currentMockupSrc = $derived(uploadedBaseSrc ? currentBaseSrc : demoAfterSrc);
 	const currentMockupAlt = $derived(
 		uploadedBaseSrc ? currentBaseAlt : 'Finished holographic Holograph sample on a surface mockup'
@@ -512,18 +507,6 @@
 		drawTextOverlay(originalContext, originalCard);
 		drawOverlayImage(originalContext, originalCard);
 
-		if (!effectCanvas || currentFinishedSrc) return;
-
-		const effectContext = effectCanvas.getContext('2d');
-		if (!effectContext) return;
-
-		effectCanvas.width = 900;
-		effectCanvas.height = 1125;
-
-		const effectCard = drawBaseCard(effectContext, baseImageElement, effectCanvas);
-		drawHolographicEffect(effectContext, effectCard, originalCanvas);
-		drawOverlayImage(effectContext, effectCard);
-		drawTextOverlay(effectContext, effectCard);
 	}
 
 	async function persistDesignAsset(file: File, slot: 'base' | 'overlay') {
@@ -776,33 +759,16 @@
 						<div class="preview-card original-shell">
 							<canvas bind:this={originalCanvas} class="preview-canvas" aria-label={currentBaseAlt}></canvas>
 						</div>
-						{#if !uploadedBaseSrc}
-							<div class="preview-card effect-shell" style={`clip-path: inset(0 0 0 ${compareSplit}%);`}>
-								<img
-									class="preview-canvas preview-image preview-image-finished"
-									src={currentFinishedSrc}
-									alt="Finished holographic sample preview"
-								/>
-							</div>
-							<div class="compare-line" style={`left:${compareSplit}%`}></div>
-						{/if}
 					</div>
 
 					<div class="compare-head">
-						<strong>{uploadedBaseSrc ? 'Your uploaded photo.' : 'Real before and after sample.'}</strong>
-						<span>{uploadedBaseSrc ? 'Clean preview only. Final holograph finish follows the real sample.' : 'Before on the left. Real finished sample on the right.'}</span>
+						<strong>{uploadedBaseSrc ? 'Your uploaded photo.' : 'Sample finish.'}</strong>
+						<span>{uploadedBaseSrc ? 'Clean preview only. Final details follow your order notes.' : 'A simple sample to show the feel.'}</span>
 					</div>
 
-					{#if !uploadedBaseSrc}
-						<label class="compare-control">
-							<span>Before / After</span>
-							<input type="range" min="6" max="94" bind:value={compareSplit} />
-						</label>
-					{/if}
-
 					<div class="glow-status glass-card">
-						<strong>{uploadedBaseSrc ? 'No fake finish preview.' : 'Real finish sample only.'}</strong>
-						<span>{uploadedBaseSrc ? 'We removed the inaccurate live glow effect so the preview stays honest.' : 'This sample shows the true holograph motion instead of a simulated effect.'}</span>
+						<strong>{uploadedBaseSrc ? 'Clean preview only.' : 'Simple sample only.'}</strong>
+						<span>{uploadedBaseSrc ? 'We keep the preview clean so your order stays easy to review.' : 'The full piece is finished from your photo and notes.'}</span>
 					</div>
 
 					<div class="mockup-card glass-card">
@@ -1412,40 +1378,10 @@
 		border-radius: 1.9rem;
 	}
 
-	.preview-image {
-		display: block;
-		height: auto;
-		object-fit: cover;
-		object-position: center 34%;
-		background: rgba(4, 4, 5, 0.82);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		box-shadow:
-			0 24px 52px rgba(0, 0, 0, 0.34),
-			0 0 0 1px rgba(255, 255, 255, 0.05);
-	}
-
-	.preview-image-finished {
-		object-position: center 20%;
-		transform: scale(1.16) translateY(-1%);
-		box-shadow:
-			0 28px 64px rgba(0, 0, 0, 0.42),
-			0 0 0 1px rgba(255, 255, 255, 0.06);
-	}
-
-	.compare-line {
-		position: absolute;
-		top: 8%;
-		bottom: 8%;
-		width: 1px;
-		background: rgba(255, 255, 255, 0.92);
-		box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
-		transform: translateX(-50%);
-	}
-
 	.compare-head {
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		flex-direction: column;
+		align-items: flex-start;
 		gap: 0.75rem;
 		color: rgba(247, 243, 238, 0.82);
 		font-size: 0.88rem;

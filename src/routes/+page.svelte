@@ -21,7 +21,7 @@
 	<title>Holograph | Your Favorite Photo, Reimagined In Light</title>
 	<meta
 		name="description"
-		content="Upload a photo, see the glow, and make it yours."
+		content="Upload a photo and turn it into a light-catching keepsake."
 	/>
 </svelte:head>
 

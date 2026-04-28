@@ -16,12 +16,12 @@
 			<div class="hero-copy">
 				<p class="eyebrow">Gallery</p>
 				<h1>Sweet moments, coming soon.</h1>
-				<p>Real customer photos will live here soon.</p>
+				<p>Photos coming soon.</p>
 			</div>
 
 			<div class="showcase-card">
 				<p class="showcase-kicker">Soon</p>
-				<h2>Fresh uploads on the way.</h2>
+				<h2>More soon.</h2>
 				<div class="showcase-tags">
 					<span>Family</span>
 					<span>Glow</span>
@@ -40,7 +40,7 @@
 			<div class="cta-copy">
 				<p class="eyebrow">Next</p>
 				<h2>See yours.</h2>
-				<p>Upload. Preview. Order.</p>
+				<p>See yours next.</p>
 			</div>
 			<div class="cta-actions">
 				<a class="button-primary" href={`${resolve('/')}#preview-builder`}>Bring It To Life</a>

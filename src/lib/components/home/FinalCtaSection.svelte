@@ -5,11 +5,11 @@
 <section class="section final-cta">
 	<div class="page-wrap">
 		<div class="cta-card">
-			<p class="eyebrow">Almost yours</p>
-			<h2>Ready to make the magic?</h2>
+			<p class="eyebrow">Ready</p>
+			<h2>Make it yours.</h2>
 			<div class="actions">
 				<a class="button-primary" href="#preview-builder">Make The Magic</a>
-				<a class="button-secondary" href={resolve('/prices')}>See Bundles</a>
+				<a class="button-secondary" href={resolve('/prices')}>Prices</a>
 			</div>
 		</div>
 	</div>
