@@ -688,6 +688,104 @@
 		</div>
 
 		<div class:tikTokFirst={isTikTokVisitor} class="builder-card">
+			<div class="quick-order-card glass-card">
+				<div class="quick-order-copy">
+					<p class="label">Quick order</p>
+					<h3>Upload and add to cart.</h3>
+					<p class="micro">Start simple. Customize more below if you want.</p>
+				</div>
+
+				<form id="homepage-order-form" class="quick-order-form" method="POST" action="/checkout">
+					<input type="hidden" name="source" value={isTikTokVisitor ? 'home-tiktok-preview' : 'home-live-preview'} />
+					<input type="hidden" name="base_name" value={uploadedBaseName} />
+					<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
+					<input type="hidden" name="base_blob_url" value={uploadedBaseBlobUrl} />
+					<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
+					<input type="hidden" name="view_mode" value="compare" />
+					<input type="hidden" name="gift_mode" value={giftMode ? 'gift' : 'standard'} />
+					<input type="hidden" name="rounded_edges" value={roundedEdges} />
+					<input type="hidden" name="frame_option" value={frameOption} />
+					<input type="hidden" name="print_size" value={printSize} />
+					<input type="hidden" name="personal_request" value={personalRequest} />
+					<input type="hidden" name="overlay_text" value={textOverlay} />
+					<input type="hidden" name="overlay_text_style" value={textStyle} />
+					<input type="hidden" name="overlay_text_color" value={textTone} />
+					<input type="hidden" name="gift_message" value={giftMessage} />
+					<input type="hidden" name="ship_direct" value={shipDirect ? 'yes' : 'no'} />
+					<input type="hidden" name="brightness_level" value={String(brightness)} />
+					<input type="hidden" name="shimmer_intensity" value={String(shimmer)} />
+					<input type="hidden" name="effect_mode" value="glow" />
+					<input type="hidden" name="overlay_position" value={`${overlayX},${overlayY},${overlayScale},${overlayRotation}`} />
+					<input type="hidden" name="text_position" value={`${textX},${textY},${textSize}`} />
+
+					<div class="quick-order-grid">
+						<div class="quick-upload">
+							<div class="button-row">
+								<button type="button" class="soft-button" onclick={() => baseUploadInput?.click()}>
+									Upload image
+								</button>
+								<button type="button" class="soft-button" onclick={() => baseCameraInput?.click()}>
+									Take photo
+								</button>
+							</div>
+							{#if uploadedBaseName}
+								<div class="file-meta">
+									<span>{uploadedBaseName}</span>
+									<button type="button" onclick={() => clearUploadedImage('base')}>Remove</button>
+								</div>
+							{/if}
+							{#if baseUploadMessage}
+								<p class:upload-error={baseUploadState === 'error'} class="upload-note">{baseUploadMessage}</p>
+							{/if}
+						</div>
+
+						<label class="checkout-pick">
+							<span>Set</span>
+							<select name="quantity" bind:value={selectedBundle}>
+								{#each featuredCheckoutOffers as offer (offer.quantity)}
+									<option value={offer.quantity}>
+										{bundleLabels[String(offer.quantity)] ?? `${offer.quantity} Holographs`} · {offer.priceLabel}
+									</option>
+								{/each}
+							</select>
+						</label>
+
+						<label class="checkout-pick">
+							<span>Rounded edges</span>
+							<select bind:value={roundedEdges}>
+								<option value="yes">Yes</option>
+								<option value="no">No</option>
+							</select>
+						</label>
+
+						<label class="checkout-pick">
+							<span>Frame</span>
+							<select bind:value={frameOption}>
+								<option value="no">No</option>
+								<option value="yes">Yes</option>
+							</select>
+						</label>
+
+						<label class="checkout-pick">
+							<span>Size</span>
+							<select bind:value={printSize}>
+								{#each sizeOptions as option (option.value)}
+									<option value={option.value}>{option.label}</option>
+								{/each}
+							</select>
+						</label>
+
+						<button class="button-primary quick-order-button" type="submit" disabled={!canOrder}>
+							{canOrder ? 'Add To Cart' : 'Finish Saving'}
+						</button>
+					</div>
+				</form>
+
+				{#if hasUnsavedDesign}
+					<p class="upload-warn">Almost there. Let the save finish first.</p>
+				{/if}
+			</div>
+
 			<div class="builder-grid">
 				<div class="preview-panel">
 					<div
@@ -740,53 +838,6 @@
 						<span>{uploadedBaseSrc ? 'Premium light effect, already built in.' : 'Upload your own photo any time to preview it live.'}</span>
 					</div>
 
-					<div class="checkout-card">
-						<form id="homepage-order-form" class="checkout-form" method="POST" action="/checkout">
-							<input type="hidden" name="source" value={isTikTokVisitor ? 'home-tiktok-preview' : 'home-live-preview'} />
-							<input type="hidden" name="base_name" value={uploadedBaseName} />
-							<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
-							<input type="hidden" name="base_blob_url" value={uploadedBaseBlobUrl} />
-							<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
-							<input type="hidden" name="view_mode" value="compare" />
-							<input type="hidden" name="gift_mode" value={giftMode ? 'gift' : 'standard'} />
-							<input type="hidden" name="rounded_edges" value={roundedEdges} />
-							<input type="hidden" name="frame_option" value={frameOption} />
-							<input type="hidden" name="print_size" value={printSize} />
-							<input type="hidden" name="personal_request" value={personalRequest} />
-							<input type="hidden" name="overlay_text" value={textOverlay} />
-							<input type="hidden" name="overlay_text_style" value={textStyle} />
-							<input type="hidden" name="overlay_text_color" value={textTone} />
-							<input type="hidden" name="gift_message" value={giftMessage} />
-							<input type="hidden" name="ship_direct" value={shipDirect ? 'yes' : 'no'} />
-							<input type="hidden" name="brightness_level" value={String(brightness)} />
-							<input type="hidden" name="shimmer_intensity" value={String(shimmer)} />
-							<input type="hidden" name="effect_mode" value="glow" />
-							<input type="hidden" name="overlay_position" value={`${overlayX},${overlayY},${overlayScale},${overlayRotation}`} />
-							<input type="hidden" name="text_position" value={`${textX},${textY},${textSize}`} />
-
-							<div class="bundle-row">
-								<label class="checkout-pick">
-									<span>Choose quantity</span>
-									<select name="quantity" bind:value={selectedBundle}>
-										{#each featuredCheckoutOffers as offer (offer.quantity)}
-											<option value={offer.quantity}>
-												{bundleLabels[String(offer.quantity)] ?? `${offer.quantity} Holographs`} · {offer.priceLabel}
-											</option>
-										{/each}
-									</select>
-								</label>
-								<button class="button-primary order-button" type="submit" disabled={!canOrder}>
-									{canOrder ? 'Bring It To Life' : 'Finish Saving'}
-								</button>
-							</div>
-						</form>
-
-						<p class="checkout-note">Pick your set and bring it to life.</p>
-						{#if hasUnsavedDesign}
-							<p class="upload-warn">Almost there. Let the save finish first.</p>
-						{/if}
-					</div>
-
 					<div class="mockup-card glass-card">
 						<div class="mockup-copy">
 							<p class="label">Ways to use it</p>
@@ -833,10 +884,16 @@
 				</div>
 
 				<div class="controls-panel">
+					<div class="control-block optional-block">
+						<p class="label">Customizations</p>
+						<h3>Optional touches.</h3>
+						<p class="micro">Everything below is extra if you want to personalize more.</p>
+					</div>
+
 					<div class="control-block">
 						<p class="label">Upload</p>
-						<h3>Start with your photo.</h3>
-						<p class="micro">Upload it or snap one now.</p>
+						<h3>Change your photo.</h3>
+						<p class="micro">Upload a different one any time.</p>
 						<div class="button-row">
 							<button type="button" class="soft-button" onclick={() => baseUploadInput?.click()}>
 								Upload photo
@@ -1096,7 +1153,8 @@
 	.preview-layout,
 	.preview-panel,
 	.controls-panel,
-	.checkout-card {
+	.checkout-card,
+	.quick-order-card {
 		display: grid;
 		gap: 1rem;
 	}
@@ -1172,6 +1230,36 @@
 		gap: 1rem;
 	}
 
+	.quick-order-card {
+		padding: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.quick-order-copy {
+		display: grid;
+		gap: 0.35rem;
+	}
+
+	.quick-order-form,
+	.quick-order-grid,
+	.quick-upload {
+		display: grid;
+		gap: 0.75rem;
+	}
+
+	.quick-order-grid {
+		grid-template-columns: minmax(0, 1.4fr) repeat(4, minmax(0, 0.8fr)) auto;
+		align-items: end;
+	}
+
+	.quick-order-button {
+		min-width: 12rem;
+		min-height: 3.2rem;
+		font-size: 1rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
 	.control-block {
 		display: grid;
 		gap: 0.72rem;
@@ -1179,6 +1267,12 @@
 		border-radius: 1.35rem;
 		background: rgba(255, 255, 255, 0.025);
 		border: 1px solid rgba(255, 255, 255, 0.06);
+	}
+
+	.optional-block {
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+			rgba(255, 255, 255, 0.02);
 	}
 
 	.label,
@@ -1419,7 +1513,8 @@
 
 	.checkout-card,
 	.glow-status,
-	.mockup-card {
+	.mockup-card,
+	.quick-order-card {
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.04),
 			0 18px 40px rgba(0, 0, 0, 0.16);
@@ -1734,6 +1829,17 @@
 		}
 	}
 
+	@media (max-width: 1080px) {
+		.quick-order-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.quick-upload,
+		.quick-order-button {
+			grid-column: 1 / -1;
+		}
+	}
+
 	@media (min-width: 861px) {
 		.mobile-order-bar {
 			display: none;
@@ -1754,7 +1860,8 @@
 		.control-block,
 		.checkout-card,
 		.glow-status,
-		.mockup-card {
+		.mockup-card,
+		.quick-order-card {
 			padding: 0.85rem;
 			border-radius: 1.1rem;
 		}
@@ -1776,6 +1883,10 @@
 
 		.bundle-row {
 			display: grid;
+			grid-template-columns: 1fr;
+		}
+
+		.quick-order-grid {
 			grid-template-columns: 1fr;
 		}
 
