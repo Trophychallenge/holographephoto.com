@@ -263,7 +263,7 @@
 					<p class="kicker">Private quote</p>
 					<p>Best for events, gifts, and larger orders.</p>
 				</div>
-				<a class="button-secondary" href="#contact-modal">Call Christina For A Quote</a>
+				<a class="button-secondary" href="/contact">Contact</a>
 			</div>
 		</section>
 	</div>

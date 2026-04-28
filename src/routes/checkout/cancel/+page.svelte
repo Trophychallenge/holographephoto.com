@@ -15,7 +15,7 @@
 			<p>You can try again or ask for a quote.</p>
 			<div class="button-row">
 				<a class="button-primary" href={resolve('/prices')}>Back to checkout</a>
-				<a class="button-secondary" href="#contact-modal">Call Christina</a>
+				<a class="button-secondary" href="/contact">Contact Christina</a>
 			</div>
 		</div>
 	</div>

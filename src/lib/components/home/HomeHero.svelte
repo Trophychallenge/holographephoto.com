@@ -65,11 +65,6 @@
 					<span class="hero-note-line"></span>
 					<p>Simple, personal, and easy to give.</p>
 				</div>
-
-				<div class="hero-contact glass-contact">
-					<p>Feel free to reach out for any feedback.</p>
-					<a href="#contact-modal">Contact Christina at 347-996-0205</a>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -231,39 +226,6 @@
 		max-width: 22rem;
 	}
 
-	.hero-contact {
-		display: grid;
-		gap: 0.35rem;
-		max-width: 28rem;
-		padding: 0.9rem 1rem;
-		border-radius: 1.1rem;
-		background:
-			linear-gradient(180deg, rgba(8, 8, 8, 0.28), rgba(8, 8, 8, 0.12)),
-			radial-gradient(circle at top left, rgba(234, 211, 182, 0.08), transparent 42%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		backdrop-filter: blur(12px);
-	}
-
-	.hero-contact p,
-	.hero-contact a {
-		margin: 0;
-		font-size: 0.86rem;
-		line-height: 1.5;
-	}
-
-	.hero-contact p {
-		color: rgba(247, 243, 238, 0.72);
-	}
-
-	.hero-contact a {
-		color: #f7efe2;
-		text-decoration: none;
-		font-weight: 600;
-	}
-
-	.hero-contact a:hover {
-		color: #fff7eb;
-	}
 
 	.hero-note-line {
 		width: 2.5rem;

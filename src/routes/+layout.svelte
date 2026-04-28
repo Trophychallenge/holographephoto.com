@@ -12,7 +12,8 @@
 	const navItems = [
 		{ href: '/', label: 'Home' },
 		{ href: '/prices', label: 'Prices' },
-		{ href: '/gallery', label: 'Gallery' }
+		{ href: '/gallery', label: 'Gallery' },
+		{ href: '/contact', label: 'Contact' }
 	] as const;
 </script>
 
@@ -25,7 +26,7 @@
 	/>
 </svelte:head>
 
-<div class="site-shell" id="site-top">
+<div class="site-shell">
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
 			<img class="brand-logo" src="/holographe/brand-logo.png" alt="Holographe logo" />
@@ -51,19 +52,11 @@
 		<div class="footer-links">
 			<a href={resolve('/prices')}>Prices</a>
 			<a href={resolve('/gallery')}>Gallery</a>
-			<a href="#contact-modal">Call Christina</a>
+			<a href={resolve('/contact')}>Contact</a>
 		</div>
-		<p class="footer-meta">holographephoto.com</p>
+		<div>
+			<p class="footer-copy">Christina</p>
+			<p class="footer-meta">347-996-0205</p>
+		</div>
 	</footer>
-</div>
-
-<div class="modal-shell" id="contact-modal">
-	<a class="modal-backdrop" href="#site-top" aria-label="Close contact details"></a>
-	<div class="modal-card contact-modal-card">
-		<a class="modal-close" href="#site-top" aria-label="Close contact details">Close</a>
-		<p class="modal-kicker">Contact Christina</p>
-		<strong class="modal-title">347-996-0205</strong>
-		<p class="modal-copy">Feel free to reach out for any feedback.</p>
-		<a class="button-primary modal-action" href="tel:3479960205">Call Now</a>
-	</div>
 </div>

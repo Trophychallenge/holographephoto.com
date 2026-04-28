@@ -18,7 +18,6 @@
 
 	const demoBeforeSrc = '/holographe/jess-before.jpg';
 	const demoAfterSrc = '/holographe/jessholo.png';
-	const demoAfterVideoSrc = '/holographe/jessholo.mov';
 
 	const textStyles: { id: TextStyle; label: string }[] = [
 		{ id: 'serif', label: 'Serif' },
@@ -87,6 +86,7 @@
 	let overlayY = $state(52);
 	let brightness = $state(100);
 	let shimmer = $state(50);
+	let compareSplit = $state(52);
 	let textOverlay = $state('');
 	let textStyle = $state<TextStyle>('handwritten');
 	let textTone = $state<TextTone>('ivory');
@@ -111,7 +111,6 @@
 	let overlayCameraInput: HTMLInputElement | null = null;
 	let originalCanvas = $state<HTMLCanvasElement | null>(null);
 	let effectCanvas = $state<HTMLCanvasElement | null>(null);
-	let compareVideo = $state<HTMLVideoElement | null>(null);
 
 	let baseImageElement = $state<HTMLImageElement | null>(null);
 	let overlayImageElement = $state<HTMLImageElement | null>(null);
@@ -120,7 +119,6 @@
 	const currentBaseAlt = $derived(uploadedBaseName || 'Before photo preview for a Holograph keepsake');
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
 	const currentFinishedSrc = $derived(uploadedBaseSrc ? '' : demoAfterSrc);
-	const currentFinishedVideoSrc = $derived(uploadedBaseSrc ? '' : demoAfterVideoSrc);
 	const currentMockupSrc = $derived(uploadedBaseSrc ? currentBaseSrc : demoAfterSrc);
 	const currentMockupAlt = $derived(
 		uploadedBaseSrc ? currentBaseAlt : 'Finished holographic Holograph sample on a surface mockup'
@@ -152,12 +150,6 @@
 
 	$effect(() => {
 		drawPreviews();
-	});
-
-	$effect(() => {
-		if (!compareVideo || !currentFinishedVideoSrc) return;
-		compareVideo.playbackRate = 0.78;
-		void compareVideo.play().catch(() => {});
 	});
 
 	async function submitCheckoutForm(event: SubmitEvent) {
@@ -785,37 +777,28 @@
 							<canvas bind:this={originalCanvas} class="preview-canvas" aria-label={currentBaseAlt}></canvas>
 						</div>
 						{#if !uploadedBaseSrc}
-							<div class="preview-card effect-shell preview-sample-shell">
-								{#if currentFinishedVideoSrc}
-									<video
-										bind:this={compareVideo}
-										class="preview-canvas preview-image preview-video-finished"
-										autoplay
-										muted
-										loop
-										playsinline
-										preload="auto"
-										poster={currentFinishedSrc}
-										aria-label="Finished holographic video preview"
-									>
-										<source src={currentFinishedVideoSrc} type="video/quicktime" />
-									</video>
-								{:else if currentFinishedSrc}
-									<img
-										class="preview-canvas preview-image preview-image-finished"
-										src={currentFinishedSrc}
-										alt="Finished holographic sample preview"
-									/>
-								{/if}
+							<div class="preview-card effect-shell" style={`clip-path: inset(0 0 0 ${compareSplit}%);`}>
+								<img
+									class="preview-canvas preview-image preview-image-finished"
+									src={currentFinishedSrc}
+									alt="Finished holographic sample preview"
+								/>
 							</div>
-							<div class="compare-line compare-line-static"></div>
+							<div class="compare-line" style={`left:${compareSplit}%`}></div>
 						{/if}
 					</div>
 
 					<div class="compare-head">
 						<strong>{uploadedBaseSrc ? 'Your uploaded photo.' : 'Real before and after sample.'}</strong>
-						<span>{uploadedBaseSrc ? 'Clean preview only. Final holograph finish follows the real sample.' : 'Before on the left. Real holograph video on the right.'}</span>
+						<span>{uploadedBaseSrc ? 'Clean preview only. Final holograph finish follows the real sample.' : 'Before on the left. Real finished sample on the right.'}</span>
 					</div>
+
+					{#if !uploadedBaseSrc}
+						<label class="compare-control">
+							<span>Before / After</span>
+							<input type="range" min="6" max="94" bind:value={compareSplit} />
+						</label>
+					{/if}
 
 					<div class="glow-status glass-card">
 						<strong>{uploadedBaseSrc ? 'No fake finish preview.' : 'Real finish sample only.'}</strong>
@@ -1443,18 +1426,9 @@
 
 	.preview-image-finished {
 		object-position: center 20%;
-		transform: scale(1.28) translateY(-2%);
+		transform: scale(1.16) translateY(-1%);
 		box-shadow:
 			0 28px 64px rgba(0, 0, 0, 0.42),
-			0 0 0 1px rgba(255, 255, 255, 0.06);
-	}
-
-	.preview-video-finished {
-		object-position: center 18%;
-		transform: scale(1.22) translateY(-2%);
-		filter: saturate(1.02) contrast(1.04) brightness(0.96);
-		box-shadow:
-			0 30px 72px rgba(0, 0, 0, 0.46),
 			0 0 0 1px rgba(255, 255, 255, 0.06);
 	}
 
@@ -1466,14 +1440,6 @@
 		background: rgba(255, 255, 255, 0.92);
 		box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
 		transform: translateX(-50%);
-	}
-
-	.preview-sample-shell {
-		clip-path: inset(0 0 0 50%);
-	}
-
-	.compare-line-static {
-		left: 50%;
 	}
 
 	.compare-head {
