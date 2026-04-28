@@ -18,6 +18,7 @@
 
 	const demoBeforeSrc = '/holographe/jess-before.jpg';
 	const demoAfterSrc = '/holographe/jessholo.png';
+	const demoAfterVideoSrc = '/holographe/jessholo.mov';
 
 	const textStyles: { id: TextStyle; label: string }[] = [
 		{ id: 'serif', label: 'Serif' },
@@ -86,7 +87,6 @@
 	let overlayY = $state(52);
 	let brightness = $state(100);
 	let shimmer = $state(50);
-	let compareSplit = $state(52);
 	let textOverlay = $state('');
 	let textStyle = $state<TextStyle>('handwritten');
 	let textTone = $state<TextTone>('ivory');
@@ -102,19 +102,16 @@
 	let shipDirect = $state(true);
 	let selectedBundle = $state(String(featuredCheckoutOffers[1]?.quantity ?? featuredCheckoutOffers[0].quantity));
 	let selectedMockup = $state<MockupScene>('locker');
-	let previewTiltX = $state(0);
-	let previewTiltY = $state(0);
-	let lightX = $state(54);
-	let lightY = $state(30);
+	let checkoutError = $state('');
+	let checkoutLoading = $state(false);
 
 	let baseUploadInput: HTMLInputElement | null = null;
 	let baseCameraInput: HTMLInputElement | null = null;
 	let overlayUploadInput: HTMLInputElement | null = null;
 	let overlayCameraInput: HTMLInputElement | null = null;
-	let previewStage: HTMLDivElement | null = null;
 	let originalCanvas = $state<HTMLCanvasElement | null>(null);
 	let effectCanvas = $state<HTMLCanvasElement | null>(null);
-	let activeDragLayer = $state<DragLayer>(null);
+	let compareVideo = $state<HTMLVideoElement | null>(null);
 
 	let baseImageElement = $state<HTMLImageElement | null>(null);
 	let overlayImageElement = $state<HTMLImageElement | null>(null);
@@ -123,6 +120,7 @@
 	const currentBaseAlt = $derived(uploadedBaseName || 'Before photo preview for a Holograph keepsake');
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
 	const currentFinishedSrc = $derived(uploadedBaseSrc ? '' : demoAfterSrc);
+	const currentFinishedVideoSrc = $derived(uploadedBaseSrc ? '' : demoAfterVideoSrc);
 	const currentMockupSrc = $derived(uploadedBaseSrc ? currentBaseSrc : demoAfterSrc);
 	const currentMockupAlt = $derived(
 		uploadedBaseSrc ? currentBaseAlt : 'Finished holographic Holograph sample on a surface mockup'
@@ -139,10 +137,6 @@
 		!hasUnsavedDesign && baseUploadState !== 'uploading' && overlayUploadState !== 'uploading' && !overlayProcessing
 	);
 	const currentMockup = $derived(mockupScenes.find((item) => item.id === selectedMockup) ?? mockupScenes[0]);
-	const stageStyle = $derived(
-		`--tilt-x:${previewTiltX}deg; --tilt-y:${previewTiltY}deg; --light-x:${lightX}%; --light-y:${lightY}%;`
-	);
-
 	onMount(() => {
 		void syncBaseImage(currentBaseSrc);
 		if (currentOverlaySrc) void syncOverlayImage(currentOverlaySrc);
@@ -159,6 +153,43 @@
 	$effect(() => {
 		drawPreviews();
 	});
+
+	$effect(() => {
+		if (!compareVideo || !currentFinishedVideoSrc) return;
+		compareVideo.playbackRate = 0.78;
+		void compareVideo.play().catch(() => {});
+	});
+
+	async function submitCheckoutForm(event: SubmitEvent) {
+		event.preventDefault();
+		const form = event.currentTarget as HTMLFormElement;
+		checkoutError = '';
+		checkoutLoading = true;
+
+		try {
+			const response = await fetch(form.action, {
+				method: 'POST',
+				body: new FormData(form),
+				headers: {
+					accept: 'application/json',
+					'x-holograph-ajax': '1'
+				}
+			});
+
+			const result = (await response.json().catch(() => ({}))) as { error?: string; url?: string };
+
+			if (!response.ok || !result.url) {
+				checkoutError = result.error || 'Checkout could not start right now. Please try again.';
+				return;
+			}
+
+			window.location.href = result.url;
+		} catch {
+			checkoutError = 'Checkout could not start right now. Please try again.';
+		} finally {
+			checkoutLoading = false;
+		}
+	}
 
 	function clamp(value: number, min: number, max: number) {
 		return Math.min(max, Math.max(min, value));
@@ -387,8 +418,8 @@
 		context.fillStyle = sheen;
 		context.fillRect(card.x, card.y, card.width, card.height);
 
-		const lightCenterX = card.x + (card.width * lightX) / 100;
-		const lightCenterY = card.y + (card.height * lightY) / 100;
+		const lightCenterX = card.x + card.width * 0.54;
+		const lightCenterY = card.y + card.height * 0.3;
 		const glow = context.createRadialGradient(
 			lightCenterX,
 			lightCenterY,
@@ -501,54 +532,6 @@
 		drawHolographicEffect(effectContext, effectCard, originalCanvas);
 		drawOverlayImage(effectContext, effectCard);
 		drawTextOverlay(effectContext, effectCard);
-	}
-
-	function beginPointerInteraction(event: PointerEvent) {
-		if (!previewStage) return;
-		const bounds = previewStage.getBoundingClientRect();
-		const x = ((event.clientX - bounds.left) / bounds.width) * 100;
-		const y = ((event.clientY - bounds.top) / bounds.height) * 100;
-
-		const overlayHit =
-			currentOverlaySrc && overlayEnabled && Math.abs(x - overlayX) < 14 && Math.abs(y - overlayY) < 16;
-		const textHit = textOverlay.trim() && Math.abs(x - textX) < 18 && Math.abs(y - textY) < 12;
-
-		activeDragLayer = overlayHit ? 'overlay' : textHit ? 'text' : null;
-		handlePointerMove(event);
-		previewStage.setPointerCapture(event.pointerId);
-	}
-
-	function handlePointerMove(event: PointerEvent) {
-		if (!previewStage) return;
-		const bounds = previewStage.getBoundingClientRect();
-		const x = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 6, 94);
-		const y = clamp(((event.clientY - bounds.top) / bounds.height) * 100, 6, 94);
-
-		lightX = clamp(x, 14, 86);
-		lightY = clamp(y, 12, 80);
-		previewTiltY = (x - 50) * 0.08;
-		previewTiltX = (50 - y) * 0.06;
-
-		if (activeDragLayer === 'overlay') {
-			overlayX = clamp(x, 18, 82);
-			overlayY = clamp(y, 18, 82);
-		}
-
-		if (activeDragLayer === 'text') {
-			textX = clamp(x, 14, 86);
-			textY = clamp(y, 12, 90);
-		}
-	}
-
-	function endPointerInteraction(event?: PointerEvent) {
-		if (event && previewStage?.hasPointerCapture(event.pointerId)) {
-			previewStage.releasePointerCapture(event.pointerId);
-		}
-		activeDragLayer = null;
-		previewTiltX = 0;
-		previewTiltY = 0;
-		lightX = 54;
-		lightY = 30;
 	}
 
 	async function persistDesignAsset(file: File, slot: 'base' | 'overlay') {
@@ -695,7 +678,13 @@
 					<p class="micro">Start simple. Customize more below if you want.</p>
 				</div>
 
-				<form id="homepage-order-form" class="quick-order-form" method="POST" action="/checkout">
+				<form
+					id="homepage-order-form"
+					class="quick-order-form"
+					method="POST"
+					action="/checkout"
+					onsubmit={submitCheckoutForm}
+				>
 					<input type="hidden" name="source" value={isTikTokVisitor ? 'home-tiktok-preview' : 'home-live-preview'} />
 					<input type="hidden" name="base_name" value={uploadedBaseName} />
 					<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
@@ -775,8 +764,8 @@
 							</select>
 						</label>
 
-						<button class="button-primary quick-order-button" type="submit" disabled={!canOrder}>
-							{canOrder ? 'Add To Cart' : 'Finish Saving'}
+						<button class="button-primary quick-order-button" type="submit" disabled={!canOrder || checkoutLoading}>
+							{checkoutLoading ? 'Starting Checkout...' : canOrder ? 'Add To Cart' : 'Finish Saving'}
 						</button>
 					</div>
 				</form>
@@ -789,53 +778,48 @@
 			<div class="builder-grid">
 				<div class="preview-panel">
 					<div
-						bind:this={previewStage}
 						class="preview-stage"
-						role="application"
-						aria-label="Interactive Holograph preview comparing the original photo and the finished holographic effect"
-						style={stageStyle}
-						onpointerdown={beginPointerInteraction}
-						onpointermove={handlePointerMove}
-						onpointerleave={() => endPointerInteraction()}
-						onpointerup={endPointerInteraction}
-						onpointercancel={endPointerInteraction}
+						aria-label="Holograph sample preview"
 					>
 						<div class="preview-card original-shell">
 							<canvas bind:this={originalCanvas} class="preview-canvas" aria-label={currentBaseAlt}></canvas>
 						</div>
-						<div class="preview-card effect-shell" style={`clip-path: inset(0 ${100 - compareSplit}% 0 0);`}>
-							{#if currentFinishedSrc}
-								<img
-									class="preview-canvas preview-image preview-image-finished"
-									src={currentFinishedSrc}
-									alt="Finished holographic sample preview"
-								/>
-							{:else}
-								<canvas bind:this={effectCanvas} class="preview-canvas" aria-hidden="true"></canvas>
-							{/if}
-						</div>
-						<div class="compare-line" style={`left:${compareSplit}%`}></div>
-						{#if currentOverlaySrc && overlayEnabled}
-							<div class="drag-tag overlay-tag">Drag overlay</div>
-						{/if}
-						{#if textOverlay.trim()}
-							<div class="drag-tag text-tag">Drag text</div>
+						{#if !uploadedBaseSrc}
+							<div class="preview-card effect-shell preview-sample-shell">
+								{#if currentFinishedVideoSrc}
+									<video
+										bind:this={compareVideo}
+										class="preview-canvas preview-image preview-video-finished"
+										autoplay
+										muted
+										loop
+										playsinline
+										preload="auto"
+										poster={currentFinishedSrc}
+										aria-label="Finished holographic video preview"
+									>
+										<source src={currentFinishedVideoSrc} type="video/quicktime" />
+									</video>
+								{:else if currentFinishedSrc}
+									<img
+										class="preview-canvas preview-image preview-image-finished"
+										src={currentFinishedSrc}
+										alt="Finished holographic sample preview"
+									/>
+								{/if}
+							</div>
+							<div class="compare-line compare-line-static"></div>
 						{/if}
 					</div>
 
 					<div class="compare-head">
-						<strong>{uploadedBaseSrc ? 'See your photo catch the light.' : 'From quiet photo to full shimmer.'}</strong>
-						<span>{uploadedBaseSrc ? 'Your photo / Live glow preview' : 'A real Holograph finish from the original photo'}</span>
+						<strong>{uploadedBaseSrc ? 'Your uploaded photo.' : 'Real before and after sample.'}</strong>
+						<span>{uploadedBaseSrc ? 'Clean preview only. Final holograph finish follows the real sample.' : 'Before on the left. Real holograph video on the right.'}</span>
 					</div>
 
-					<label class="compare-control">
-						<span>Before / After</span>
-						<input type="range" min="6" max="94" bind:value={compareSplit} />
-					</label>
-
 					<div class="glow-status glass-card">
-						<strong>One signature glow.</strong>
-						<span>{uploadedBaseSrc ? 'Premium light effect, already built in.' : 'Upload your own photo any time to preview it live.'}</span>
+						<strong>{uploadedBaseSrc ? 'No fake finish preview.' : 'Real finish sample only.'}</strong>
+						<span>{uploadedBaseSrc ? 'We removed the inaccurate live glow effect so the preview stays honest.' : 'This sample shows the true holograph motion instead of a simulated effect.'}</span>
 					</div>
 
 					<div class="mockup-card glass-card">
@@ -1013,7 +997,7 @@
 								onclick={cleanOverlayBackground}
 								disabled={!currentOverlaySrc || overlayProcessing}
 							>
-								{overlayProcessing ? 'Cleaning...' : 'Remove paper background'}
+								{overlayProcessing ? 'Cleaning...' : 'Remove background'}
 							</button>
 							<button
 								type="button"
@@ -1143,10 +1127,21 @@
 			<p>{isTikTokVisitor ? 'Try it with your own photo' : currentBundleLabel}</p>
 			<strong>{currentBundlePrice}</strong>
 		</div>
-		<button class="button-primary" type="submit" form="homepage-order-form" disabled={!canOrder}>
-			{canOrder ? 'Bring It To Life' : 'Saving...'}
+		<button class="button-primary" type="submit" form="homepage-order-form" disabled={!canOrder || checkoutLoading}>
+			{checkoutLoading ? 'Starting...' : canOrder ? 'Bring It To Life' : 'Saving...'}
 		</button>
 	</div>
+
+	{#if checkoutError}
+		<div class="checkout-error-shell">
+			<div class="checkout-error-card glass-card">
+				<button type="button" class="checkout-error-close" onclick={() => (checkoutError = '')}>Close</button>
+				<p class="label">Checkout issue</p>
+				<h3>We could not start checkout.</h3>
+				<p class="micro">{checkoutError}</p>
+			</div>
+		</div>
+	{/if}
 </section>
 
 <style>
@@ -1277,8 +1272,7 @@
 
 	.label,
 	.slider-wrap span,
-	.checkout-pick span,
-	.compare-control span {
+	.checkout-pick span {
 		font-size: 0.68rem;
 		font-weight: 700;
 		letter-spacing: 0.16em;
@@ -1361,9 +1355,19 @@
 		width: 100%;
 		padding: 0.88rem 0.96rem;
 		border-radius: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		background: rgba(255, 255, 255, 0.04);
-		color: var(--text);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		background:
+			linear-gradient(180deg, rgba(15, 15, 17, 0.96), rgba(11, 11, 13, 0.94)),
+			rgba(255, 255, 255, 0.03);
+		color: #f8f4ee;
+		color-scheme: dark;
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+	}
+
+	.checkout-pick select option,
+	.simple-select option {
+		background: #111214;
+		color: #f8f4ee;
 	}
 
 	.text-input::placeholder,
@@ -1398,7 +1402,6 @@
 			radial-gradient(circle at top, rgba(255, 255, 255, 0.1), transparent 30%),
 			linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
 			linear-gradient(160deg, rgba(33, 33, 33, 0.75), rgba(10, 10, 10, 0.94));
-		touch-action: none;
 	}
 
 	.preview-stage::before {
@@ -1407,7 +1410,7 @@
 		inset: 0;
 		pointer-events: none;
 		background:
-			radial-gradient(circle at var(--light-x) var(--light-y), rgba(255, 255, 255, 0.12), transparent 14%),
+			radial-gradient(circle at 62% 28%, rgba(255, 255, 255, 0.1), transparent 15%),
 			linear-gradient(115deg, rgba(255, 255, 255, 0.05), transparent 32%, rgba(234, 211, 182, 0.04), transparent 68%);
 	}
 
@@ -1417,8 +1420,6 @@
 		display: grid;
 		place-items: center;
 		padding: 1rem;
-		transform: perspective(1100px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
-		transition: transform 140ms ease;
 	}
 
 	.preview-canvas {
@@ -1441,10 +1442,19 @@
 	}
 
 	.preview-image-finished {
-		object-position: center 22%;
-		transform: scale(1.86) translateY(-3%);
+		object-position: center 20%;
+		transform: scale(1.28) translateY(-2%);
 		box-shadow:
 			0 28px 64px rgba(0, 0, 0, 0.42),
+			0 0 0 1px rgba(255, 255, 255, 0.06);
+	}
+
+	.preview-video-finished {
+		object-position: center 18%;
+		transform: scale(1.22) translateY(-2%);
+		filter: saturate(1.02) contrast(1.04) brightness(0.96);
+		box-shadow:
+			0 30px 72px rgba(0, 0, 0, 0.46),
 			0 0 0 1px rgba(255, 255, 255, 0.06);
 	}
 
@@ -1458,27 +1468,12 @@
 		transform: translateX(-50%);
 	}
 
-	.drag-tag {
-		position: absolute;
-		z-index: 2;
-		padding: 0.35rem 0.58rem;
-		border-radius: 999px;
-		background: rgba(12, 12, 12, 0.74);
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		font-size: 0.68rem;
-		color: rgba(247, 243, 238, 0.82);
-		backdrop-filter: blur(12px);
-		pointer-events: none;
+	.preview-sample-shell {
+		clip-path: inset(0 0 0 50%);
 	}
 
-	.overlay-tag {
-		left: 1rem;
-		top: 1rem;
-	}
-
-	.text-tag {
-		right: 1rem;
-		top: 1rem;
+	.compare-line-static {
+		left: 50%;
 	}
 
 	.compare-head {
@@ -1492,11 +1487,6 @@
 
 	.compare-head strong {
 		font-size: 0.98rem;
-	}
-
-	.compare-control {
-		display: grid;
-		gap: 0.45rem;
 	}
 
 	.glow-status,
@@ -1572,6 +1562,35 @@
 	.upload-warn,
 	.upload-error {
 		color: #f5d3bf;
+	}
+
+	.checkout-error-shell {
+		position: fixed;
+		inset: 0;
+		z-index: 70;
+		display: grid;
+		place-items: center;
+		padding: 1rem;
+		background: rgba(4, 4, 6, 0.76);
+		backdrop-filter: blur(16px);
+	}
+
+	.checkout-error-card {
+		width: min(32rem, calc(100vw - 2rem));
+		display: grid;
+		gap: 0.75rem;
+		padding: 1.2rem;
+	}
+
+	.checkout-error-close {
+		justify-self: end;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: rgba(248, 244, 238, 0.72);
+		font-size: 0.76rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 	}
 
 	.file-meta {

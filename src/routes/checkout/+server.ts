@@ -3,6 +3,15 @@ import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getCheckoutOffer, parseCheckoutQuantity } from '$lib/pricing';
 
+function jsonResponse(body: Record<string, string>, status = 200) {
+	return new Response(JSON.stringify(body), {
+		status,
+		headers: {
+			'content-type': 'application/json'
+		}
+	});
+}
+
 function buildCheckoutParams({
 	origin,
 	quantity,
@@ -51,13 +60,13 @@ function buildCheckoutParams({
 }
 
 export const POST: RequestHandler = async ({ request, fetch, url }) => {
+	const wantsJson =
+		request.headers.get('x-holograph-ajax') === '1' ||
+		request.headers.get('accept')?.includes('application/json');
+
 	if (!env.STRIPE_SECRET_KEY) {
-		return new Response(
-			'Stripe is not configured yet. Add STRIPE_SECRET_KEY before using checkout.',
-			{
-				status: 503
-			}
-		);
+		const message = 'Stripe is not configured yet. Add STRIPE_SECRET_KEY before using checkout.';
+		return wantsJson ? jsonResponse({ error: message }, 503) : new Response(message, { status: 503 });
 	}
 
 	const formData = await request.formData();
@@ -87,18 +96,15 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 	};
 
 	if (!quantity) {
-		return new Response('Select one of the available sale bundle sizes.', { status: 400 });
+		const message = 'Select one of the available sale bundle sizes.';
+		return wantsJson ? jsonResponse({ error: message }, 400) : new Response(message, { status: 400 });
 	}
 
 	const offer = getCheckoutOffer(quantity);
 
 	if (!offer) {
-		return new Response(
-			'That bundle size is not available online. Request a custom quote instead.',
-			{
-				status: 400
-			}
-		);
+		const message = 'That bundle size is not available online. Request a custom quote instead.';
+		return wantsJson ? jsonResponse({ error: message }, 400) : new Response(message, { status: 400 });
 	}
 
 	const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
@@ -118,13 +124,21 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 
 	if (!stripeResponse.ok) {
 		const errorBody = await stripeResponse.text();
-		return new Response(`Stripe checkout error: ${errorBody}`, { status: stripeResponse.status });
+		const message = `Stripe checkout error: ${errorBody}`;
+		return wantsJson
+			? jsonResponse({ error: message }, stripeResponse.status)
+			: new Response(message, { status: stripeResponse.status });
 	}
 
 	const session = (await stripeResponse.json()) as { url?: string };
 
 	if (!session.url) {
-		return new Response('Stripe did not return a checkout URL.', { status: 502 });
+		const message = 'Stripe did not return a checkout URL.';
+		return wantsJson ? jsonResponse({ error: message }, 502) : new Response(message, { status: 502 });
+	}
+
+	if (wantsJson) {
+		return jsonResponse({ url: session.url });
 	}
 
 	throw redirect(303, session.url);

@@ -8,6 +8,40 @@
 		{ value: '8x10', label: '8 x 10' },
 		{ value: '11x14', label: '11 x 14' }
 	] as const;
+
+	let checkoutError = $state('');
+	let checkoutLoading = $state(false);
+
+	async function submitCheckoutForm(event: SubmitEvent) {
+		event.preventDefault();
+		const form = event.currentTarget as HTMLFormElement;
+		checkoutError = '';
+		checkoutLoading = true;
+
+		try {
+			const response = await fetch(form.action, {
+				method: 'POST',
+				body: new FormData(form),
+				headers: {
+					accept: 'application/json',
+					'x-holograph-ajax': '1'
+				}
+			});
+
+			const result = (await response.json().catch(() => ({}))) as { error?: string; url?: string };
+
+			if (!response.ok || !result.url) {
+				checkoutError = result.error || 'Checkout could not start right now. Please try again.';
+				return;
+			}
+
+			window.location.href = result.url;
+		} catch {
+			checkoutError = 'Checkout could not start right now. Please try again.';
+		} finally {
+			checkoutLoading = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -96,7 +130,7 @@
 						{/each}
 					</div>
 
-					<form class="checkout-form" method="POST" action="/checkout">
+					<form class="checkout-form" method="POST" action="/checkout" onsubmit={submitCheckoutForm}>
 						<label>
 							<span>Featured bundle</span>
 							<select name="quantity">
@@ -133,7 +167,9 @@
 							<span>Request</span>
 							<input type="text" name="personal_request" placeholder="Name, date, or quick note" />
 						</label>
-						<button class="button-primary" type="submit">Add To Cart</button>
+						<button class="button-primary" type="submit" disabled={checkoutLoading}>
+							{checkoutLoading ? 'Starting Checkout...' : 'Add To Cart'}
+						</button>
 					</form>
 				</article>
 
@@ -170,7 +206,7 @@
 						{/each}
 					</div>
 
-					<form class="checkout-form" method="POST" action="/checkout">
+					<form class="checkout-form" method="POST" action="/checkout" onsubmit={submitCheckoutForm}>
 						<label>
 							<span>Larger bundle</span>
 							<select name="quantity">
@@ -207,7 +243,9 @@
 							<span>Request</span>
 							<input type="text" name="personal_request" placeholder="Name, date, or quick note" />
 						</label>
-						<button class="button-primary" type="submit">Add To Cart</button>
+						<button class="button-primary" type="submit" disabled={checkoutLoading}>
+							{checkoutLoading ? 'Starting Checkout...' : 'Add To Cart'}
+						</button>
 					</form>
 				</article>
 			</div>
@@ -238,6 +276,17 @@
 		<img src="/holographe/bulk.jpg" alt="Wrapped bulk Holograph orders with pink ribbon" />
 	</div>
 </div>
+
+{#if checkoutError}
+	<div class="checkout-error-shell">
+		<div class="checkout-error-card glass-card">
+			<button type="button" class="checkout-error-close" onclick={() => (checkoutError = '')}>Close</button>
+			<p class="kicker">Checkout issue</p>
+			<h2>We could not start checkout.</h2>
+			<p>{checkoutError}</p>
+		</div>
+	</div>
+{/if}
 
 <style>
 	h1,
@@ -368,6 +417,36 @@
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: rgba(248, 244, 238, 0.72);
+	}
+
+	.checkout-error-shell {
+		position: fixed;
+		inset: 0;
+		z-index: 70;
+		display: grid;
+		place-items: center;
+		padding: 1rem;
+		background: rgba(4, 4, 6, 0.78);
+		backdrop-filter: blur(16px);
+	}
+
+	.checkout-error-card {
+		width: min(32rem, calc(100vw - 2rem));
+		display: grid;
+		gap: 0.75rem;
+		padding: 1.2rem;
+		text-align: center;
+	}
+
+	.checkout-error-close {
+		justify-self: end;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: rgba(248, 244, 238, 0.72);
+		font-size: 0.76rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 	}
 
 	.bulk-hero-copy {
@@ -598,9 +677,18 @@
 		padding: 0.68rem 0.78rem;
 		border-radius: 0.78rem;
 		border: 1px solid rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.05);
-		color: var(--text);
+		background:
+			linear-gradient(180deg, rgba(15, 15, 17, 0.96), rgba(11, 11, 13, 0.94)),
+			rgba(255, 255, 255, 0.03);
+		color: #f8f4ee;
 		font-size: 0.88rem;
+		color-scheme: dark;
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+	}
+
+	.checkout-form select option {
+		background: #111214;
+		color: #f8f4ee;
 	}
 
 	.concierge-actions {
