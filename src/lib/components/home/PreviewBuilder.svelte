@@ -1304,12 +1304,14 @@
 
 	.preview-canvas {
 		width: min(24rem, 72%);
+		aspect-ratio: 4 / 5;
 		height: auto;
 		border-radius: 1.3rem;
 	}
 
 	.preview-image {
 		display: block;
+		height: auto;
 		object-fit: cover;
 		box-shadow:
 			0 16px 40px rgba(0, 0, 0, 0.28),

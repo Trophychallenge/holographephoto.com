@@ -178,9 +178,15 @@
 			</div>
 
 			<div class="concierge-actions">
+				<div class="bulk-photo-card">
+					<img
+						src="/holographe/bulk.jpg"
+						alt="Wrapped bulk Holographe orders with pink ribbon"
+					/>
+				</div>
 				<div class="concierge-note">
 					<p class="kicker">Private quote</p>
-					<p>Best for events and larger orders.</p>
+					<p>Best for events, gifts, and larger orders.</p>
 				</div>
 				<a class="button-secondary" href={resolve('/contact')}>Ask For A Custom Quote</a>
 			</div>
@@ -466,6 +472,8 @@
 	}
 
 	.concierge-actions {
+		display: grid;
+		gap: 0.7rem;
 		align-content: center;
 	}
 
@@ -474,6 +482,25 @@
 		border-radius: 0.85rem;
 		background: rgba(255, 255, 255, 0.03);
 		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.bulk-photo-card {
+		overflow: hidden;
+		border-radius: 1rem;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
+			rgba(255, 255, 255, 0.02);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.08),
+			0 24px 50px rgba(4, 10, 22, 0.22);
+	}
+
+	.bulk-photo-card img {
+		display: block;
+		width: 100%;
+		height: 13rem;
+		object-fit: cover;
 	}
 
 	@media (max-width: 960px) {
