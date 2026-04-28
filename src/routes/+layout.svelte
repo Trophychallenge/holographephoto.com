@@ -29,8 +29,9 @@
 <div class="site-shell">
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
-			<img class="brand-logo" src="/holographe/brand-logo.png" alt="Holographe logo" />
-			<span class="brand-name">Made from your photo</span>
+			<span class="brand-badge">
+				<img class="brand-logo" src="/holographe/brand-logo.png" alt="Holographe logo" />
+			</span>
 		</a>
 		<nav class="site-nav" aria-label="Main navigation">
 			{#each navItems as item (item.href)}
