@@ -16,6 +16,9 @@
 		| 'gym-locker'
 		| 'car';
 
+	const demoBeforeSrc = '/holographe/jess-before.jpg';
+	const demoAfterSrc = '/holographe/jessholo.png';
+
 	const textStyles: { id: TextStyle; label: string }[] = [
 		{ id: 'serif', label: 'Serif' },
 		{ id: 'handwritten', label: 'Handwritten' },
@@ -100,16 +103,21 @@
 	let overlayUploadInput: HTMLInputElement | null = null;
 	let overlayCameraInput: HTMLInputElement | null = null;
 	let previewStage: HTMLDivElement | null = null;
-	let originalCanvas: HTMLCanvasElement | null = null;
-	let effectCanvas: HTMLCanvasElement | null = null;
+	let originalCanvas = $state<HTMLCanvasElement | null>(null);
+	let effectCanvas = $state<HTMLCanvasElement | null>(null);
 	let activeDragLayer = $state<DragLayer>(null);
 
 	let baseImageElement = $state<HTMLImageElement | null>(null);
 	let overlayImageElement = $state<HTMLImageElement | null>(null);
 
-	const currentBaseSrc = $derived(uploadedBaseSrc || '/holographe/leo.png');
-	const currentBaseAlt = $derived(uploadedBaseName || 'Preview of your Holographe keepsake');
+	const currentBaseSrc = $derived(uploadedBaseSrc || demoBeforeSrc);
+	const currentBaseAlt = $derived(uploadedBaseName || 'Before photo preview for a Holographe keepsake');
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
+	const currentFinishedSrc = $derived(uploadedBaseSrc ? '' : demoAfterSrc);
+	const currentMockupSrc = $derived(uploadedBaseSrc ? currentBaseSrc : demoAfterSrc);
+	const currentMockupAlt = $derived(
+		uploadedBaseSrc ? currentBaseAlt : 'Finished holographic Holographe sample on a surface mockup'
+	);
 	const currentBundlePrice = $derived(
 		featuredCheckoutOffers.find((offer) => String(offer.quantity) === selectedBundle)?.priceLabel ?? '$14.99'
 	);
@@ -191,14 +199,6 @@
 
 	function getTextColor(tone: TextTone) {
 		return textTones.find((item) => item.id === tone)?.color ?? '#fbf8f3';
-	}
-
-	function getCanvasElements() {
-		if (!originalCanvas || !effectCanvas) return null;
-		const originalContext = originalCanvas.getContext('2d');
-		const effectContext = effectCanvas.getContext('2d');
-		if (!originalContext || !effectContext) return null;
-		return { originalContext, effectContext };
 	}
 
 	function fitRect(width: number, height: number, boundsWidth: number, boundsHeight: number) {
@@ -468,22 +468,30 @@
 	}
 
 	function drawPreviews() {
-		const canvases = getCanvasElements();
-		if (!canvases || !baseImageElement || !originalCanvas || !effectCanvas) return;
+		if (!baseImageElement || !originalCanvas) return;
+
+		const originalContext = originalCanvas.getContext('2d');
+		if (!originalContext) return;
 
 		originalCanvas.width = 900;
 		originalCanvas.height = 1125;
+
+		const originalCard = drawBaseCard(originalContext, baseImageElement, originalCanvas);
+		drawTextOverlay(originalContext, originalCard);
+		drawOverlayImage(originalContext, originalCard);
+
+		if (!effectCanvas || currentFinishedSrc) return;
+
+		const effectContext = effectCanvas.getContext('2d');
+		if (!effectContext) return;
+
 		effectCanvas.width = 900;
 		effectCanvas.height = 1125;
 
-		const originalCard = drawBaseCard(canvases.originalContext, baseImageElement, originalCanvas);
-		drawTextOverlay(canvases.originalContext, originalCard);
-		drawOverlayImage(canvases.originalContext, originalCard);
-
-		const effectCard = drawBaseCard(canvases.effectContext, baseImageElement, effectCanvas);
-		drawHolographicEffect(canvases.effectContext, effectCard, originalCanvas);
-		drawOverlayImage(canvases.effectContext, effectCard);
-		drawTextOverlay(canvases.effectContext, effectCard);
+		const effectCard = drawBaseCard(effectContext, baseImageElement, effectCanvas);
+		drawHolographicEffect(effectContext, effectCard, originalCanvas);
+		drawOverlayImage(effectContext, effectCard);
+		drawTextOverlay(effectContext, effectCard);
 	}
 
 	function beginPointerInteraction(event: PointerEvent) {
@@ -677,7 +685,7 @@
 						bind:this={previewStage}
 						class="preview-stage"
 						role="application"
-						aria-label="Interactive Holographe preview comparing the original photo and the holographic effect"
+						aria-label="Interactive Holographe preview comparing the original photo and the finished holographic effect"
 						style={stageStyle}
 						onpointerdown={beginPointerInteraction}
 						onpointermove={handlePointerMove}
@@ -689,7 +697,15 @@
 							<canvas bind:this={originalCanvas} class="preview-canvas" aria-label={currentBaseAlt}></canvas>
 						</div>
 						<div class="preview-card effect-shell" style={`clip-path: inset(0 ${100 - compareSplit}% 0 0);`}>
-							<canvas bind:this={effectCanvas} class="preview-canvas" aria-hidden="true"></canvas>
+							{#if currentFinishedSrc}
+								<img
+									class="preview-canvas preview-image"
+									src={currentFinishedSrc}
+									alt="Finished holographic sample preview"
+								/>
+							{:else}
+								<canvas bind:this={effectCanvas} class="preview-canvas" aria-hidden="true"></canvas>
+							{/if}
 						</div>
 						<div class="compare-line" style={`left:${compareSplit}%`}></div>
 						{#if currentOverlaySrc && overlayEnabled}
@@ -701,8 +717,8 @@
 					</div>
 
 					<div class="compare-head">
-						<strong>See it catch the light.</strong>
-						<span>Original / Glow</span>
+						<strong>{uploadedBaseSrc ? 'See your photo catch the light.' : 'Real before and after.'}</strong>
+						<span>{uploadedBaseSrc ? 'Your photo / Live glow preview' : 'Jess before / Jess holographe'}</span>
 					</div>
 
 					<label class="compare-control">
@@ -712,7 +728,7 @@
 
 					<div class="glow-status glass-card">
 						<strong>One signature glow.</strong>
-						<span>Premium light effect, already built in.</span>
+						<span>{uploadedBaseSrc ? 'Premium light effect, already built in.' : 'Upload your own photo any time to preview it live.'}</span>
 					</div>
 
 					<div class="checkout-card">
@@ -781,7 +797,7 @@
 						<div class={`use-mockup use-${selectedMockup}`}>
 							<div class="use-surface">
 								<div class="use-frame">
-									<img class="use-base" src={currentBaseSrc} alt={currentBaseAlt} />
+									<img class="use-base" src={currentMockupSrc} alt={currentMockupAlt} />
 									{#if currentOverlaySrc && overlayEnabled}
 										<img
 											class="use-overlay"
@@ -1290,6 +1306,14 @@
 		width: min(24rem, 72%);
 		height: auto;
 		border-radius: 1.3rem;
+	}
+
+	.preview-image {
+		display: block;
+		object-fit: cover;
+		box-shadow:
+			0 16px 40px rgba(0, 0, 0, 0.28),
+			0 0 0 1px rgba(255, 255, 255, 0.08);
 	}
 
 	.compare-line {

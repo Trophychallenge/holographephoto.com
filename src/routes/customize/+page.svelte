@@ -37,7 +37,7 @@
 		{
 			id: 'portrait',
 			label: 'Portrait',
-			src: '/holographe/leo.png',
+			src: '/holographe/jess-before.jpg',
 			alt: 'Portrait keepsake with holographic shimmer',
 			mode: 'signature'
 		}
