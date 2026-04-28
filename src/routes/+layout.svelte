@@ -12,8 +12,7 @@
 	const navItems = [
 		{ href: '/', label: 'Home' },
 		{ href: '/prices', label: 'Prices' },
-		{ href: '/gallery', label: 'Gallery' },
-		{ href: '/contact', label: 'Contact' }
+		{ href: '/gallery', label: 'Gallery' }
 	] as const;
 </script>
 
@@ -52,7 +51,7 @@
 		<div class="footer-links">
 			<a href={resolve('/prices')}>Prices</a>
 			<a href={resolve('/gallery')}>Gallery</a>
-			<a href={resolve('/contact')}>Start your order</a>
+			<a href="tel:3479960205">Call Christina</a>
 		</div>
 		<p class="footer-meta">holographephoto.com</p>
 	</footer>

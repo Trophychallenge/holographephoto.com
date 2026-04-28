@@ -28,7 +28,7 @@ function buildCheckoutParams({
 	params.set('allow_promotion_codes', 'true');
 	params.set(
 		'custom_text[submit][message]',
-		'After checkout, send your photo and any customization notes through the contact page if we do not already have them.'
+		'After checkout, call Christina at 347-996-0205 if we still need your photo or notes.'
 	);
 	params.set('line_items[0][quantity]', '1');
 	params.set('line_items[0][price_data][currency]', 'usd');

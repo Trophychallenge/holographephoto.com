@@ -1,10 +1,20 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	let { isTikTokVisitor = false } = $props();
+
+	let heroVideo: HTMLVideoElement | null = null;
+
+	onMount(() => {
+		if (!heroVideo) return;
+		heroVideo.playbackRate = 0.72;
+	});
 </script>
 
 <section class:tiktok-hero={isTikTokVisitor} class="hero section">
 	<div class="hero-media" aria-hidden="true">
 		<video
+			bind:this={heroVideo}
 			class="hero-video hero-video-fill"
 			autoplay
 			muted
@@ -51,6 +61,11 @@
 					<span class="hero-note-line"></span>
 					<p>Simple, personal, and easy to give.</p>
 				</div>
+
+				<div class="hero-contact glass-contact">
+					<p>Feel free to reach out for any feedback.</p>
+					<a href="tel:3479960205">Contact Christina at 347-996-0205</a>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -93,22 +108,32 @@
 
 	.hero-video-fill {
 		object-fit: cover;
-		transform: scale(1.015);
-		filter: saturate(1.04) contrast(1.08) brightness(0.98);
+		object-position: center 46%;
+		transform: scale(0.96);
+		filter: saturate(0.92) contrast(1.02) brightness(0.86) blur(0.35px);
 	}
 
 	.hero-overlay {
 		background:
-			linear-gradient(180deg, rgba(7, 7, 7, 0.04), rgba(7, 7, 7, 0.08) 24%, rgba(7, 7, 7, 0.2) 56%, rgba(7, 7, 7, 0.46)),
-			linear-gradient(90deg, rgba(0, 0, 0, 0.26), rgba(0, 0, 0, 0.04) 24%, rgba(0, 0, 0, 0.04) 72%, rgba(0, 0, 0, 0.22)),
-			radial-gradient(circle at 58% 20%, rgba(255, 236, 214, 0.2), transparent 28%);
+			linear-gradient(180deg, rgba(7, 7, 7, 0.14), rgba(7, 7, 7, 0.2) 24%, rgba(7, 7, 7, 0.3) 56%, rgba(7, 7, 7, 0.58)),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.12) 24%, rgba(0, 0, 0, 0.1) 72%, rgba(0, 0, 0, 0.3)),
+			radial-gradient(circle at 58% 20%, rgba(255, 236, 214, 0.12), transparent 28%);
 	}
 
 	.hero-glow {
 		background:
-			radial-gradient(circle at 22% 18%, rgba(234, 211, 182, 0.14), transparent 22%),
-			radial-gradient(circle at 78% 22%, rgba(217, 228, 248, 0.12), transparent 20%),
-			linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 28%, rgba(255, 239, 212, 0.08) 44%, transparent 62%);
+			radial-gradient(circle at 22% 18%, rgba(234, 211, 182, 0.1), transparent 22%),
+			radial-gradient(circle at 78% 22%, rgba(217, 228, 248, 0.08), transparent 20%),
+			linear-gradient(120deg, rgba(255, 255, 255, 0.04), transparent 28%, rgba(255, 239, 212, 0.05) 44%, transparent 62%);
+	}
+
+	.hero-media::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(circle at center, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.18) 72%, rgba(0, 0, 0, 0.34));
+		pointer-events: none;
 	}
 
 	.hero-shell {
@@ -124,7 +149,7 @@
 
 	.hero-copy-wrap {
 		display: grid;
-		gap: 1rem;
+		gap: 0.95rem;
 		max-width: 36rem;
 	}
 
@@ -192,6 +217,40 @@
 
 	.hero-note p {
 		max-width: 22rem;
+	}
+
+	.hero-contact {
+		display: grid;
+		gap: 0.35rem;
+		max-width: 28rem;
+		padding: 0.9rem 1rem;
+		border-radius: 1.1rem;
+		background:
+			linear-gradient(180deg, rgba(8, 8, 8, 0.28), rgba(8, 8, 8, 0.12)),
+			radial-gradient(circle at top left, rgba(234, 211, 182, 0.08), transparent 42%);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		backdrop-filter: blur(12px);
+	}
+
+	.hero-contact p,
+	.hero-contact a {
+		margin: 0;
+		font-size: 0.86rem;
+		line-height: 1.5;
+	}
+
+	.hero-contact p {
+		color: rgba(247, 243, 238, 0.72);
+	}
+
+	.hero-contact a {
+		color: #f7efe2;
+		text-decoration: none;
+		font-weight: 600;
+	}
+
+	.hero-contact a:hover {
+		color: #fff7eb;
 	}
 
 	.hero-note-line {

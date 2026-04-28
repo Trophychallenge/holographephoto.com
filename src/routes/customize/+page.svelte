@@ -333,7 +333,7 @@
 								? 'Saving design...'
 								: 'Buy this design'}
 						</button>
-						<a class="button-secondary" href={resolve('/contact')}>Need help?</a>
+						<a class="button-secondary" href="tel:3479960205">Call Christina</a>
 					</div>
 				</form>
 				{#if hasUnsavedDesign}
@@ -703,7 +703,7 @@
 								Finish cloud save before ordering so your uploaded design is attached to the payment.
 							</p>
 						{/if}
-						<a class="button-secondary" href={resolve('/contact')}>Need help?</a>
+						<a class="button-secondary" href="tel:3479960205">Call Christina</a>
 					</div>
 				</aside>
 			</div>

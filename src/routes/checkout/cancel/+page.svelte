@@ -15,7 +15,7 @@
 			<p>You can try again or ask for a quote.</p>
 			<div class="button-row">
 				<a class="button-primary" href={resolve('/prices')}>Back to checkout</a>
-				<a class="button-secondary" href={resolve('/contact')}>Request a quote</a>
+				<a class="button-secondary" href="tel:3479960205">Call Christina</a>
 			</div>
 		</div>
 	</div>

@@ -225,7 +225,7 @@
 					<p class="kicker">Private quote</p>
 					<p>Best for events, gifts, and larger orders.</p>
 				</div>
-				<a class="button-secondary" href={resolve('/contact')}>Ask For A Custom Quote</a>
+				<a class="button-secondary" href="tel:3479960205">Call Christina For A Quote</a>
 			</div>
 		</section>
 	</div>

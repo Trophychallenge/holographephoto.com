@@ -17,7 +17,7 @@
 			<h1>Your order is in.</h1>
 			<p>If we still need your photo or notes, send them now.</p>
 			<div class="button-row">
-				<a class="button-primary" href={resolve('/contact')}>Send photo details</a>
+				<a class="button-primary" href="tel:3479960205">Call Christina</a>
 				<a class="button-secondary" href={resolve('/gallery')}>See examples</a>
 			</div>
 		</div>
