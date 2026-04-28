@@ -1,16 +1,16 @@
 <script lang="ts">
 	const items = [
-		{ title: 'Feels like a memory, not a product', mark: '◌' },
-		{ title: 'Made to be seen every day', mark: '◐' },
-		{ title: 'More personal than a frame', mark: '✦' }
+		{ title: 'Warm and personal', mark: '◌' },
+		{ title: 'Made for everyday spots', mark: '◐' },
+		{ title: 'Easy to gift', mark: '✦' }
 	];
 </script>
 
 <section class="section why-section">
 	<div class="page-wrap why-layout">
 		<div class="section-head">
-			<p class="eyebrow">Why it feels different</p>
-			<h2>Quietly more personal.</h2>
+			<p class="eyebrow">Why it feels special</p>
+			<h2>Small, bright, personal.</h2>
 		</div>
 
 		<div class="why-grid">

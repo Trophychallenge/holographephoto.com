@@ -12,8 +12,8 @@
 <section class="section gift-section">
 	<div class="page-wrap gift-layout">
 		<div class="heading">
-			<p class="eyebrow">Why it feels better</p>
-			<h2>Cleaner, brighter, more giftable.</h2>
+			<p class="eyebrow">Why families love it</p>
+			<h2>Easy to make. Easy to give.</h2>
 		</div>
 
 		<div class="card-grid">

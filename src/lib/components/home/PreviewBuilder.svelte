@@ -3,20 +3,33 @@
 	import { removeLightBackgroundFromFile } from '$lib/browser/overlay-tools';
 	import { featuredCheckoutOffers } from '$lib/pricing';
 
-	type TextStyle = 'serif' | 'handwritten' | 'clean';
-	type GlowMode = 'soft' | 'signature' | 'extra';
+	type TextStyle = 'serif' | 'handwritten' | 'clean' | 'modern' | 'classic';
 	type DragLayer = 'overlay' | 'text' | null;
+	type TextTone = 'ivory' | 'blush' | 'champagne' | 'sky' | 'charcoal';
+	type MockupScene =
+		| 'locker'
+		| 'dishwasher'
+		| 'clean-dirty'
+		| 'dorm-fridge'
+		| 'filing-cabinet'
+		| 'toolbox'
+		| 'gym-locker'
+		| 'car';
 
 	const textStyles: { id: TextStyle; label: string }[] = [
 		{ id: 'serif', label: 'Serif' },
 		{ id: 'handwritten', label: 'Handwritten' },
-		{ id: 'clean', label: 'Clean' }
+		{ id: 'clean', label: 'Clean' },
+		{ id: 'modern', label: 'Modern' },
+		{ id: 'classic', label: 'Classic' }
 	];
 
-	const glowModes: { id: GlowMode; label: string; shimmer: number; wash: number }[] = [
-		{ id: 'soft', label: 'Soft', shimmer: 28, wash: 0.18 },
-		{ id: 'signature', label: 'Signature', shimmer: 50, wash: 0.26 },
-		{ id: 'extra', label: 'Extra Glow', shimmer: 72, wash: 0.34 }
+	const textTones: { id: TextTone; label: string; color: string }[] = [
+		{ id: 'ivory', label: 'Ivory', color: '#fbf8f3' },
+		{ id: 'blush', label: 'Blush', color: '#ffdce8' },
+		{ id: 'champagne', label: 'Champagne', color: '#f6e2bf' },
+		{ id: 'sky', label: 'Sky', color: '#d7ebff' },
+		{ id: 'charcoal', label: 'Charcoal', color: '#2c2a2a' }
 	];
 
 	const bundleLabels: Record<string, string> = {
@@ -24,6 +37,23 @@
 		'3': 'Set of 3',
 		'5': 'Family Set'
 	};
+
+	const mockupScenes: {
+		id: MockupScene;
+		label: string;
+		title: string;
+		note: string;
+		accent: string;
+	}[] = [
+		{ id: 'locker', label: 'School Locker', title: 'High school locker', note: 'A sweet single for a locker door or first-day surprise.', accent: 'Single available' },
+		{ id: 'dishwasher', label: 'Dishwasher', title: 'Dishwasher decor', note: 'A fun kitchen magnet with a personal photo.', accent: 'Home favorite' },
+		{ id: 'clean-dirty', label: 'Clean / Dirty', title: 'Clean and dirty magnet', note: 'Personalized for the dishwasher with a useful little twist.', accent: 'Custom idea' },
+		{ id: 'dorm-fridge', label: 'Dorm Fridge', title: 'College dorm fridge', note: 'Easy to gift, easy to keep, perfect for tiny spaces.', accent: 'Dorm-ready' },
+		{ id: 'filing-cabinet', label: 'Office', title: 'Filing cabinet or office door', note: 'Warm up a workspace without clutter.', accent: 'Workday glow' },
+		{ id: 'toolbox', label: 'Tool Box', title: 'Tool box or garage station', note: 'A fun Father’s Day idea for the garage or workshop.', accent: 'Father’s Day' },
+		{ id: 'gym-locker', label: 'Gym Locker', title: 'Gym locker', note: 'Small, bright, and easy to spot.', accent: 'Everyday use' },
+		{ id: 'car', label: 'Car / Van', title: 'Car, minivan, or business door', note: 'Works on metal surfaces from family vans to mobile business ads.', accent: 'Multi-use' }
+	];
 
 	let { isTikTokVisitor = false } = $props();
 
@@ -40,7 +70,7 @@
 	let overlayProcessing = $state(false);
 
 	let overlayEnabled = $state(true);
-	let overlayScale = $state(42);
+	let overlayScale = $state(30);
 	let overlayRotation = $state(-4);
 	let overlayX = $state(50);
 	let overlayY = $state(52);
@@ -49,14 +79,17 @@
 	let compareSplit = $state(52);
 	let textOverlay = $state('');
 	let textStyle = $state<TextStyle>('handwritten');
+	let textTone = $state<TextTone>('ivory');
 	let textSize = $state(28);
 	let textX = $state(50);
 	let textY = $state(84);
+	let photoSize = $state('classic');
+	let personalRequest = $state('');
 	let giftMode = $state(false);
 	let giftMessage = $state('');
 	let shipDirect = $state(true);
 	let selectedBundle = $state(String(featuredCheckoutOffers[1]?.quantity ?? featuredCheckoutOffers[0].quantity));
-	let glowMode = $state<GlowMode>('signature');
+	let selectedMockup = $state<MockupScene>('locker');
 	let previewTiltX = $state(0);
 	let previewTiltY = $state(0);
 	let lightX = $state(54);
@@ -88,7 +121,7 @@
 	const canOrder = $derived(
 		!hasUnsavedDesign && baseUploadState !== 'uploading' && overlayUploadState !== 'uploading' && !overlayProcessing
 	);
-	const currentGlow = $derived(glowModes.find((item) => item.id === glowMode) ?? glowModes[1]);
+	const currentMockup = $derived(mockupScenes.find((item) => item.id === selectedMockup) ?? mockupScenes[0]);
 	const stageStyle = $derived(
 		`--tilt-x:${previewTiltX}deg; --tilt-y:${previewTiltY}deg; --light-x:${lightX}%; --light-y:${lightY}%;`
 	);
@@ -148,15 +181,16 @@
 		}
 	}
 
-	function setGlowMode(mode: GlowMode) {
-		glowMode = mode;
-		shimmer = glowModes.find((item) => item.id === mode)?.shimmer ?? 50;
-	}
-
 	function getTextFont(style: TextStyle) {
 		if (style === 'handwritten') return '"Snell Roundhand", "Brush Script MT", cursive';
 		if (style === 'clean') return '"Avenir Next", "Helvetica Neue", sans-serif';
+		if (style === 'modern') return '"Futura", "Avenir Next", sans-serif';
+		if (style === 'classic') return '"Baskerville", "Times New Roman", serif';
 		return '"Iowan Old Style", Georgia, serif';
+	}
+
+	function getTextColor(tone: TextTone) {
+		return textTones.find((item) => item.id === tone)?.color ?? '#fbf8f3';
 	}
 
 	function getCanvasElements() {
@@ -169,6 +203,18 @@
 
 	function fitRect(width: number, height: number, boundsWidth: number, boundsHeight: number) {
 		const scale = Math.min(boundsWidth / width, boundsHeight / height);
+		const drawWidth = width * scale;
+		const drawHeight = height * scale;
+		return {
+			x: (boundsWidth - drawWidth) / 2,
+			y: (boundsHeight - drawHeight) / 2,
+			width: drawWidth,
+			height: drawHeight
+		};
+	}
+
+	function fillRect(width: number, height: number, boundsWidth: number, boundsHeight: number) {
+		const scale = Math.max(boundsWidth / width, boundsHeight / height);
 		const drawWidth = width * scale;
 		const drawHeight = height * scale;
 		return {
@@ -225,8 +271,8 @@
 		roundedRectPath(context, card.x, card.y, card.width, card.height, card.radius);
 		context.clip();
 
-		const imageRect = fitRect(image.width, image.height, card.width, card.height);
-		context.filter = `brightness(${brightness / 100}) contrast(1.02)`;
+		const imageRect = fillRect(image.width, image.height, card.width, card.height);
+		context.filter = `brightness(${brightness / 100}) contrast(1.04) saturate(1.02)`;
 		context.drawImage(
 			image,
 			card.x + imageRect.x,
@@ -256,8 +302,7 @@
 	function drawOverlayImage(context: CanvasRenderingContext2D, card: ReturnType<typeof drawBaseCard>) {
 		if (!overlayEnabled || !overlayImageElement) return;
 
-		const longestSide = Math.max(card.width, card.height);
-		const targetWidth = longestSide * (overlayScale / 100) * 0.68;
+		const targetWidth = card.width * (overlayScale / 100);
 		const aspectRatio = overlayImageElement.width / overlayImageElement.height;
 		const targetHeight = targetWidth / aspectRatio;
 		const centerX = card.x + card.width * (overlayX / 100);
@@ -285,9 +330,12 @@
 		context.font = `600 ${textSize}px ${getTextFont(textStyle)}`;
 		context.textAlign = 'center';
 		context.textBaseline = 'middle';
-		context.shadowColor = 'rgba(0, 0, 0, 0.36)';
-		context.shadowBlur = 16;
-		context.fillStyle = 'rgba(251, 248, 243, 0.97)';
+		context.shadowColor = textTone === 'charcoal' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.36)';
+		context.shadowBlur = 18;
+		context.lineWidth = textTone === 'charcoal' ? 5 : 3;
+		context.strokeStyle = textTone === 'charcoal' ? 'rgba(255,255,255,0.24)' : 'rgba(0,0,0,0.18)';
+		context.strokeText(text, card.x + card.width * (textX / 100), card.y + card.height * (textY / 100));
+		context.fillStyle = getTextColor(textTone);
 		context.fillText(text, card.x + card.width * (textX / 100), card.y + card.height * (textY / 100));
 		context.restore();
 	}
@@ -297,11 +345,28 @@
 		card: ReturnType<typeof drawBaseCard>,
 		canvas: HTMLCanvasElement
 	) {
-		const washOpacity = currentGlow.wash;
+		const washOpacity = 0.26;
+		const shimmerStrength = shimmer / 100;
 
 		context.save();
 		roundedRectPath(context, card.x, card.y, card.width, card.height, card.radius);
 		context.clip();
+
+		context.globalCompositeOperation = 'screen';
+		const diagonalGlow = context.createLinearGradient(
+			card.x - card.width * 0.12,
+			card.y + card.height * 0.08,
+			card.x + card.width * 1.08,
+			card.y + card.height * 0.92
+		);
+		diagonalGlow.addColorStop(0, 'rgba(255,255,255,0)');
+		diagonalGlow.addColorStop(0.2, `rgba(255, 204, 236, ${0.08 + shimmerStrength * 0.08})`);
+		diagonalGlow.addColorStop(0.42, `rgba(178, 226, 255, ${0.12 + shimmerStrength * 0.1})`);
+		diagonalGlow.addColorStop(0.56, `rgba(255, 245, 190, ${0.16 + shimmerStrength * 0.12})`);
+		diagonalGlow.addColorStop(0.7, `rgba(255,255,255,${0.08 + shimmerStrength * 0.08})`);
+		diagonalGlow.addColorStop(1, 'rgba(255,255,255,0)');
+		context.fillStyle = diagonalGlow;
+		context.fillRect(card.x, card.y, card.width, card.height);
 
 		const sheen = context.createLinearGradient(card.x, card.y, card.x + card.width, card.y + card.height);
 		sheen.addColorStop(0, `rgba(255,255,255,${0.08 + washOpacity * 0.16})`);
@@ -328,6 +393,21 @@
 		glow.addColorStop(0.62, `rgba(217,228,248,${0.04 + shimmer / 1600})`);
 		glow.addColorStop(1, 'rgba(255,255,255,0)');
 		context.fillStyle = glow;
+		context.fillRect(card.x, card.y, card.width, card.height);
+
+		const edgeGlow = context.createRadialGradient(
+			card.x + card.width * 0.76,
+			card.y + card.height * 0.26,
+			card.width * 0.02,
+			card.x + card.width * 0.76,
+			card.y + card.height * 0.26,
+			card.width * 0.24
+		);
+		edgeGlow.addColorStop(0, `rgba(255,255,255,${0.16 + shimmerStrength * 0.1})`);
+		edgeGlow.addColorStop(0.24, `rgba(255,244,206,${0.11 + shimmerStrength * 0.08})`);
+		edgeGlow.addColorStop(0.54, `rgba(193,226,255,${0.08 + shimmerStrength * 0.05})`);
+		edgeGlow.addColorStop(1, 'rgba(255,255,255,0)');
+		context.fillStyle = edgeGlow;
 		context.fillRect(card.x, card.y, card.width, card.height);
 
 		context.globalCompositeOperation = 'overlay';
@@ -362,6 +442,15 @@
 		topGloss.addColorStop(1, 'rgba(255,255,255,0)');
 		context.fillStyle = topGloss;
 		context.fillRect(card.x, card.y, card.width, card.height * 0.55);
+
+		context.globalCompositeOperation = 'soft-light';
+		const lowerColor = context.createLinearGradient(card.x, card.y, card.x, card.y + card.height);
+		lowerColor.addColorStop(0, 'rgba(255,255,255,0)');
+		lowerColor.addColorStop(0.56, `rgba(255, 191, 226, ${0.05 + washOpacity * 0.16})`);
+		lowerColor.addColorStop(0.78, `rgba(173, 216, 255, ${0.04 + washOpacity * 0.14})`);
+		lowerColor.addColorStop(1, `rgba(255, 241, 201, ${0.06 + washOpacity * 0.15})`);
+		context.fillStyle = lowerColor;
+		context.fillRect(card.x, card.y, card.width, card.height);
 
 		context.restore();
 
@@ -566,19 +655,19 @@
 		{#if isTikTokVisitor}
 			<div class="tiktok-banner glass-card">
 				<p class="eyebrow">Try it with your own photo</p>
-				<h2>Made for the photos sitting in your camera roll.</h2>
-				<p>Your camera roll probably has one.</p>
+				<h2>Made for the photo you already love.</h2>
+				<p>Try it here.</p>
 			</div>
 		{/if}
 
 		<div class="section-copy">
-			<p class="eyebrow">{isTikTokVisitor ? 'Upload first' : 'Start With a Memory'}</p>
+			<p class="eyebrow">{isTikTokVisitor ? 'Upload first' : 'Start here'}</p>
 			<h2>
 				{isTikTokVisitor
 					? 'Upload a photo. Watch it become something more.'
 					: 'Upload a photo. Watch it become something more.'}
 			</h2>
-			<p>See the moment shift in the light.</p>
+			<p>Move the light. See the glow.</p>
 		</div>
 
 		<div class:tikTokFirst={isTikTokVisitor} class="builder-card">
@@ -612,8 +701,8 @@
 					</div>
 
 					<div class="compare-head">
-						<strong>See the moment shift in the light.</strong>
-						<span>Original / Holographe Preview</span>
+						<strong>See it catch the light.</strong>
+						<span>Original / Glow</span>
 					</div>
 
 					<label class="compare-control">
@@ -621,17 +710,9 @@
 						<input type="range" min="6" max="94" bind:value={compareSplit} />
 					</label>
 
-					<div class="glow-pills" role="tablist" aria-label="Holographic intensity">
-						{#each glowModes as mode (mode.id)}
-							<button
-								type="button"
-								class:active={glowMode === mode.id}
-								class="glow-pill"
-								onclick={() => setGlowMode(mode.id)}
-							>
-								{mode.label}
-							</button>
-						{/each}
+					<div class="glow-status glass-card">
+						<strong>One signature glow.</strong>
+						<span>Premium light effect, already built in.</span>
 					</div>
 
 					<div class="checkout-card">
@@ -643,13 +724,16 @@
 							<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
 							<input type="hidden" name="view_mode" value="compare" />
 							<input type="hidden" name="gift_mode" value={giftMode ? 'gift' : 'standard'} />
+							<input type="hidden" name="photo_size" value={photoSize} />
+							<input type="hidden" name="personal_request" value={personalRequest} />
 							<input type="hidden" name="overlay_text" value={textOverlay} />
 							<input type="hidden" name="overlay_text_style" value={textStyle} />
+							<input type="hidden" name="overlay_text_color" value={textTone} />
 							<input type="hidden" name="gift_message" value={giftMessage} />
 							<input type="hidden" name="ship_direct" value={shipDirect ? 'yes' : 'no'} />
 							<input type="hidden" name="brightness_level" value={String(brightness)} />
 							<input type="hidden" name="shimmer_intensity" value={String(shimmer)} />
-							<input type="hidden" name="effect_mode" value={glowMode} />
+							<input type="hidden" name="effect_mode" value="glow" />
 							<input type="hidden" name="overlay_position" value={`${overlayX},${overlayY},${overlayScale},${overlayRotation}`} />
 							<input type="hidden" name="text_position" value={`${textX},${textY},${textSize}`} />
 
@@ -665,15 +749,59 @@
 									</select>
 								</label>
 								<button class="button-primary order-button" type="submit" disabled={!canOrder}>
-									{canOrder ? (isTikTokVisitor ? 'Try Your Photo' : 'Create Yours') : 'Finish Saving'}
+									{canOrder ? 'Bring It To Life' : 'Finish Saving'}
 								</button>
 							</div>
 						</form>
 
-						<p class="checkout-note">Almost yours. Review your keepsake before we make it.</p>
+						<p class="checkout-note">Pick your set and bring it to life.</p>
 						{#if hasUnsavedDesign}
-							<p class="upload-warn">Your preview is ready. Cloud save must finish before checkout.</p>
+							<p class="upload-warn">Almost there. Let the save finish first.</p>
 						{/if}
+					</div>
+
+					<div class="mockup-card glass-card">
+						<div class="mockup-copy">
+							<p class="label">Ways to use it</p>
+							<h3>{currentMockup.title}</h3>
+							<p class="micro">{currentMockup.note}</p>
+						</div>
+						<div class="mockup-tabs" role="tablist" aria-label="Mockup uses">
+							{#each mockupScenes as scene (scene.id)}
+								<button
+									type="button"
+									class:active={selectedMockup === scene.id}
+									class="mini-chip"
+									onclick={() => (selectedMockup = scene.id)}
+								>
+									{scene.label}
+								</button>
+							{/each}
+						</div>
+						<div class={`use-mockup use-${selectedMockup}`}>
+							<div class="use-surface">
+								<div class="use-frame">
+									<img class="use-base" src={currentBaseSrc} alt={currentBaseAlt} />
+									{#if currentOverlaySrc && overlayEnabled}
+										<img
+											class="use-overlay"
+											src={currentOverlaySrc}
+											alt="Overlay artwork preview"
+											style={`left:${overlayX}%; top:${overlayY}%; transform: translate(-50%, -50%) scale(${overlayScale / 100}) rotate(${overlayRotation}deg);`}
+										/>
+									{/if}
+									{#if textOverlay.trim()}
+										<div
+											class="use-text"
+											style={`left:${textX}%; top:${textY}%; color:${getTextColor(textTone)}; font-family:${getTextFont(textStyle)}; font-size:${Math.max(0.9, textSize / 28)}rem;`}
+										>
+											{textOverlay}
+										</div>
+									{/if}
+								</div>
+								<div class="use-badge">{currentMockup.accent}</div>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -681,7 +809,7 @@
 					<div class="control-block">
 						<p class="label">Upload</p>
 						<h3>Start with your photo.</h3>
-						<p class="micro">Upload or take one now.</p>
+						<p class="micro">Upload it or snap one now.</p>
 						<div class="button-row">
 							<button type="button" class="soft-button" onclick={() => baseUploadInput?.click()}>
 								Upload photo
@@ -718,8 +846,8 @@
 
 					<div class="control-block">
 						<p class="label">Add Text</p>
-						<h3>Add the part only they would understand.</h3>
-						<p class="micro">A note. A date. A tiny line that matters.</p>
+						<h3>Add a little note.</h3>
+						<p class="micro">Name, date, or something sweet.</p>
 						<input
 							class="text-input"
 							type="text"
@@ -738,22 +866,39 @@
 								</button>
 							{/each}
 						</div>
+						<div class="style-row">
+							{#each textTones as tone (tone.id)}
+								<button
+									type="button"
+									class:active={textTone === tone.id}
+									class="mini-chip tone-chip"
+									onclick={() => (textTone = tone.id)}
+								>
+									<span class="tone-dot" style={`background:${tone.color}`}></span>
+									{tone.label}
+								</button>
+							{/each}
+						</div>
 						<div class="slider-grid">
 							<label class="slider-wrap">
 								<span>Text size</span>
-								<input type="range" min="20" max="40" bind:value={textSize} />
+								<input type="range" min="20" max="46" bind:value={textSize} />
 							</label>
 							<label class="slider-wrap">
 								<span>Text height</span>
 								<input type="range" min="56" max="90" bind:value={textY} />
+							</label>
+							<label class="slider-wrap">
+								<span>Text width</span>
+								<input type="range" min="14" max="86" bind:value={textX} />
 							</label>
 						</div>
 					</div>
 
 					<div class="control-block">
 						<p class="label">Upload Overlay</p>
-						<h3>Handwriting, drawing, footprint, paw print, ultrasound.</h3>
-						<p class="micro">Keep it personal, not busy.</p>
+						<h3>Add handwriting or art.</h3>
+						<p class="micro">Simple works best.</p>
 						<div class="button-row">
 							<button type="button" class="soft-button" onclick={() => overlayUploadInput?.click()}>
 								Upload overlay
@@ -807,8 +952,32 @@
 					</div>
 
 					<div class="control-block compact">
+						<p class="label">Order details</p>
+						<h3>Choose the basics.</h3>
+						<div class="slider-grid">
+							<label class="slider-wrap">
+								<span>Photo size</span>
+								<select bind:value={photoSize} class="simple-select">
+									<option value="classic">Classic</option>
+									<option value="close-up">Close-up</option>
+									<option value="full-frame">Full frame</option>
+								</select>
+							</label>
+							<label class="slider-wrap">
+								<span>Personal request</span>
+								<textarea
+									class="gift-message"
+									rows="3"
+									bind:value={personalRequest}
+									placeholder="Name, date, size note, or short request"
+								></textarea>
+							</label>
+						</div>
+					</div>
+
+					<div class="control-block compact">
 						<p class="label">Refine</p>
-						<h3>Soft shimmer. Premium glow.</h3>
+						<h3>Fine-tune the glow.</h3>
 						<div class="slider-grid">
 							<label class="slider-wrap">
 								<span>Brightness</span>
@@ -816,7 +985,7 @@
 							</label>
 							<label class="slider-wrap">
 								<span>Overlay size</span>
-								<input type="range" min="18" max="72" bind:value={overlayScale} />
+								<input type="range" min="14" max="46" bind:value={overlayScale} />
 							</label>
 							<label class="slider-wrap">
 								<span>Overlay rotate</span>
@@ -831,8 +1000,8 @@
 
 					<div class="control-block compact gift-block">
 						<p class="label">Gift</p>
-						<h3>Already gift-ready.</h3>
-						<p class="micro">Finished with a black envelope and white ribbon.</p>
+						<h3>Ready to gift.</h3>
+						<p class="micro">Sweet and simple.</p>
 						<label class="toggle">
 							<input type="checkbox" bind:checked={giftMode} />
 							<span>Send as a gift</span>
@@ -855,7 +1024,7 @@
 		</div>
 
 		<div class="camera-roll-strip glass-card">
-			<p class="eyebrow">Made for the photos sitting in your camera roll.</p>
+			<p class="eyebrow">Great for family favorites.</p>
 			<div class="camera-roll-list">
 				<span>Baby photo</span>
 				<span>Pet photo</span>
@@ -877,7 +1046,7 @@
 			<strong>{currentBundlePrice}</strong>
 		</div>
 		<button class="button-primary" type="submit" form="homepage-order-form" disabled={!canOrder}>
-			{canOrder ? (isTikTokVisitor ? 'Try Your Photo' : 'Create Yours') : 'Saving...'}
+			{canOrder ? 'Bring It To Life' : 'Saving...'}
 		</button>
 	</div>
 </section>
@@ -985,7 +1154,7 @@
 	.button-row,
 	.style-row,
 	.bundle-row,
-	.glow-pills {
+	.mockup-tabs {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.6rem;
@@ -998,7 +1167,6 @@
 
 	.soft-button,
 	.mini-chip,
-	.glow-pill,
 	.file-meta button {
 		padding: 0.72rem 0.96rem;
 		border-radius: 999px;
@@ -1016,8 +1184,7 @@
 	}
 
 	.soft-button:hover,
-	.mini-chip:hover,
-	.glow-pill:hover {
+	.mini-chip:hover {
 		transform: translateY(-1px);
 		box-shadow: 0 10px 26px rgba(234, 211, 182, 0.08);
 	}
@@ -1026,13 +1193,26 @@
 		background: rgba(255, 255, 255, 0.014);
 	}
 
-	.mini-chip.active,
-	.glow-pill.active {
+	.mini-chip.active {
 		border-color: rgba(255, 231, 204, 0.34);
 		background:
 			linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(234, 211, 182, 0.16), rgba(217, 228, 248, 0.08)),
 			rgba(255, 255, 255, 0.03);
 		color: #fff9f2;
+	}
+
+	.tone-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+	}
+
+	.tone-dot {
+		width: 0.85rem;
+		height: 0.85rem;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 	}
 
 	.hidden-input {
@@ -1041,7 +1221,8 @@
 
 	.text-input,
 	.gift-message,
-	.checkout-pick select {
+	.checkout-pick select,
+	.simple-select {
 		width: 100%;
 		padding: 0.88rem 0.96rem;
 		border-radius: 1rem;
@@ -1162,6 +1343,36 @@
 		gap: 0.45rem;
 	}
 
+	.glow-status,
+	.mockup-card {
+		display: grid;
+		gap: 0.8rem;
+		padding: 1rem;
+	}
+
+	.mockup-copy {
+		display: grid;
+		gap: 0.35rem;
+	}
+
+	.checkout-card,
+	.glow-status,
+	.mockup-card {
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.04),
+			0 18px 40px rgba(0, 0, 0, 0.16);
+	}
+
+	.glow-status strong {
+		font-size: 0.98rem;
+		color: #f7f3ee;
+	}
+
+	.glow-status span {
+		font-size: 0.82rem;
+		color: rgba(237, 226, 213, 0.66);
+	}
+
 	.checkout-card {
 		padding: 1rem;
 		border-radius: 1.35rem;
@@ -1178,6 +1389,7 @@
 
 	.bundle-row {
 		align-items: end;
+		gap: 0.8rem;
 	}
 
 	.checkout-pick {
@@ -1187,7 +1399,11 @@
 	}
 
 	.order-button {
-		min-width: 12rem;
+		min-width: 15rem;
+		padding: 1rem 1.35rem;
+		font-size: 1rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
 	}
 
 	.checkout-note,
@@ -1239,6 +1455,177 @@
 		font-size: 0.8rem;
 	}
 
+	.use-mockup {
+		min-height: 15rem;
+		padding: 1.1rem;
+		border-radius: 1.35rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		overflow: hidden;
+		position: relative;
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+			linear-gradient(160deg, rgba(16, 16, 18, 0.94), rgba(8, 8, 10, 0.96));
+		box-shadow:
+			inset 0 1px 0 rgba(255,255,255,0.05),
+			0 22px 44px rgba(0, 0, 0, 0.18);
+	}
+
+	.use-mockup::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			linear-gradient(180deg, rgba(255,255,255,0.08), transparent 24%, transparent 72%, rgba(0,0,0,0.12)),
+			radial-gradient(circle at 24% 18%, rgba(255,255,255,0.14), transparent 20%);
+	}
+
+	.use-locker {
+		background:
+			linear-gradient(180deg, rgba(110, 132, 160, 0.2), rgba(41, 52, 68, 0.45)),
+			repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 96px),
+			linear-gradient(160deg, #77879a, #495564);
+	}
+
+	.use-dishwasher,
+	.use-clean-dirty {
+		background:
+			linear-gradient(180deg, rgba(246, 247, 249, 0.2), rgba(151, 161, 171, 0.3)),
+			linear-gradient(160deg, #e5ebf1, #929eaa);
+	}
+
+	.use-dorm-fridge {
+		background:
+			linear-gradient(180deg, rgba(255,255,255,0.12), rgba(181, 190, 198, 0.24)),
+			linear-gradient(160deg, #eef2f5, #a3adb6);
+	}
+
+	.use-filing-cabinet,
+	.use-gym-locker {
+		background:
+			linear-gradient(180deg, rgba(214, 222, 228, 0.16), rgba(92, 103, 114, 0.38)),
+			linear-gradient(160deg, #b8c2cc, #687483);
+	}
+
+	.use-toolbox {
+		background:
+			linear-gradient(180deg, rgba(255, 106, 60, 0.16), rgba(90, 24, 14, 0.42)),
+			linear-gradient(160deg, #bf4f33, #5f291d);
+	}
+
+	.use-car {
+		background:
+			linear-gradient(180deg, rgba(245, 246, 249, 0.15), rgba(69, 77, 90, 0.34)),
+			linear-gradient(160deg, #d7dce2, #576170);
+	}
+
+	.use-locker::after,
+	.use-gym-locker::after {
+		content: '';
+		position: absolute;
+		right: 1.2rem;
+		top: 50%;
+		width: 0.45rem;
+		height: 2.5rem;
+		border-radius: 999px;
+		background: rgba(12, 18, 24, 0.34);
+		box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+		transform: translateY(-50%);
+	}
+
+	.use-clean-dirty::after {
+		content: 'Clean / Dirty';
+		position: absolute;
+		left: 1rem;
+		top: 1rem;
+		padding: 0.38rem 0.62rem;
+		border-radius: 999px;
+		background: rgba(8, 10, 12, 0.74);
+		border: 1px solid rgba(255,255,255,0.12);
+		color: rgba(248, 244, 238, 0.9);
+		font-size: 0.68rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.use-dishwasher::after,
+	.use-dorm-fridge::after,
+	.use-filing-cabinet::after,
+	.use-car::after {
+		content: '';
+		position: absolute;
+		inset: 0.7rem;
+		border-radius: 1rem;
+		box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16);
+		pointer-events: none;
+	}
+
+	.use-surface {
+		position: relative;
+		display: grid;
+		place-items: center;
+		min-height: 13rem;
+	}
+
+	.use-frame {
+		position: relative;
+		width: min(12rem, 56vw);
+		aspect-ratio: 4 / 5;
+		padding: 0.55rem;
+		border-radius: 1rem;
+		background:
+			linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)),
+			radial-gradient(circle at top left, rgba(255, 236, 214, 0.16), transparent 40%);
+		box-shadow:
+			0 18px 34px rgba(0, 0, 0, 0.22),
+			0 0 0 1px rgba(255,255,255,0.08);
+		transform: rotate(-3deg) translateY(-0.2rem);
+		overflow: hidden;
+	}
+
+	.use-base,
+	.use-overlay {
+		position: absolute;
+	}
+
+	.use-base {
+		inset: 0.55rem;
+		width: calc(100% - 1.1rem);
+		height: calc(100% - 1.1rem);
+		object-fit: cover;
+		border-radius: 0.7rem;
+	}
+
+	.use-overlay {
+		max-width: 72%;
+		max-height: 72%;
+		object-fit: contain;
+		opacity: 0.92;
+	}
+
+	.use-text {
+		position: absolute;
+		transform: translate(-50%, -50%);
+		text-shadow: 0 2px 10px rgba(0,0,0,0.28);
+		text-align: center;
+		max-width: 70%;
+		line-height: 1.1;
+	}
+
+	.use-badge {
+		position: absolute;
+		right: 0.85rem;
+		bottom: 0.85rem;
+		padding: 0.45rem 0.7rem;
+		border-radius: 999px;
+		background: rgba(10, 10, 12, 0.7);
+		border: 1px solid rgba(255,255,255,0.12);
+		color: #f8f4ee;
+		font-size: 0.72rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
 	.mobile-order-bar {
 		position: sticky;
 		bottom: 0;
@@ -1272,6 +1659,12 @@
 		color: #f7f3ee;
 	}
 
+	.mobile-order-bar :global(.button-primary) {
+		flex: 0 0 auto;
+		min-width: 12.5rem;
+		padding: 0.95rem 1.2rem;
+	}
+
 	@media (min-width: 980px) {
 		.builder-grid {
 			grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 0.92fr);
@@ -1286,17 +1679,37 @@
 	}
 
 	@media (max-width: 860px) {
+		.builder-card {
+			padding: 0.8rem;
+			border-radius: 1.6rem;
+		}
+
+		.controls-panel,
+		.preview-panel {
+			gap: 0.8rem;
+		}
+
+		.control-block,
+		.checkout-card,
+		.glow-status,
+		.mockup-card {
+			padding: 0.85rem;
+			border-radius: 1.1rem;
+		}
+
 		.preview-stage {
-			min-height: 24rem;
+			min-height: 22rem;
+			border-radius: 1.4rem;
 		}
 
 		.preview-canvas {
-			width: min(18rem, 78%);
+			width: min(17rem, 82%);
 		}
 
 		.compare-head {
 			flex-direction: column;
 			align-items: flex-start;
+			gap: 0.35rem;
 		}
 
 		.bundle-row {
@@ -1304,9 +1717,94 @@
 			grid-template-columns: 1fr;
 		}
 
+		.mockup-tabs {
+			gap: 0.45rem;
+		}
+
+		.mockup-tabs .mini-chip,
+		.style-row .mini-chip {
+			padding: 0.62rem 0.82rem;
+			font-size: 0.8rem;
+		}
+
+		.use-mockup {
+			min-height: 12.5rem;
+			padding: 0.8rem;
+		}
+
+		.use-surface {
+			min-height: 10.5rem;
+		}
+
+		.use-frame {
+			width: min(9.4rem, 58vw);
+			border-radius: 0.9rem;
+		}
+
+		.use-badge {
+			right: 0.6rem;
+			bottom: 0.6rem;
+			padding: 0.38rem 0.56rem;
+			font-size: 0.64rem;
+		}
+
 		.order-button {
 			width: 100%;
 			min-width: 0;
+		}
+
+		.mobile-order-bar {
+			gap: 0.75rem;
+			padding: 0.72rem 0.85rem calc(0.72rem + env(safe-area-inset-bottom, 0px));
+		}
+
+		.mobile-order-bar p {
+			font-size: 0.7rem;
+			letter-spacing: 0.12em;
+		}
+
+		.mobile-order-bar strong {
+			font-size: 1.05rem;
+		}
+
+		.mobile-order-bar :global(.button-primary) {
+			min-width: 10.75rem;
+			padding: 0.82rem 0.95rem;
+			font-size: 0.92rem;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.section-copy {
+			gap: 0.5rem;
+		}
+
+		.section-copy h2,
+		.tiktok-banner h2 {
+			font-size: clamp(1.75rem, 8vw, 2.4rem);
+		}
+
+		.control-block h3,
+		.mockup-copy h3 {
+			font-size: 1rem;
+		}
+
+		.preview-stage {
+			min-height: 20.5rem;
+		}
+
+		.preview-canvas {
+			width: min(15.5rem, 84%);
+		}
+
+		.drag-tag {
+			font-size: 0.62rem;
+			padding: 0.28rem 0.48rem;
+		}
+
+		.use-frame {
+			width: min(8.8rem, 60vw);
+			transform: rotate(-2deg) translateY(-0.1rem);
 		}
 	}
 </style>

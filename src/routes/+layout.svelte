@@ -11,7 +11,6 @@
 
 	const navItems = [
 		{ href: '/', label: 'Home' },
-		{ href: '/customize', label: 'Customize' },
 		{ href: '/prices', label: 'Prices' },
 		{ href: '/gallery', label: 'Gallery' },
 		{ href: '/contact', label: 'Contact' }
@@ -23,7 +22,7 @@
 	<title>Holographe</title>
 	<meta
 		name="description"
-		content="Create a premium holographic keepsake from your favorite photo, add a personal overlay, and order it gift-ready in minutes."
+		content="Turn a favorite photo into a warm, light-catching keepsake."
 	/>
 </svelte:head>
 
@@ -31,14 +30,14 @@
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
 			<span class="brand-kicker">Holographe</span>
-			<span class="brand-name">Custom keepsakes in light</span>
+			<span class="brand-name">Made from your photo</span>
 		</a>
 		<nav class="site-nav" aria-label="Main navigation">
 			{#each navItems as item (item.href)}
 				<a href={resolve(item.href)}>{item.label}</a>
 			{/each}
 		</nav>
-		<a class="button-primary header-cta" href="/#preview-builder">Create Yours</a>
+		<a class="button-primary header-cta" href="/#preview-builder">Make The Magic</a>
 	</header>
 
 	<main>
@@ -48,12 +47,9 @@
 	<footer class="site-footer">
 		<div>
 			<p class="footer-title">Holographe</p>
-			<p class="footer-copy">
-				Quietly luxurious holographic keepsakes for the photos you keep returning to.
-			</p>
+			<p class="footer-copy">Little keepsakes for big family moments.</p>
 		</div>
 		<div class="footer-links">
-			<a href={resolve('/customize')}>Customize</a>
 			<a href={resolve('/prices')}>Prices</a>
 			<a href={resolve('/gallery')}>Gallery</a>
 			<a href={resolve('/contact')}>Start your order</a>

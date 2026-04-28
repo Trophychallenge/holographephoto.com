@@ -2,7 +2,7 @@
 	<title>Contact | Holographe</title>
 	<meta
 		name="description"
-		content="Contact Holographe for custom quotes, event gifting, and higher-touch personalization requests."
+		content="Send us your photo, timing, and a few quick notes."
 	/>
 </svelte:head>
 
@@ -12,7 +12,7 @@
 			<div class="hero-copy">
 				<p class="eyebrow">Contact</p>
 				<h1>Send the basics.</h1>
-				<p class="hero-subcopy">Photo, occasion, timing.</p>
+				<p class="hero-subcopy">Photo, timing, notes.</p>
 
 				<div class="hero-points">
 					<div class="hero-point">
@@ -33,7 +33,7 @@
 			<div class="contact-card">
 				<p class="card-kicker">Direct line</p>
 				<h2>hello@holographephoto.com</h2>
-				<p>We’ll guide the rest.</p>
+				<p>We’ll take it from there.</p>
 				<div class="pill-row">
 					<span>Photo</span>
 					<span>Occasion</span>
@@ -47,7 +47,7 @@
 			<div class="form-copy">
 				<p class="eyebrow">Inquiry form</p>
 				<h2>Keep it simple.</h2>
-				<p>Just the details that matter.</p>
+				<p>Just what we need.</p>
 			</div>
 
 			<form class="contact-form">

@@ -1,34 +1,34 @@
 <section class="section how-section" id="how-it-works">
 	<div class="page-wrap how-layout">
 		<div class="heading">
-			<p class="eyebrow">How it flows</p>
-			<h2>See it. Upload it. Personalize it. Order it.</h2>
+			<p class="eyebrow">How it works</p>
+			<h2>Upload. Glow. Gift.</h2>
 		</div>
 
 		<ol class="steps">
 			<li>
 				<div class="icon-shell">01</div>
-				<h3>See what it is</h3>
+				<h3>Pick a photo</h3>
 			</li>
 			<li>
 				<div class="icon-shell">02</div>
-				<h3>Upload your photo</h3>
+				<h3>Upload it</h3>
 			</li>
 			<li>
 				<div class="icon-shell">03</div>
-				<h3>Preview the light</h3>
+				<h3>See the glow</h3>
 			</li>
 			<li>
 				<div class="icon-shell">04</div>
-				<h3>Add a personal touch</h3>
+				<h3>Add a note</h3>
 			</li>
 			<li>
 				<div class="icon-shell">05</div>
-				<h3>Choose your set</h3>
+				<h3>Choose a set</h3>
 			</li>
 			<li>
 				<div class="icon-shell">06</div>
-				<h3>Order gift-ready</h3>
+				<h3>Order</h3>
 			</li>
 		</ol>
 	</div>

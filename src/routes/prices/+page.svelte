@@ -1,13 +1,19 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { featuredCheckoutOffers, largerCheckoutOffers } from '$lib/pricing';
+
+	const sizeOptions = [
+		{ value: 'classic', label: 'Classic' },
+		{ value: 'close-up', label: 'Close-up' },
+		{ value: 'full-frame', label: 'Full frame' }
+	] as const;
 </script>
 
 <svelte:head>
 	<title>Prices | Holographe</title>
 	<meta
 		name="description"
-		content="Luxury bundle pricing for custom holographic photo magnets with direct checkout and free shipping on current sale offers."
+		content="Simple bundle pricing for your Holographe keepsakes."
 	/>
 </svelte:head>
 
@@ -15,32 +21,32 @@
 	<div class="page-wrap prices-layout" id="secure-checkout">
 		<section class="hero-band glass-card">
 			<div class="hero-copy">
-				<p class="eyebrow">Luxury pricing, simplified</p>
-				<h1>Choose your bundle.</h1>
-				<p class="hero-subcopy">One photo or a full set.</p>
+				<p class="eyebrow">Simple pricing</p>
+				<h1>Pick your set.</h1>
+				<p class="hero-subcopy">One keepsake or a family bundle.</p>
 			</div>
 
 			<div class="spotlight-card">
-				<p class="spotlight-kicker">Current signature offer</p>
+				<p class="spotlight-kicker">Most-loved</p>
 				<div class="spotlight-price">
 					<span>Starting at</span>
 					<strong>$14.99</strong>
 				</div>
-				<p class="spotlight-copy">Free shipping. Easy checkout.</p>
+				<p class="spotlight-copy">Free shipping. One easy step.</p>
 				<div class="spotlight-tags">
 					<span>Free shipping</span>
 					<span>Premium finish</span>
-					<span>Easy checkout</span>
+					<span>Quick checkout</span>
 				</div>
-				<a class="button-primary" href="#bundle-shop">Shop the sale bundles</a>
+				<a class="button-primary" href="#bundle-shop">Choose Your Bundle</a>
 			</div>
 		</section>
 
 		<section class="bundle-stage" id="bundle-shop">
 			<div class="section-head">
 				<span class="eyebrow">Bundle shop</span>
-				<h2>Pick a size.</h2>
-				<p>Check out right away.</p>
+				<h2>Choose your fit.</h2>
+				<p>Add your favorite and keep going.</p>
 			</div>
 
 			<div class="bundle-grid">
@@ -86,7 +92,19 @@
 								{/each}
 							</select>
 						</label>
-						<button class="button-primary" type="submit">Order now</button>
+						<label>
+							<span>Photo size</span>
+							<select name="photo_size">
+								{#each sizeOptions as option (option.value)}
+									<option value={option.value}>{option.label}</option>
+								{/each}
+							</select>
+						</label>
+						<label>
+							<span>Request</span>
+							<input type="text" name="personal_request" placeholder="Name, date, or quick note" />
+						</label>
+						<button class="button-primary" type="submit">Add To Cart</button>
 					</form>
 				</article>
 
@@ -134,7 +152,19 @@
 								{/each}
 							</select>
 						</label>
-						<button class="button-primary" type="submit">Order now</button>
+						<label>
+							<span>Photo size</span>
+							<select name="photo_size">
+								{#each sizeOptions as option (option.value)}
+									<option value={option.value}>{option.label}</option>
+								{/each}
+							</select>
+						</label>
+						<label>
+							<span>Request</span>
+							<input type="text" name="personal_request" placeholder="Name, date, or quick note" />
+						</label>
+						<button class="button-primary" type="submit">Add To Cart</button>
 					</form>
 				</article>
 			</div>
@@ -152,7 +182,7 @@
 					<p class="kicker">Private quote</p>
 					<p>Best for events and larger orders.</p>
 				</div>
-				<a class="button-secondary" href={resolve('/contact')}>Request a custom quote</a>
+				<a class="button-secondary" href={resolve('/contact')}>Ask For A Custom Quote</a>
 			</div>
 		</section>
 	</div>
@@ -426,7 +456,8 @@
 		gap: 0.48rem;
 	}
 
-	.checkout-form select {
+	.checkout-form select,
+	.checkout-form input {
 		padding: 0.75rem 0.85rem;
 		border-radius: 0.85rem;
 		border: 1px solid rgba(255, 255, 255, 0.12);

@@ -21,7 +21,7 @@
 	<title>Holographe | Your Favorite Photo, Reimagined In Light</title>
 	<meta
 		name="description"
-		content="Upload a photo, preview a premium holographic keepsake in real time, add a personal overlay, and order in seconds."
+		content="Upload a photo, see the glow, and make it yours."
 	/>
 </svelte:head>
 

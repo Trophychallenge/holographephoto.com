@@ -10,7 +10,7 @@
 			muted
 			loop
 			playsinline
-			preload="metadata"
+			preload="auto"
 			poster="/holographe/jessholo.png"
 		>
 			<source src="/holographe/3picsdishwasher.mp4" type="video/mp4" />
@@ -26,24 +26,24 @@
 					<p class="eyebrow">{isTikTokVisitor ? 'Made for your camera roll' : 'Holographe'}</p>
 					<h1>
 						{isTikTokVisitor
-							? 'The photo is cute. The light makes it unforgettable.'
-							: 'Your favorite photo, reimagined in light.'}
+							? 'Your photo, glowing back at you.'
+							: 'Your photo, glowing back at you.'}
 					</h1>
 					<p class="subcopy">
 						{isTikTokVisitor
-							? 'Try it with your own photo. Add a note, a drawing, or handwriting they would know instantly.'
-							: 'A custom holographic keepsake made to be seen every day.'}
+							? 'Upload it. Add a little love. We handle the rest.'
+							: 'A sweet little keepsake for the people you love most.'}
 					</p>
 
 					<div class="microcopy" aria-label="Product details">
-						<span>Subtle holographic finish</span>
-						<span>Gift-ready from the start</span>
-						<span>Made for meaningful details</span>
+						<span>Real shimmer</span>
+						<span>Gift-ready</span>
+						<span>Made from your photo</span>
 					</div>
 
 					<div class="actions">
 						<a class="button-primary" href="#preview-builder">
-							{isTikTokVisitor ? 'Try Your Photo' : 'Create Yours'}
+							{isTikTokVisitor ? 'Try Your Photo' : 'Make The Magic'}
 						</a>
 						<a class="button-secondary" href="#how-it-works">
 							{isTikTokVisitor ? 'See the flow' : 'See How It Works'}
@@ -53,19 +53,37 @@
 
 				<div class="hero-note">
 					<span class="hero-note-line"></span>
-					<p>A photo you already love, made to catch the light every time you pass it.</p>
+					<p>Simple, personal, and easy to give.</p>
 				</div>
 			</div>
 
 			{#if !isTikTokVisitor}
-				<aside class="hero-specimen glass-card" aria-label="Featured keepsake preview">
-					<div class="specimen-image-wrap">
-						<img class="specimen-image" src="/holographe/jessholo.png" alt="Holographe keepsake detail" />
+				<aside class="hero-specimen glass-card" aria-label="Before and after holographic logo preview">
+					<div class="specimen-compare">
+						<div class="compare-panel">
+							<p class="compare-label">Before</p>
+							<div class="compare-image-wrap">
+								<img class="specimen-image specimen-before" src="/holographe/holographe-logo-hero.png" alt="Original Holographe logo" />
+							</div>
+						</div>
+						<div class="compare-panel">
+							<p class="compare-label">After</p>
+							<div class="compare-image-wrap after-wrap">
+								<img class="specimen-image specimen-after" src="/holographe/holographe-logo-hero.png" alt="Holographe logo with realistic light shimmer" />
+								<div class="after-rainbow"></div>
+								<div class="after-sheen"></div>
+								<div class="after-stars">
+									<span class="star star-a"></span>
+									<span class="star star-b"></span>
+									<span class="star star-c"></span>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div class="specimen-copy">
-						<p class="specimen-label">In the light</p>
-						<strong>Quiet shimmer. Real detail.</strong>
-						<span>Upload the photo. Add the part only they would understand.</span>
+						<p class="specimen-label">Light test</p>
+						<strong>Real shine. Soft color.</strong>
+						<span>The same glow carries into the live preview below.</span>
 					</div>
 				</aside>
 			{/if}
@@ -110,21 +128,22 @@
 
 	.hero-video-fill {
 		object-fit: cover;
-		transform: scale(1.03);
-		filter: saturate(0.98) contrast(1.04) brightness(0.86);
+		transform: scale(1.015);
+		filter: saturate(1.04) contrast(1.08) brightness(0.98);
 	}
 
 	.hero-overlay {
 		background:
-			linear-gradient(180deg, rgba(7, 7, 7, 0.08), rgba(7, 7, 7, 0.12) 26%, rgba(7, 7, 7, 0.3) 58%, rgba(7, 7, 7, 0.58)),
-			linear-gradient(90deg, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.08) 24%, rgba(0, 0, 0, 0.06) 72%, rgba(0, 0, 0, 0.34)),
-			radial-gradient(circle at 58% 20%, rgba(255, 236, 214, 0.18), transparent 26%);
+			linear-gradient(180deg, rgba(7, 7, 7, 0.04), rgba(7, 7, 7, 0.08) 24%, rgba(7, 7, 7, 0.2) 56%, rgba(7, 7, 7, 0.46)),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.26), rgba(0, 0, 0, 0.04) 24%, rgba(0, 0, 0, 0.04) 72%, rgba(0, 0, 0, 0.22)),
+			radial-gradient(circle at 58% 20%, rgba(255, 236, 214, 0.2), transparent 28%);
 	}
 
 	.hero-glow {
 		background:
-			radial-gradient(circle at 22% 18%, rgba(234, 211, 182, 0.12), transparent 20%),
-			radial-gradient(circle at 78% 22%, rgba(217, 228, 248, 0.1), transparent 18%);
+			radial-gradient(circle at 22% 18%, rgba(234, 211, 182, 0.14), transparent 22%),
+			radial-gradient(circle at 78% 22%, rgba(217, 228, 248, 0.12), transparent 20%),
+			linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 28%, rgba(255, 239, 212, 0.08) 44%, transparent 62%);
 	}
 
 	.hero-shell {
@@ -220,14 +239,35 @@
 	.hero-specimen {
 		align-self: end;
 		justify-self: end;
-		width: min(20rem, 100%);
+		width: min(24rem, 100%);
 		padding: 0.9rem;
 		background:
 			linear-gradient(160deg, rgba(15, 15, 15, 0.8), rgba(8, 8, 8, 0.74)),
 			radial-gradient(circle at top, rgba(234, 211, 182, 0.08), transparent 42%);
 	}
 
-	.specimen-image-wrap {
+	.specimen-compare {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.7rem;
+	}
+
+	.compare-panel {
+		display: grid;
+		gap: 0.45rem;
+	}
+
+	.compare-label,
+	.specimen-label {
+		font-size: 0.68rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: rgba(241, 220, 194, 0.76);
+	}
+
+	.compare-image-wrap {
+		position: relative;
+		overflow: hidden;
 		padding: 0.7rem;
 		border-radius: 1.35rem;
 		background:
@@ -238,21 +278,105 @@
 	.specimen-image {
 		display: block;
 		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
 		border-radius: 1rem;
 		box-shadow: 0 20px 44px rgba(0, 0, 0, 0.24);
+	}
+
+	.specimen-before {
+		filter: grayscale(1) contrast(0.9) brightness(0.62);
+	}
+
+	.after-wrap {
+		isolation: isolate;
+		background:
+			linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+			radial-gradient(circle at 18% 16%, rgba(255, 214, 170, 0.12), transparent 32%),
+			radial-gradient(circle at 80% 78%, rgba(167, 212, 255, 0.12), transparent 28%);
+	}
+
+	.specimen-after {
+		filter: saturate(1.16) contrast(1.06) brightness(1.02);
+	}
+
+	.after-rainbow,
+	.after-sheen,
+	.after-stars {
+		position: absolute;
+		inset: 0.7rem;
+		border-radius: 1rem;
+		pointer-events: none;
+	}
+
+	.after-rainbow {
+		mix-blend-mode: screen;
+		background:
+			radial-gradient(circle at 20% 22%, rgba(255, 226, 171, 0.3), transparent 28%),
+			radial-gradient(circle at 76% 26%, rgba(189, 221, 255, 0.24), transparent 26%),
+			radial-gradient(circle at 72% 76%, rgba(255, 177, 221, 0.22), transparent 24%),
+			linear-gradient(115deg, rgba(255, 156, 208, 0.18), rgba(170, 220, 255, 0.22) 44%, rgba(255, 241, 187, 0.2) 74%, rgba(255, 255, 255, 0));
+	}
+
+	.after-sheen {
+		mix-blend-mode: screen;
+		background: linear-gradient(118deg, rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, 0.22) 44%, rgba(255, 243, 218, 0.42) 49%, rgba(178, 226, 255, 0.16) 55%, rgba(255, 255, 255, 0) 72%);
+		transform: translateX(-18%) rotate(-7deg);
+		animation: shimmer-pass 6.8s ease-in-out infinite;
+	}
+
+	.after-stars span {
+		position: absolute;
+		width: 0.9rem;
+		height: 0.9rem;
+		border-radius: 999px;
+		background: radial-gradient(circle, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.12) 58%, rgba(255, 255, 255, 0) 72%);
+		box-shadow:
+			0 0 0.95rem rgba(255, 238, 214, 0.5),
+			0 0 1.5rem rgba(190, 222, 255, 0.38);
+	}
+
+	.after-stars span::before,
+	.after-stars span::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		background: rgba(255, 255, 255, 0.96);
+		transform: translate(-50%, -50%);
+	}
+
+	.after-stars span::before {
+		width: 2.1rem;
+		height: 1px;
+	}
+
+	.after-stars span::after {
+		width: 1px;
+		height: 2.1rem;
+	}
+
+	.star-a {
+		top: 18%;
+		left: 16%;
+	}
+
+	.star-b {
+		top: 62%;
+		left: 74%;
+	}
+
+	.star-c {
+		top: 32%;
+		left: 86%;
+		width: 0.72rem;
+		height: 0.72rem;
 	}
 
 	.specimen-copy {
 		display: grid;
 		gap: 0.35rem;
 		padding: 0.85rem 0.35rem 0.2rem;
-	}
-
-	.specimen-label {
-		font-size: 0.68rem;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-		color: rgba(241, 220, 194, 0.76);
 	}
 
 	.specimen-copy strong {
@@ -355,12 +479,25 @@
 	@media (max-width: 919px) {
 		.hero-specimen {
 			justify-self: start;
-			max-width: 16rem;
+			max-width: 20rem;
 		}
 
 		.hero-video-fill {
 			transform: scale(1.02);
 			filter: saturate(0.96) contrast(1.03) brightness(0.78);
+		}
+	}
+
+	@keyframes shimmer-pass {
+		0%,
+		100% {
+			transform: translateX(-24%) rotate(-7deg);
+			opacity: 0.45;
+		}
+
+		50% {
+			transform: translateX(18%) rotate(-7deg);
+			opacity: 0.95;
 		}
 	}
 </style>

@@ -6,10 +6,10 @@
 	<div class="page-wrap">
 		<div class="cta-card">
 			<p class="eyebrow">Almost yours</p>
-			<h2>Create yours in seconds.</h2>
+			<h2>Ready to make the magic?</h2>
 			<div class="actions">
-				<a class="button-primary" href="#preview-builder">Create Yours</a>
-				<a class="button-secondary" href={resolve('/prices')}>View bundles</a>
+				<a class="button-primary" href="#preview-builder">Make The Magic</a>
+				<a class="button-secondary" href={resolve('/prices')}>See Bundles</a>
 			</div>
 		</div>
 	</div>

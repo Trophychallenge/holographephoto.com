@@ -19,7 +19,7 @@
 	<title>Product | Holographe</title>
 	<meta
 		name="description"
-		content="What makes Holographe feel premium: shimmer, color, and personalized detail in a collectible keepsake format."
+		content="See what gives Holographe its glow."
 	/>
 </svelte:head>
 
@@ -27,9 +27,9 @@
 	<div class="page-wrap product-layout">
 		<section class="product-hero glass-card">
 			<div class="hero-copy">
-				<p class="eyebrow">What makes it different</p>
-				<h1>Small format. Big feeling.</h1>
-				<p class="hero-subcopy">More than a flat print.</p>
+				<p class="eyebrow">The glow</p>
+				<h1>More than a flat photo.</h1>
+				<p class="hero-subcopy">Brighter. Softer. More personal.</p>
 			</div>
 
 			<div class="hero-card">

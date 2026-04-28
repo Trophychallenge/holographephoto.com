@@ -1,23 +1,21 @@
+<script lang="ts">
+	import { featuredCheckoutOffers } from '$lib/pricing';
+</script>
+
 <section class="section value-section">
 	<div class="page-wrap value-layout">
 		<div class="section-head">
-			<p class="eyebrow">Some memories belong together</p>
-			<h2>Better together.</h2>
+			<p class="eyebrow">Simple bundles</p>
+			<h2>Pick a favorite.</h2>
 		</div>
 
 		<div class="value-grid">
-			<div class="value-card glass-card">
-				<span>1 Holographe</span>
-				<strong>$15</strong>
-			</div>
-			<div class="value-card glass-card">
-				<span>Set of 3</span>
-				<strong>$30</strong>
-			</div>
-			<div class="value-card glass-card">
-				<span>Family Set</span>
-				<strong>$60</strong>
-			</div>
+			{#each featuredCheckoutOffers as offer (offer.quantity)}
+				<div class="value-card glass-card">
+					<span>{offer.label}</span>
+					<strong>{offer.priceLabel}</strong>
+				</div>
+			{/each}
 		</div>
 	</div>
 </section>

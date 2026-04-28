@@ -19,7 +19,7 @@
 	<title>Personalization | Holographe</title>
 	<meta
 		name="description"
-		content="Luxury personalization styles for Holographe keepsakes: clean, signature, and layered."
+		content="Choose the style that fits your photo best."
 	/>
 </svelte:head>
 
@@ -27,15 +27,15 @@
 	<div class="page-wrap formats-layout">
 		<section class="formats-hero glass-card">
 			<div class="hero-copy">
-				<p class="eyebrow">Personalization styles</p>
-				<h1>Three ways to personalize.</h1>
-				<p class="hero-subcopy">Simple and clear.</p>
+				<p class="eyebrow">Styles</p>
+				<h1>Three easy ways to personalize.</h1>
+				<p class="hero-subcopy">Clean. Sweet. Simple.</p>
 			</div>
 
 			<div class="hero-card">
 				<p class="hero-kicker">Choose</p>
 				<h2>Clean, signature, or layered.</h2>
-				<p>Pick the feel you want.</p>
+				<p>Choose what feels right.</p>
 			</div>
 		</section>
 

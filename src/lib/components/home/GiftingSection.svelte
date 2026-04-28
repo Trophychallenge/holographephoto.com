@@ -15,9 +15,9 @@
 
 		<div class="gift-copy">
 			<p class="eyebrow">Already gift-ready</p>
-			<h2>Finished with a black envelope and white ribbon.</h2>
-			<p>Ready to give.</p>
-			<p>No wrapping needed.</p>
+			<h2>Ready to hand over.</h2>
+			<p>Black envelope. White ribbon.</p>
+			<p>No extra wrapping.</p>
 
 			<label class="gift-toggle">
 				<input type="checkbox" bind:checked={sendAsGift} />
