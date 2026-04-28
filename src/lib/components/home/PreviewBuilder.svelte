@@ -699,7 +699,7 @@
 						<div class="preview-card effect-shell" style={`clip-path: inset(0 ${100 - compareSplit}% 0 0);`}>
 							{#if currentFinishedSrc}
 								<img
-									class="preview-canvas preview-image"
+									class="preview-canvas preview-image preview-image-finished"
 									src={currentFinishedSrc}
 									alt="Finished holographic sample preview"
 								/>
@@ -717,8 +717,8 @@
 					</div>
 
 					<div class="compare-head">
-						<strong>{uploadedBaseSrc ? 'See your photo catch the light.' : 'Real before and after.'}</strong>
-						<span>{uploadedBaseSrc ? 'Your photo / Live glow preview' : 'Jess before / Jess holographe'}</span>
+						<strong>{uploadedBaseSrc ? 'See your photo catch the light.' : 'From quiet photo to full shimmer.'}</strong>
+						<span>{uploadedBaseSrc ? 'Your photo / Live glow preview' : 'A real Holographe finish from the original photo'}</span>
 					</div>
 
 					<label class="compare-control">
@@ -1306,16 +1306,21 @@
 		width: min(24rem, 72%);
 		aspect-ratio: 4 / 5;
 		height: auto;
-		border-radius: 1.3rem;
+		border-radius: 1.9rem;
 	}
 
 	.preview-image {
 		display: block;
 		height: auto;
 		object-fit: cover;
+		object-position: center 42%;
 		box-shadow:
 			0 16px 40px rgba(0, 0, 0, 0.28),
 			0 0 0 1px rgba(255, 255, 255, 0.08);
+	}
+
+	.preview-image-finished {
+		transform: scale(1.11);
 	}
 
 	.compare-line {
