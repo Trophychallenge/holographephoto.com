@@ -13,21 +13,8 @@
 			preload="metadata"
 			poster="/holographe/jessholo.png"
 		>
-			<source src="/holographe/dishwasherview.mp4" type="video/mp4" />
+			<source src="/holographe/3picsdishwasher.mp4" type="video/mp4" />
 		</video>
-		<div class="hero-video-focus-frame">
-			<video
-				class="hero-video hero-video-focus"
-				autoplay
-				muted
-				loop
-				playsinline
-				preload="metadata"
-				poster="/holographe/jessholo.png"
-			>
-				<source src="/holographe/dishwasherview.mp4" type="video/mp4" />
-			</video>
-		</div>
 		<div class="hero-overlay"></div>
 		<div class="hero-glow"></div>
 	</div>
@@ -123,50 +110,15 @@
 
 	.hero-video-fill {
 		object-fit: cover;
-		transform: scale(1.08);
-		filter: saturate(0.9) contrast(1.04) brightness(0.72) blur(14px);
-		opacity: 0.9;
-	}
-
-	.hero-video-focus-frame {
-		position: absolute;
-		inset: 4.5rem auto 4rem 50%;
-		width: min(28rem, 36vw);
-		transform: translateX(-50%);
-		border-radius: 2rem;
-		overflow: hidden;
-		border: 1px solid rgba(255, 255, 255, 0.16);
-		background: rgba(255, 255, 255, 0.04);
-		box-shadow:
-			0 32px 80px rgba(0, 0, 0, 0.34),
-			inset 0 1px 0 rgba(255, 255, 255, 0.2);
-	}
-
-	.hero-video-focus-frame::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		z-index: 1;
-		pointer-events: none;
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.12)),
-			linear-gradient(110deg, rgba(255, 255, 255, 0.08), transparent 28%, transparent 76%, rgba(234, 211, 182, 0.08));
-	}
-
-	.hero-video-focus {
-		position: relative;
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		filter: saturate(1) contrast(1.04) brightness(0.92);
+		transform: scale(1.03);
+		filter: saturate(0.98) contrast(1.04) brightness(0.86);
 	}
 
 	.hero-overlay {
 		background:
-			linear-gradient(180deg, rgba(7, 7, 7, 0.08), rgba(7, 7, 7, 0.14) 24%, rgba(7, 7, 7, 0.34) 58%, rgba(7, 7, 7, 0.62)),
-			linear-gradient(90deg, rgba(0, 0, 0, 0.36), rgba(0, 0, 0, 0.06) 28%, rgba(0, 0, 0, 0.08) 70%, rgba(0, 0, 0, 0.34)),
-			radial-gradient(circle at 54% 24%, rgba(255, 236, 214, 0.14), transparent 26%);
+			linear-gradient(180deg, rgba(7, 7, 7, 0.08), rgba(7, 7, 7, 0.12) 26%, rgba(7, 7, 7, 0.3) 58%, rgba(7, 7, 7, 0.58)),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.08) 24%, rgba(0, 0, 0, 0.06) 72%, rgba(0, 0, 0, 0.34)),
+			radial-gradient(circle at 58% 20%, rgba(255, 236, 214, 0.18), transparent 26%);
 	}
 
 	.hero-glow {
@@ -360,10 +312,6 @@
 		.hero-stage {
 			grid-template-columns: minmax(0, 1fr) minmax(14rem, 20rem);
 		}
-
-		.hero-copy-wrap {
-			padding-right: min(24rem, 28vw);
-		}
 	}
 
 	@media (max-width: 640px) {
@@ -399,13 +347,6 @@
 			font-size: 0.78rem;
 		}
 
-		.hero-video-focus-frame {
-			inset: 5.6rem 1rem auto 1rem;
-			width: auto;
-			transform: none;
-			height: 42svh;
-		}
-
 		.scroll-cue {
 			bottom: 1rem;
 		}
@@ -418,17 +359,8 @@
 		}
 
 		.hero-video-fill {
-			transform: scale(1.04);
-			filter: saturate(0.88) contrast(1.04) brightness(0.64) blur(10px);
-		}
-	}
-
-	@media (min-width: 641px) and (max-width: 919px) {
-		.hero-video-focus-frame {
-			inset: 6.4rem auto auto 50%;
-			width: min(22rem, 48vw);
-			height: 58svh;
-			transform: translateX(-50%);
+			transform: scale(1.02);
+			filter: saturate(0.96) contrast(1.03) brightness(0.78);
 		}
 	}
 </style>
