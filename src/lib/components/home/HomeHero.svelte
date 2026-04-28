@@ -4,11 +4,12 @@
 	let { isTikTokVisitor = false } = $props();
 
 	let heroVideo: HTMLVideoElement | null = null;
+	let compareVideo: HTMLVideoElement | null = null;
 	let compareSplit = $state(44);
 
 	onMount(() => {
-		if (!heroVideo) return;
-		heroVideo.playbackRate = 0.72;
+		if (heroVideo) heroVideo.playbackRate = 0.72;
+		if (compareVideo) compareVideo.playbackRate = 0.82;
 	});
 </script>
 
@@ -71,15 +72,18 @@
 						/>
 					</picture>
 					<div class="compare-after" style={`clip-path: inset(0 0 0 ${compareSplit}%);`}>
-						<picture class="compare-image-shell">
-							<source srcset="/holographe/jess-holo-hero.webp" type="image/webp" />
-							<img
-								class="compare-image compare-finished"
-								src="/holographe/jess-holo-hero.png"
-								alt="Holograph"
-								fetchpriority="high"
-							/>
-						</picture>
+						<video
+							bind:this={compareVideo}
+							class="compare-image compare-finished compare-video"
+							autoplay
+							muted
+							loop
+							playsinline
+							preload="auto"
+							poster="/holographe/jess-holo-hero.png"
+						>
+							<source src="/holographe/jessholo.mov" type="video/quicktime" />
+						</video>
 						<div class="compare-shimmer"></div>
 					</div>
 					<div class="compare-line" style={`left:${compareSplit}%`}>
@@ -242,6 +246,7 @@
 
 	.hero-compare {
 		padding: 0.9rem;
+		width: min(100%, 25rem);
 		border-radius: 1.6rem;
 		background:
 			linear-gradient(180deg, rgba(12, 12, 14, 0.82), rgba(7, 7, 9, 0.88)),
@@ -296,12 +301,17 @@
 		object-position: center;
 	}
 
+	.compare-video {
+		object-position: center 48%;
+		filter: contrast(1.08) brightness(1.05) saturate(1.06);
+	}
+
 	.compare-before {
 		filter: contrast(1.04) brightness(1.02);
 	}
 
 	.compare-finished {
-		filter: contrast(1.08) brightness(1.04) saturate(1.04);
+		filter: contrast(1.08) brightness(1.05) saturate(1.06);
 	}
 
 	.compare-after {
@@ -431,8 +441,17 @@
 
 	@media (min-width: 980px) {
 		.hero-stage {
-			grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
-			gap: 1.1rem;
+			grid-template-columns: minmax(320px, 25rem) minmax(0, 1fr);
+			gap: 1.3rem;
+		}
+
+		.hero-compare {
+			order: 1;
+			justify-self: start;
+		}
+
+		.hero-copy-wrap {
+			order: 2;
 		}
 	}
 
