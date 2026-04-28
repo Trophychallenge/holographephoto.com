@@ -4,7 +4,7 @@
 	let { isTikTokVisitor = false } = $props();
 
 	let heroVideo: HTMLVideoElement | null = null;
-	let compareSplit = $state(58);
+	let compareSplit = $state(44);
 
 	onMount(() => {
 		if (!heroVideo) return;
@@ -22,7 +22,7 @@
 			loop
 			playsinline
 			preload="auto"
-			poster="/holographe/jessholo.png"
+			poster="/holographe/jess-holo-hero.png"
 		>
 			<source src="/holographe/3picsdishwasher.mp4" type="video/mp4" />
 		</video>
@@ -34,13 +34,11 @@
 		<div class="hero-stage">
 			<div class="hero-copy-wrap">
 				<div class="hero-copy">
-					{#if isTikTokVisitor}
-						<p class="eyebrow">Made for your camera roll</p>
-					{:else}
-						<img class="hero-logo" src="/holographe/brand-logo.png" alt="Holographe logo" />
+					{#if !isTikTokVisitor}
+						<img class="hero-logo" src="/holographe/brand-logo.png" alt="Holograph logo" />
 					{/if}
 					<h1>Turn a moment into something you can feel.</h1>
-					<p class="subcopy">{isTikTokVisitor ? 'Upload. Preview. Order.' : 'Upload. Personalize. Keep it close.'}</p>
+					<p class="subcopy">{isTikTokVisitor ? 'Slide. Upload. Order.' : 'Slide to see the finish.'}</p>
 
 					<div class="actions">
 						<a class="button-primary" href="#preview-builder">
@@ -52,20 +50,36 @@
 
 				<div class="hero-note">
 					<span class="hero-note-line"></span>
-					<p>Original on the left. Finished holograph on the right.</p>
+					<p>Original left. Holograph right.</p>
 				</div>
 			</div>
 
 			<div class="hero-compare glass-card">
 				<div class="compare-topline">
 					<span>Original</span>
-					<span>Holographe</span>
+					<span>Holograph</span>
 				</div>
 
-				<div class="compare-stage" aria-label="Before and after Holographe comparison">
-					<img class="compare-image compare-before" src="/holographe/jess-before.jpg" alt="Original" fetchpriority="high" />
+				<div class="compare-stage" aria-label="Before and after Holograph comparison">
+					<picture class="compare-image-shell compare-before-shell">
+						<source srcset="/holographe/jess-before-hero.webp" type="image/webp" />
+						<img
+							class="compare-image compare-before"
+							src="/holographe/jess-before-hero.jpg"
+							alt="Original"
+							fetchpriority="high"
+						/>
+					</picture>
 					<div class="compare-after" style={`clip-path: inset(0 0 0 ${compareSplit}%);`}>
-						<img class="compare-image compare-finished" src="/holographe/jessholo.png" alt="Holographe" fetchpriority="high" />
+						<picture class="compare-image-shell">
+							<source srcset="/holographe/jess-holo-hero.webp" type="image/webp" />
+							<img
+								class="compare-image compare-finished"
+								src="/holographe/jess-holo-hero.png"
+								alt="Holograph"
+								fetchpriority="high"
+							/>
+						</picture>
 						<div class="compare-shimmer"></div>
 					</div>
 					<div class="compare-line" style={`left:${compareSplit}%`}>
@@ -74,7 +88,7 @@
 				</div>
 
 				<label class="compare-slider">
-					<span class="sr-only">Reveal finished Holographe image</span>
+					<span class="sr-only">Reveal finished Holograph image</span>
 					<input type="range" min="8" max="92" bind:value={compareSplit} />
 				</label>
 			</div>
@@ -263,12 +277,17 @@
 			0 24px 56px rgba(0, 0, 0, 0.3);
 	}
 
+	.compare-image-shell,
 	.compare-image,
 	.compare-after {
 		position: absolute;
 		inset: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	.compare-image-shell {
+		display: block;
 	}
 
 	.compare-image {

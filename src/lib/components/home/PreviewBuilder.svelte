@@ -16,8 +16,8 @@
 		| 'gym-locker'
 		| 'car';
 
-	const demoBeforeSrc = '/holographe/jess-before.jpg';
-	const demoAfterSrc = '/holographe/jessholo.png';
+	const demoBeforeSrc = '/holographe/jess-before-hero.webp';
+	const demoAfterSrc = '/holographe/jess-holo-hero.webp';
 
 	const textStyles: { id: TextStyle; label: string }[] = [
 		{ id: 'serif', label: 'Serif' },
