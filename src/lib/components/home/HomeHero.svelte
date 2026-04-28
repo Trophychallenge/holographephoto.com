@@ -4,6 +4,7 @@
 	let { isTikTokVisitor = false } = $props();
 
 	let heroVideo: HTMLVideoElement | null = null;
+	let compareSplit = $state(58);
 
 	onMount(() => {
 		if (!heroVideo) return;
@@ -38,42 +39,49 @@
 					{:else}
 						<img class="hero-logo" src="/holographe/brand-logo.png" alt="Holographe logo" />
 					{/if}
-					<h1>Your photo, glowing back at you.</h1>
-					<p class="subcopy">
-						{isTikTokVisitor
-							? 'Upload it. Add a little love. We handle the rest.'
-							: 'A sweet little keepsake for the people you love most.'}
-					</p>
-
-					<div class="microcopy" aria-label="Product details">
-						<span>Real shimmer</span>
-						<span>Gift-ready</span>
-						<span>Made from your photo</span>
-					</div>
+					<h1>Turn a moment into something you can feel.</h1>
+					<p class="subcopy">{isTikTokVisitor ? 'Upload. Preview. Order.' : 'Upload. Personalize. Keep it close.'}</p>
 
 					<div class="actions">
 						<a class="button-primary" href="#preview-builder">
 							{isTikTokVisitor ? 'Try Your Photo' : 'Make The Magic'}
 						</a>
-						<a class="button-secondary" href="#how-it-works">
-							{isTikTokVisitor ? 'See the flow' : 'See How It Works'}
-						</a>
+						<a class="button-secondary" href="/prices">See Prices</a>
 					</div>
 				</div>
 
 				<div class="hero-note">
 					<span class="hero-note-line"></span>
-					<p>Simple, personal, and easy to give.</p>
+					<p>Original on the left. Finished holograph on the right.</p>
 				</div>
+			</div>
+
+			<div class="hero-compare glass-card">
+				<div class="compare-topline">
+					<span>Original</span>
+					<span>Holographe</span>
+				</div>
+
+				<div class="compare-stage" aria-label="Before and after Holographe comparison">
+					<img class="compare-image compare-before" src="/holographe/jess-before.jpg" alt="Original" fetchpriority="high" />
+					<div class="compare-after" style={`clip-path: inset(0 0 0 ${compareSplit}%);`}>
+						<img class="compare-image compare-finished" src="/holographe/jessholo.png" alt="Holographe" fetchpriority="high" />
+						<div class="compare-shimmer"></div>
+					</div>
+					<div class="compare-line" style={`left:${compareSplit}%`}>
+						<span class="compare-thumb"></span>
+					</div>
+				</div>
+
+				<label class="compare-slider">
+					<span class="sr-only">Reveal finished Holographe image</span>
+					<input type="range" min="8" max="92" bind:value={compareSplit} />
+				</label>
 			</div>
 		</div>
 	</div>
 
 	<div class="hero-bottom-fade" aria-hidden="true"></div>
-
-	<a class="scroll-cue" href="#preview-builder">
-		<span>Preview your photo</span>
-	</a>
 </section>
 
 <style>
@@ -81,13 +89,13 @@
 		position: relative;
 		min-height: 100vh;
 		display: grid;
-		align-items: end;
-		padding: 7rem 0 4.5rem;
+		align-items: center;
+		padding: 6.6rem 0 3.6rem;
 		overflow: clip;
 	}
 
 	.hero.tiktok-hero {
-		min-height: 78svh;
+		min-height: 90svh;
 		padding-top: 1rem;
 	}
 
@@ -108,22 +116,22 @@
 	.hero-video-fill {
 		object-fit: cover;
 		object-position: center 46%;
-		transform: scale(0.96);
-		filter: saturate(0.92) contrast(1.02) brightness(0.86) blur(0.35px);
+		transform: scale(0.97);
+		filter: saturate(0.88) contrast(1.02) brightness(0.74) blur(0.4px);
 	}
 
 	.hero-overlay {
 		background:
-			linear-gradient(180deg, rgba(7, 7, 7, 0.14), rgba(7, 7, 7, 0.2) 24%, rgba(7, 7, 7, 0.3) 56%, rgba(7, 7, 7, 0.58)),
-			linear-gradient(90deg, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.12) 24%, rgba(0, 0, 0, 0.1) 72%, rgba(0, 0, 0, 0.3)),
-			radial-gradient(circle at 58% 20%, rgba(255, 236, 214, 0.12), transparent 28%);
+			linear-gradient(180deg, rgba(7, 7, 7, 0.2), rgba(7, 7, 7, 0.24) 24%, rgba(7, 7, 7, 0.36) 56%, rgba(7, 7, 7, 0.62)),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.16) 24%, rgba(0, 0, 0, 0.08) 72%, rgba(0, 0, 0, 0.34)),
+			radial-gradient(circle at 60% 22%, rgba(255, 236, 214, 0.12), transparent 28%);
 	}
 
 	.hero-glow {
 		background:
-			radial-gradient(circle at 22% 18%, rgba(234, 211, 182, 0.1), transparent 22%),
+			radial-gradient(circle at 24% 18%, rgba(234, 211, 182, 0.08), transparent 22%),
 			radial-gradient(circle at 78% 22%, rgba(217, 228, 248, 0.08), transparent 20%),
-			linear-gradient(120deg, rgba(255, 255, 255, 0.04), transparent 28%, rgba(255, 239, 212, 0.05) 44%, transparent 62%);
+			linear-gradient(120deg, rgba(255, 255, 255, 0.03), transparent 28%, rgba(255, 239, 212, 0.04) 44%, transparent 62%);
 	}
 
 	.hero-media::after {
@@ -131,7 +139,7 @@
 		position: absolute;
 		inset: 0;
 		background:
-			radial-gradient(circle at center, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.18) 72%, rgba(0, 0, 0, 0.34));
+			radial-gradient(circle at center, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.22) 72%, rgba(0, 0, 0, 0.38));
 		pointer-events: none;
 	}
 
@@ -142,25 +150,24 @@
 
 	.hero-stage {
 		display: grid;
-		align-items: end;
-		gap: 1rem;
+		gap: 1.1rem;
+		align-items: center;
 	}
 
-	.hero-copy-wrap {
+	.hero-copy-wrap,
+	.hero-copy,
+	.hero-compare {
 		display: grid;
 		gap: 0.95rem;
-		max-width: 36rem;
 	}
 
 	.hero-copy {
-		display: grid;
-		gap: 1rem;
-		max-width: 35rem;
-		padding: 1.2rem;
+		max-width: 33rem;
+		padding: 1.1rem;
 		border-radius: 1.8rem;
 		background:
-			linear-gradient(180deg, rgba(8, 8, 8, 0.34), rgba(8, 8, 8, 0.12)),
-			radial-gradient(circle at top left, rgba(234, 211, 182, 0.1), transparent 34%);
+			linear-gradient(180deg, rgba(8, 8, 8, 0.32), rgba(8, 8, 8, 0.1)),
+			radial-gradient(circle at top left, rgba(234, 211, 182, 0.08), transparent 34%);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		backdrop-filter: blur(12px);
 		box-shadow: 0 28px 70px rgba(0, 0, 0, 0.18);
@@ -173,7 +180,7 @@
 
 	h1 {
 		font-family: 'Georgia', 'Iowan Old Style', serif;
-		font-size: clamp(2.7rem, 6vw, 5rem);
+		font-size: clamp(2.5rem, 5.8vw, 4.7rem);
 		line-height: 0.94;
 		letter-spacing: -0.055em;
 		text-wrap: balance;
@@ -181,9 +188,9 @@
 	}
 
 	.subcopy {
-		max-width: 27rem;
-		font-size: 0.98rem;
-		line-height: 1.5;
+		max-width: 24rem;
+		font-size: 0.94rem;
+		line-height: 1.45;
 		color: rgba(247, 243, 238, 0.8);
 	}
 
@@ -195,44 +202,185 @@
 		filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.28));
 	}
 
-	.microcopy,
 	.actions {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.7rem;
 	}
 
-	.microcopy span {
-		padding: 0.5rem 0.78rem;
-		border-radius: 999px;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(255, 255, 255, 0.05);
-		backdrop-filter: blur(16px);
-		font-size: 0.76rem;
-		color: rgba(244, 240, 234, 0.8);
-	}
-
 	.hero-note {
 		display: flex;
 		align-items: flex-start;
 		gap: 0.75rem;
-		max-width: 26rem;
+		max-width: 25rem;
 		color: rgba(247, 243, 238, 0.72);
-		font-size: 0.82rem;
-		line-height: 1.55;
+		font-size: 0.8rem;
+		line-height: 1.5;
 	}
-
-	.hero-note p {
-		max-width: 22rem;
-	}
-
 
 	.hero-note-line {
 		width: 2.5rem;
 		height: 1px;
-		margin-top: 0.75rem;
+		margin-top: 0.7rem;
 		background: linear-gradient(90deg, rgba(234, 211, 182, 0.9), rgba(234, 211, 182, 0));
 		flex: 0 0 auto;
+	}
+
+	.hero-compare {
+		padding: 0.9rem;
+		border-radius: 1.6rem;
+		background:
+			linear-gradient(180deg, rgba(12, 12, 14, 0.82), rgba(7, 7, 9, 0.88)),
+			radial-gradient(circle at top, rgba(255, 255, 255, 0.06), transparent 40%);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		backdrop-filter: blur(16px);
+		box-shadow:
+			0 28px 80px rgba(0, 0, 0, 0.28),
+			inset 0 1px 0 rgba(255, 255, 255, 0.05);
+	}
+
+	.compare-topline {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0 0.15rem;
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: rgba(244, 240, 234, 0.7);
+	}
+
+	.compare-stage {
+		position: relative;
+		aspect-ratio: 4 / 5;
+		border-radius: 1.35rem;
+		overflow: hidden;
+		background:
+			linear-gradient(180deg, rgba(10, 10, 12, 0.92), rgba(7, 7, 9, 0.96));
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.05),
+			0 24px 56px rgba(0, 0, 0, 0.3);
+	}
+
+	.compare-image,
+	.compare-after {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.compare-image {
+		display: block;
+		object-fit: cover;
+		object-position: center;
+	}
+
+	.compare-before {
+		filter: contrast(1.04) brightness(1.02);
+	}
+
+	.compare-finished {
+		filter: contrast(1.08) brightness(1.04) saturate(1.04);
+	}
+
+	.compare-after {
+		pointer-events: none;
+	}
+
+	.compare-after::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.08), transparent 26%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 34%, rgba(0, 0, 0, 0.1));
+		pointer-events: none;
+	}
+
+	.compare-shimmer {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(112deg, transparent 28%, rgba(255, 255, 255, 0.08) 42%, rgba(255, 233, 204, 0.14) 50%, rgba(201, 228, 255, 0.12) 56%, transparent 70%);
+		mix-blend-mode: screen;
+		opacity: 0.72;
+		transform: translateX(-38%);
+		animation: heroShimmer 4.8s ease-in-out infinite;
+		pointer-events: none;
+	}
+
+	.compare-stage:hover .compare-shimmer {
+		animation-duration: 3.6s;
+	}
+
+	.compare-line {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 1px;
+		background: rgba(255, 255, 255, 0.96);
+		box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.12);
+		transform: translateX(-50%);
+	}
+
+	.compare-thumb {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 2.6rem;
+		height: 2.6rem;
+		border-radius: 999px;
+		background:
+			linear-gradient(135deg, rgba(247, 243, 238, 0.98), rgba(235, 214, 186, 0.98), rgba(220, 230, 246, 0.94));
+		box-shadow:
+			0 14px 28px rgba(0, 0, 0, 0.28),
+			0 0 0 1px rgba(255, 255, 255, 0.08);
+		transform: translate(-50%, -50%);
+	}
+
+	.compare-thumb::before,
+	.compare-thumb::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		width: 0.5rem;
+		height: 0.5rem;
+		border-top: 1px solid #111;
+		border-right: 1px solid #111;
+	}
+
+	.compare-thumb::before {
+		left: 0.78rem;
+		transform: translateY(-50%) rotate(-135deg);
+	}
+
+	.compare-thumb::after {
+		right: 0.78rem;
+		transform: translateY(-50%) rotate(45deg);
+	}
+
+	.compare-slider {
+		display: grid;
+	}
+
+	.compare-slider input {
+		width: 100%;
+		margin: 0;
+		accent-color: #ead3b6;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	.hero-bottom-fade {
@@ -240,82 +388,66 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		height: 10rem;
+		height: 9rem;
 		background: linear-gradient(180deg, rgba(6, 6, 6, 0), rgba(6, 6, 6, 0.82));
 		pointer-events: none;
 	}
 
-	.scroll-cue {
-		position: absolute;
-		left: 50%;
-		bottom: 1.4rem;
-		z-index: 1;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.55rem;
-		transform: translateX(-50%);
-		padding: 0.5rem 0.75rem;
-		border-radius: 999px;
-		background: rgba(12, 12, 12, 0.42);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		backdrop-filter: blur(12px);
-		font-size: 0.72rem;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: rgba(247, 243, 238, 0.78);
+	@keyframes heroShimmer {
+		0%, 100% {
+			transform: translateX(-42%);
+			opacity: 0.42;
+		}
+
+		45% {
+			transform: translateX(2%);
+			opacity: 0.78;
+		}
+
+		70% {
+			transform: translateX(10%);
+			opacity: 0.58;
+		}
 	}
 
-	.scroll-cue::after {
-		content: '';
-		width: 0.42rem;
-		height: 0.42rem;
-		border-right: 1px solid currentColor;
-		border-bottom: 1px solid currentColor;
-		transform: rotate(45deg) translateY(-1px);
+	@media (min-width: 980px) {
+		.hero-stage {
+			grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+			gap: 1.1rem;
+		}
 	}
 
 	@media (max-width: 640px) {
 		.hero {
-			min-height: 92svh;
-			padding: 5.8rem 0 3rem;
-		}
-
-		.hero.tiktok-hero {
 			min-height: auto;
-			padding-top: 0;
+			padding: 5.6rem 0 2.6rem;
 		}
 
 		h1 {
-			font-size: clamp(2.35rem, 11vw, 3.5rem);
+			font-size: clamp(2.2rem, 10vw, 3.4rem);
 		}
 
 		.subcopy {
-			max-width: 18rem;
-			font-size: 0.93rem;
-		}
-
-		.actions {
-			display: grid;
-			grid-template-columns: 1fr;
+			font-size: 0.9rem;
 		}
 
 		.hero-copy {
-			padding: 1rem;
+			padding: 0.95rem;
+			border-radius: 1.35rem;
 		}
 
-		.hero-note {
-			font-size: 0.78rem;
+		.hero-compare {
+			padding: 0.75rem;
+			border-radius: 1.25rem;
 		}
 
-		.scroll-cue {
-			bottom: 1rem;
+		.compare-stage {
+			border-radius: 1rem;
 		}
-	}
 
-	@media (max-width: 919px) {
-		.hero-video-fill {
-			transform: scale(1.02);
-			filter: saturate(0.96) contrast(1.03) brightness(0.78);
+		.compare-thumb {
+			width: 2.35rem;
+			height: 2.35rem;
 		}
 	}
 </style>
