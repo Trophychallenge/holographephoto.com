@@ -7,6 +7,7 @@ import {
 	verifyStripeWebhookSignature
 } from '$lib/server/stripe';
 import { storePaidOrder } from '$lib/server/orders';
+import { sendPushoverOrderAlert } from '$lib/server/pushover';
 
 const HANDLED_EVENT_TYPES = new Set([
 	'checkout.session.completed',
@@ -46,7 +47,16 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 		const session = await fetchCheckoutSession(fetch, sessionId);
 
 		if (session.payment_status === 'paid' || event.type === 'checkout.session.async_payment_succeeded') {
-			await storePaidOrder({ session, event });
+			const stored = await storePaidOrder({ session, event });
+
+			// Only notify once for a newly stored paid order so webhook retries don't spam the phone.
+			if (stored.stored) {
+				try {
+					await sendPushoverOrderAlert(fetch, session);
+				} catch (error) {
+					console.error('Pushover alert failed:', error);
+				}
+			}
 		}
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'Unknown webhook failure.';
