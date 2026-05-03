@@ -637,8 +637,8 @@
 
 		<div class="section-copy">
 			<p class="eyebrow">{isTikTokVisitor ? 'Upload first' : 'Start here'}</p>
-			<h2>Upload your photo. Order in a minute.</h2>
-			<p>Start simple. Add extras only if you want them.</p>
+			<h2>Upload your photo. Make it yours.</h2>
+			<p>Choose your favorite details and order when it feels right.</p>
 		</div>
 
 		<div class:tikTokFirst={isTikTokVisitor} class="builder-card">
@@ -759,6 +759,12 @@
 				{#if hasUnsavedDesign}
 					<p class="upload-warn">Almost there. Let the save finish first.</p>
 				{/if}
+
+				<div class="trust-strip" aria-label="Order details">
+					<span>Free shipping</span>
+					<span>Made from your photo</span>
+					<span>Personal help if needed</span>
+				</div>
 			</div>
 
 			<div class="builder-grid">
@@ -1139,6 +1145,23 @@
 	.quick-upload {
 		display: grid;
 		gap: 0.75rem;
+	}
+
+	.trust-strip {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.55rem;
+	}
+
+	.trust-strip span {
+		padding: 0.5rem 0.75rem;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(255, 255, 255, 0.03);
+		color: rgba(245, 239, 231, 0.8);
+		font-size: 0.76rem;
+		font-weight: 600;
+		letter-spacing: 0.03em;
 	}
 
 	.quick-order-grid {

@@ -38,9 +38,8 @@
 
 			<div class="actions">
 				<a class="button-primary" href="#preview-builder">
-					{isTikTokVisitor ? 'Try Your Photo' : 'Make The Magic'}
+					{isTikTokVisitor ? 'Upload Your Photo' : 'Start Your Order'}
 				</a>
-				<a class="button-secondary" href="/prices">Prices</a>
 			</div>
 		</div>
 	</div>

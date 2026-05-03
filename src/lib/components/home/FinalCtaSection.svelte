@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
 </script>
 
 <section class="section final-cta">
@@ -9,7 +8,6 @@
 			<h2>Make it yours.</h2>
 			<div class="actions">
 				<a class="button-primary" href="#preview-builder">Make The Magic</a>
-				<a class="button-secondary" href={resolve('/prices')}>Prices</a>
 			</div>
 		</div>
 	</div>

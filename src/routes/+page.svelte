@@ -3,7 +3,6 @@
 	import HomeHero from '$lib/components/home/HomeHero.svelte';
 	import PreviewBuilder from '$lib/components/home/PreviewBuilder.svelte';
 	import WhyDifferentSection from '$lib/components/home/WhyDifferentSection.svelte';
-	import ValueSection from '$lib/components/home/ValueSection.svelte';
 	import FinalCtaSection from '$lib/components/home/FinalCtaSection.svelte';
 
 	let isTikTokVisitor = $state(false);
@@ -27,7 +26,6 @@
 	<HomeHero {isTikTokVisitor} />
 	<PreviewBuilder {isTikTokVisitor} />
 	<WhyDifferentSection />
-	<ValueSection />
 	<FinalCtaSection />
 </div>
 
