@@ -79,7 +79,7 @@
 				<p class="spotlight-kicker">Most-loved</p>
 				<div class="spotlight-price">
 					<span>Starting at</span>
-					<strong>$14.99</strong>
+					<strong>$19.99</strong>
 				</div>
 				<p class="spotlight-copy">Free shipping. One easy step.</p>
 				<div class="spotlight-tags">

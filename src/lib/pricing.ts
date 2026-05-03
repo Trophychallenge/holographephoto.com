@@ -1,9 +1,9 @@
 export const checkoutOffers = [
 	{
 		quantity: 1,
-		totalAmountCents: 1499,
+		totalAmountCents: 1999,
 		label: 'Single keepsake',
-		priceLabel: '$14.99',
+		priceLabel: '$19.99',
 		subtitle: 'Sale live now',
 		highlight: 'Free shipping'
 	},

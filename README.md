@@ -39,7 +39,7 @@ After Stripe signs those events, the site verifies the signature and stores the 
 
 The pricing page now uses sale bundle pricing:
 
-- `1`: `$14.99`
+- `1`: `$19.99`
 - `3`: `$34.99`
 - `5`: `$59.99`
 - `10-40`: discounted fixed bundle pricing

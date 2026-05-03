@@ -98,7 +98,7 @@
 	let giftMode = $state(false);
 	let giftMessage = $state('');
 	let shipDirect = $state(true);
-	let selectedBundle = $state(String(featuredCheckoutOffers[1]?.quantity ?? featuredCheckoutOffers[0].quantity));
+	let selectedBundle = $state(String(featuredCheckoutOffers[0]?.quantity ?? 1));
 	let selectedMockup = $state<MockupScene>('locker');
 	let checkoutError = $state('');
 	let checkoutLoading = $state(false);
@@ -119,7 +119,7 @@
 		uploadedBaseSrc ? currentBaseAlt : 'Finished holographic Holograph sample on a surface mockup'
 	);
 	const currentBundlePrice = $derived(
-		featuredCheckoutOffers.find((offer) => String(offer.quantity) === selectedBundle)?.priceLabel ?? '$14.99'
+		featuredCheckoutOffers.find((offer) => String(offer.quantity) === selectedBundle)?.priceLabel ?? '$19.99'
 	);
 	const currentBundleLabel = $derived(bundleLabels[selectedBundle] ?? 'Family Set');
 	const hasUnsavedDesign = $derived(
@@ -637,20 +637,16 @@
 
 		<div class="section-copy">
 			<p class="eyebrow">{isTikTokVisitor ? 'Upload first' : 'Start here'}</p>
-			<h2>
-				{isTikTokVisitor
-					? 'Upload a photo. Watch it become something more.'
-					: 'Upload a photo. Watch it become something more.'}
-			</h2>
-			<p>Move the light. See the glow.</p>
+			<h2>Upload your photo. Order in a minute.</h2>
+			<p>Start simple. Add extras only if you want them.</p>
 		</div>
 
 		<div class:tikTokFirst={isTikTokVisitor} class="builder-card">
 			<div class="quick-order-card glass-card">
 				<div class="quick-order-copy">
 					<p class="label">Quick order</p>
-					<h3>Upload and add to cart.</h3>
-					<p class="micro">Start simple. Customize more below if you want.</p>
+					<h3>Upload and order.</h3>
+					<p class="micro">The fastest way to check out.</p>
 				</div>
 
 				<form
@@ -692,6 +688,21 @@
 									Take photo
 								</button>
 							</div>
+							<input
+								bind:this={baseUploadInput}
+								class="hidden-input"
+								type="file"
+								accept="image/*"
+								onchange={(event) => updateUploadedImage(event, 'base')}
+							/>
+							<input
+								bind:this={baseCameraInput}
+								class="hidden-input"
+								type="file"
+								accept="image/*"
+								capture="environment"
+								onchange={(event) => updateUploadedImage(event, 'base')}
+							/>
 							{#if uploadedBaseName}
 								<div class="file-meta">
 									<span>{uploadedBaseName}</span>
@@ -763,12 +774,12 @@
 
 					<div class="compare-head">
 						<strong>{uploadedBaseSrc ? 'Your uploaded photo.' : 'Sample finish.'}</strong>
-						<span>{uploadedBaseSrc ? 'Clean preview only. Final details follow your order notes.' : 'A simple sample to show the feel.'}</span>
+						<span>{uploadedBaseSrc ? 'Simple preview for review.' : 'A clean sample of the final feel.'}</span>
 					</div>
 
 					<div class="glow-status glass-card">
-						<strong>{uploadedBaseSrc ? 'Clean preview only.' : 'Simple sample only.'}</strong>
-						<span>{uploadedBaseSrc ? 'We keep the preview clean so your order stays easy to review.' : 'The full piece is finished from your photo and notes.'}</span>
+						<strong>{uploadedBaseSrc ? 'Easy to review.' : 'Made from your photo.'}</strong>
+						<span>{uploadedBaseSrc ? 'Your notes and options are saved with checkout.' : 'Your notes and options guide the final piece.'}</span>
 					</div>
 
 					<div class="mockup-card glass-card">
@@ -821,44 +832,6 @@
 						<p class="label">Customizations</p>
 						<h3>Optional touches.</h3>
 						<p class="micro">Everything below is extra if you want to personalize more.</p>
-					</div>
-
-					<div class="control-block">
-						<p class="label">Upload</p>
-						<h3>Change your photo.</h3>
-						<p class="micro">Upload a different one any time.</p>
-						<div class="button-row">
-							<button type="button" class="soft-button" onclick={() => baseUploadInput?.click()}>
-								Upload photo
-							</button>
-							<button type="button" class="soft-button" onclick={() => baseCameraInput?.click()}>
-								Take photo
-							</button>
-						</div>
-						<input
-							bind:this={baseUploadInput}
-							class="hidden-input"
-							type="file"
-							accept="image/*"
-							onchange={(event) => updateUploadedImage(event, 'base')}
-						/>
-						<input
-							bind:this={baseCameraInput}
-							class="hidden-input"
-							type="file"
-							accept="image/*"
-							capture="environment"
-							onchange={(event) => updateUploadedImage(event, 'base')}
-						/>
-						{#if uploadedBaseName}
-							<div class="file-meta">
-								<span>{uploadedBaseName}</span>
-								<button type="button" onclick={() => clearUploadedImage('base')}>Remove</button>
-							</div>
-						{/if}
-						{#if baseUploadMessage}
-							<p class:upload-error={baseUploadState === 'error'} class="upload-note">{baseUploadMessage}</p>
-						{/if}
 					</div>
 
 					<div class="control-block">
@@ -1002,29 +975,6 @@
 									bind:value={personalRequest}
 									placeholder="Name, date, size note, or short request"
 								></textarea>
-							</label>
-						</div>
-					</div>
-
-					<div class="control-block compact">
-						<p class="label">Refine</p>
-						<h3>Fine-tune the glow.</h3>
-						<div class="slider-grid">
-							<label class="slider-wrap">
-								<span>Brightness</span>
-								<input type="range" min="88" max="116" bind:value={brightness} />
-							</label>
-							<label class="slider-wrap">
-								<span>Overlay size</span>
-								<input type="range" min="14" max="46" bind:value={overlayScale} />
-							</label>
-							<label class="slider-wrap">
-								<span>Overlay rotate</span>
-								<input type="range" min="-22" max="22" bind:value={overlayRotation} />
-							</label>
-							<label class="slider-wrap">
-								<span>Overlay height</span>
-								<input type="range" min="18" max="82" bind:value={overlayY} />
 							</label>
 						</div>
 					</div>

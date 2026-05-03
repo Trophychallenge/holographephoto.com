@@ -12,7 +12,6 @@
 	const navItems = [
 		{ href: '/', label: 'Home' },
 		{ href: '/prices', label: 'Prices' },
-		{ href: '/gallery', label: 'Gallery' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
 </script>
@@ -52,7 +51,6 @@
 		</div>
 		<div class="footer-links">
 			<a href={resolve('/prices')}>Prices</a>
-			<a href={resolve('/gallery')}>Gallery</a>
 			<a href={resolve('/contact')}>Contact</a>
 		</div>
 		<div>

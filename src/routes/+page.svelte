@@ -3,8 +3,6 @@
 	import HomeHero from '$lib/components/home/HomeHero.svelte';
 	import PreviewBuilder from '$lib/components/home/PreviewBuilder.svelte';
 	import WhyDifferentSection from '$lib/components/home/WhyDifferentSection.svelte';
-	import GiftingSection from '$lib/components/home/GiftingSection.svelte';
-	import HowItWorksSection from '$lib/components/home/HowItWorksSection.svelte';
 	import ValueSection from '$lib/components/home/ValueSection.svelte';
 	import FinalCtaSection from '$lib/components/home/FinalCtaSection.svelte';
 
@@ -26,16 +24,9 @@
 </svelte:head>
 
 <div class="page-shell">
-	{#if isTikTokVisitor}
-		<PreviewBuilder {isTikTokVisitor} />
-		<HomeHero {isTikTokVisitor} />
-	{:else}
-		<HomeHero {isTikTokVisitor} />
-		<PreviewBuilder {isTikTokVisitor} />
-	{/if}
+	<HomeHero {isTikTokVisitor} />
+	<PreviewBuilder {isTikTokVisitor} />
 	<WhyDifferentSection />
-	<GiftingSection />
-	<HowItWorksSection />
 	<ValueSection />
 	<FinalCtaSection />
 </div>
@@ -78,4 +69,5 @@
 			radial-gradient(circle at 50% 78%, rgba(255, 255, 255, 0.03), transparent 18%);
 		opacity: 0.72;
 	}
+
 </style>
