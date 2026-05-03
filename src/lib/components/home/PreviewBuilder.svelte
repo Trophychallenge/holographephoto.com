@@ -40,13 +40,6 @@
 		'5': 'Family Set'
 	};
 
-	const sizeOptions = [
-		{ value: '4x6', label: '4 x 6' },
-		{ value: '5x7', label: '5 x 7' },
-		{ value: '8x10', label: '8 x 10' },
-		{ value: '11x14', label: '11 x 14' }
-	] as const;
-
 	const mockupScenes: {
 		id: MockupScene;
 		label: string;
@@ -741,14 +734,10 @@
 							</select>
 						</label>
 
-						<label class="checkout-pick">
+						<div class="checkout-pick checkout-note-card">
 							<span>Size</span>
-							<select bind:value={printSize}>
-								{#each sizeOptions as option (option.value)}
-									<option value={option.value}>{option.label}</option>
-								{/each}
-							</select>
-						</label>
+							<p>Photo magnet standard size is about 8x10in, adjusted for best quality. If you would like a different size, please feel free to reach out :)</p>
+						</div>
 
 						<button class="button-primary quick-order-button" type="submit" disabled={!canOrder || checkoutLoading}>
 							{checkoutLoading ? 'Starting Checkout...' : canOrder ? 'Add To Cart' : 'Finish Saving'}
@@ -965,21 +954,17 @@
 									<option value="yes">Yes</option>
 								</select>
 							</label>
-							<label class="slider-wrap">
+							<div class="slider-wrap size-note-block">
 								<span>Size</span>
-								<select bind:value={printSize} class="simple-select">
-									{#each sizeOptions as option (option.value)}
-										<option value={option.value}>{option.label}</option>
-									{/each}
-								</select>
-							</label>
+								<p>Photo magnet standard size is about 8x10in, adjusted for best quality. If you would like a different size, please feel free to reach out :)</p>
+							</div>
 							<label class="slider-wrap">
 								<span>Personal request</span>
 								<textarea
 									class="gift-message"
 									rows="3"
 									bind:value={personalRequest}
-									placeholder="Name, date, size note, or short request"
+									placeholder="Name, date, or short request"
 								></textarea>
 							</label>
 						</div>
@@ -1200,6 +1185,19 @@
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
 		color: rgba(237, 226, 213, 0.56);
+	}
+
+	.checkout-note-card,
+	.size-note-block {
+		align-content: start;
+	}
+
+	.checkout-note-card p,
+	.size-note-block p {
+		margin: 0;
+		font-size: 0.82rem;
+		line-height: 1.5;
+		color: rgba(237, 226, 213, 0.72);
 	}
 
 	.button-row,

@@ -2,13 +2,6 @@
 	import { resolve } from '$app/paths';
 	import { featuredCheckoutOffers, largerCheckoutOffers } from '$lib/pricing';
 
-	const sizeOptions = [
-		{ value: '4x6', label: '4 x 6' },
-		{ value: '5x7', label: '5 x 7' },
-		{ value: '8x10', label: '8 x 10' },
-		{ value: '11x14', label: '11 x 14' }
-	] as const;
-
 	let checkoutError = $state('');
 	let checkoutLoading = $state(false);
 
@@ -131,6 +124,7 @@
 					</div>
 
 					<form class="checkout-form" method="POST" action="/checkout" onsubmit={submitCheckoutForm}>
+						<input type="hidden" name="print_size" value="8x10" />
 						<label>
 							<span>Featured bundle</span>
 							<select name="quantity">
@@ -155,14 +149,10 @@
 								<option value="yes">Yes</option>
 							</select>
 						</label>
-						<label>
+						<div class="size-note">
 							<span>Size</span>
-							<select name="print_size">
-								{#each sizeOptions as option (option.value)}
-									<option value={option.value}>{option.label}</option>
-								{/each}
-							</select>
-						</label>
+							<p>Photo magnet standard size is about 8x10in, adjusted for best quality. If you would like a different size, please feel free to reach out :)</p>
+						</div>
 						<label>
 							<span>Request</span>
 							<input type="text" name="personal_request" placeholder="Name, date, or quick note" />
@@ -207,6 +197,7 @@
 					</div>
 
 					<form class="checkout-form" method="POST" action="/checkout" onsubmit={submitCheckoutForm}>
+						<input type="hidden" name="print_size" value="8x10" />
 						<label>
 							<span>Larger bundle</span>
 							<select name="quantity">
@@ -231,14 +222,10 @@
 								<option value="yes">Yes</option>
 							</select>
 						</label>
-						<label>
+						<div class="size-note">
 							<span>Size</span>
-							<select name="print_size">
-								{#each sizeOptions as option (option.value)}
-									<option value={option.value}>{option.label}</option>
-								{/each}
-							</select>
-						</label>
+							<p>Photo magnet standard size is about 8x10in, adjusted for best quality. If you would like a different size, please feel free to reach out :)</p>
+						</div>
 						<label>
 							<span>Request</span>
 							<input type="text" name="personal_request" placeholder="Name, date, or quick note" />
@@ -666,6 +653,18 @@
 	.checkout-form label {
 		display: grid;
 		gap: 0.4rem;
+	}
+
+	.size-note {
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.size-note p {
+		margin: 0;
+		font-size: 0.82rem;
+		line-height: 1.5;
+		color: rgba(236, 228, 216, 0.72);
 	}
 
 	.checkout-form button {
