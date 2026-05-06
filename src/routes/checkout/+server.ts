@@ -37,7 +37,7 @@ function buildCheckoutParams({
 	params.set('allow_promotion_codes', 'true');
 	params.set(
 		'custom_text[submit][message]',
-		'After checkout, call Christina at 347-996-0205 if we still need your photo or notes.'
+		'After checkout, contact us at 512-256-3720 or admin@holographephoto.com if we still need your photo or notes.'
 	);
 	params.set('line_items[0][quantity]', '1');
 	params.set('line_items[0][price_data][currency]', 'usd');

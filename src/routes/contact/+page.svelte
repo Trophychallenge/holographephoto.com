@@ -1,6 +1,6 @@
 <svelte:head>
 	<title>Contact | Holograph</title>
-	<meta name="description" content="Contact Christina for questions, feedback, or help with your order." />
+	<meta name="description" content="Contact us for questions, feedback, or help with your order." />
 </svelte:head>
 
 <section class="section contact-page">
@@ -9,7 +9,8 @@
 			<p class="eyebrow">Contact</p>
 			<h1>Feel free to reach out.</h1>
 			<p>Questions, feedback, or help with your order.</p>
-			<a class="button-primary" href="tel:3479960205">Christina · 347-996-0205</a>
+			<a class="button-primary" href="tel:5122563720">Call or text · 512-256-3720</a>
+			<a class="button-secondary" href="mailto:admin@holographephoto.com">admin@holographephoto.com</a>
 		</div>
 	</div>
 </section>

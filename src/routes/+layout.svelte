@@ -54,8 +54,8 @@
 			<a href={resolve('/contact')}>Contact</a>
 		</div>
 		<div>
-			<p class="footer-copy">Christina</p>
-			<p class="footer-meta">347-996-0205</p>
+			<p class="footer-copy">admin@holographephoto.com</p>
+			<p class="footer-meta">512-256-3720</p>
 		</div>
 	</footer>
 </div>
