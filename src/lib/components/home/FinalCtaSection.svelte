@@ -4,10 +4,17 @@
 <section class="section final-cta">
 	<div class="page-wrap">
 		<div class="cta-card">
-			<p class="eyebrow">Ready</p>
-			<h2>Make it yours.</h2>
+			<p class="eyebrow">When You're Ready</p>
+			<h2>Turn one favorite photo into a beautiful little gift.</h2>
+			<p class="cta-copy">Start with the photo. Keep the rest simple.</p>
+			<div class="cta-trust" aria-label="Order benefits">
+				<span>Free shipping</span>
+				<span>Secure Stripe checkout</span>
+				<span>Gift-ready bundles</span>
+			</div>
 			<div class="actions">
-				<a class="button-primary" href="#preview-builder">Make The Magic</a>
+				<a class="button-primary" href="#preview-builder">Create Yours</a>
+				<a class="button-secondary" href="/prices">See Bundles</a>
 			</div>
 		</div>
 	</div>
@@ -53,10 +60,18 @@
 	h2 {
 		margin: 0;
 		font-family: 'Georgia', 'Iowan Old Style', serif;
-		font-size: clamp(2rem, 5vw, 3.2rem);
+		font-size: clamp(1.95rem, 4.4vw, 2.9rem);
 		line-height: 0.98;
 		letter-spacing: -0.04em;
 		color: #f8f8f4;
+	}
+
+	.cta-copy {
+		max-width: 28rem;
+		margin: 0 auto;
+		color: rgba(248, 244, 238, 0.74);
+		font-size: 0.95rem;
+		line-height: 1.55;
 	}
 
 	.actions {
@@ -64,5 +79,21 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		gap: 0.8rem;
+	}
+
+	.cta-trust {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.6rem;
+	}
+
+	.cta-trust span {
+		padding: 0.45rem 0.7rem;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.045);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		color: rgba(248, 244, 238, 0.82);
+		font-size: 0.75rem;
 	}
 </style>

@@ -56,16 +56,16 @@
 			</a>
 			<div class="bulk-hero-copy">
 				<p class="eyebrow">Bulk and gifting</p>
-				<h1>Small sets to full table gifts.</h1>
-				<p class="hero-subcopy">Easy bundles. Simple options. Ready to order.</p>
+				<h1>Simple bundle pricing for gifts, family sets, and events.</h1>
+				<p class="hero-subcopy">Choose a set size and head straight to checkout. Keep custom notes optional.</p>
 			</div>
 		</section>
 
 		<section class="hero-band glass-card">
 			<div class="hero-copy">
 				<p class="eyebrow">Simple pricing</p>
-				<h2>Pick your set.</h2>
-				<p class="hero-subcopy">One keepsake or a family bundle.</p>
+				<h2>Pick your set and buy.</h2>
+				<p class="hero-subcopy">The fastest order is just your photo and your bundle size.</p>
 			</div>
 
 			<div class="spotlight-card">
@@ -74,7 +74,7 @@
 					<span>Starting at</span>
 					<strong>$19.99</strong>
 				</div>
-				<p class="spotlight-copy">Free shipping. One easy step.</p>
+				<p class="spotlight-copy">Free shipping. Secure checkout. No extra setup needed.</p>
 				<div class="spotlight-tags">
 					<span>Free shipping</span>
 					<span>Premium finish</span>
@@ -87,8 +87,8 @@
 		<section class="bundle-stage" id="bundle-shop">
 			<div class="section-head">
 				<span class="eyebrow">Bundle shop</span>
-				<h2>Choose your fit.</h2>
-				<p>Add your favorite and keep going.</p>
+				<h2>Choose the bundle that fits.</h2>
+				<p>Upload your photo on the homepage, then use one of these quick checkout options.</p>
 			</div>
 
 			<div class="bundle-grid">
@@ -125,6 +125,7 @@
 
 					<form class="checkout-form" method="POST" action="/checkout" onsubmit={submitCheckoutForm}>
 						<input type="hidden" name="print_size" value="8x10" />
+						<input type="hidden" name="rounded_edges" value="yes" />
 						<label>
 							<span>Featured bundle</span>
 							<select name="quantity">
@@ -135,30 +136,9 @@
 								{/each}
 							</select>
 						</label>
-						<label>
-							<span>Rounded edges</span>
-							<select name="rounded_edges">
-								<option value="yes">Yes</option>
-								<option value="no">No</option>
-							</select>
-						</label>
-						<label>
-							<span>Frame</span>
-							<select name="frame_option">
-								<option value="no">No</option>
-								<option value="yes">Yes</option>
-							</select>
-						</label>
-						<div class="size-note">
-							<span>Size</span>
-							<p>Photo magnet standard size is about 8x10in, adjusted for best quality. If you would like a different size, please feel free to reach out :)</p>
-						</div>
-						<label>
-							<span>Request</span>
-							<input type="text" name="personal_request" placeholder="Name, date, or quick note" />
-						</label>
+						<p class="checkout-helper">Rounded edges are included by default. Add extra notes later if needed.</p>
 						<button class="button-primary" type="submit" disabled={checkoutLoading}>
-							{checkoutLoading ? 'Starting Checkout...' : 'Add To Cart'}
+							{checkoutLoading ? 'Starting Checkout...' : 'Buy Now'}
 						</button>
 					</form>
 				</article>
@@ -198,6 +178,7 @@
 
 					<form class="checkout-form" method="POST" action="/checkout" onsubmit={submitCheckoutForm}>
 						<input type="hidden" name="print_size" value="8x10" />
+						<input type="hidden" name="rounded_edges" value="yes" />
 						<label>
 							<span>Larger bundle</span>
 							<select name="quantity">
@@ -208,30 +189,9 @@
 								{/each}
 							</select>
 						</label>
-						<label>
-							<span>Rounded edges</span>
-							<select name="rounded_edges">
-								<option value="yes">Yes</option>
-								<option value="no">No</option>
-							</select>
-						</label>
-						<label>
-							<span>Frame</span>
-							<select name="frame_option">
-								<option value="no">No</option>
-								<option value="yes">Yes</option>
-							</select>
-						</label>
-						<div class="size-note">
-							<span>Size</span>
-							<p>Photo magnet standard size is about 8x10in, adjusted for best quality. If you would like a different size, please feel free to reach out :)</p>
-						</div>
-						<label>
-							<span>Request</span>
-							<input type="text" name="personal_request" placeholder="Name, date, or quick note" />
-						</label>
+						<p class="checkout-helper">Rounded edges are included by default. Need a custom request? Use the contact page.</p>
 						<button class="button-primary" type="submit" disabled={checkoutLoading}>
-							{checkoutLoading ? 'Starting Checkout...' : 'Add To Cart'}
+							{checkoutLoading ? 'Starting Checkout...' : 'Buy Now'}
 						</button>
 					</form>
 				</article>
@@ -242,7 +202,7 @@
 			<div class="concierge-copy">
 				<p class="eyebrow">Concierge option</p>
 				<h2>Need 50+ or custom?</h2>
-				<p>Ask for a private quote.</p>
+				<p>Ask for a private quote for events, keepsake tables, or larger gifting runs.</p>
 			</div>
 
 			<div class="concierge-actions">
@@ -537,6 +497,12 @@
 		gap: 0.62rem;
 	}
 
+	.checkout-helper {
+		color: rgba(245, 245, 240, 0.72);
+		font-size: 0.82rem;
+		line-height: 1.5;
+	}
+
 	.bundle-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
@@ -653,18 +619,6 @@
 	.checkout-form label {
 		display: grid;
 		gap: 0.4rem;
-	}
-
-	.size-note {
-		display: grid;
-		gap: 0.4rem;
-	}
-
-	.size-note p {
-		margin: 0;
-		font-size: 0.82rem;
-		line-height: 1.5;
-		color: rgba(236, 228, 216, 0.72);
 	}
 
 	.checkout-form button {

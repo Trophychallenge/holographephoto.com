@@ -2,6 +2,7 @@
 	import { dev } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	import { orderStudioOpen } from '$lib/stores/order-studio';
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 
@@ -11,7 +12,7 @@
 
 	const navItems = [
 		{ href: '/', label: 'Home' },
-		{ href: '/prices', label: 'Prices' },
+		{ href: '/prices', label: 'Pricing' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
 </script>
@@ -37,7 +38,18 @@
 				<a href={resolve(item.href)}>{item.label}</a>
 			{/each}
 		</nav>
-		<a class="button-primary header-cta" href="/#preview-builder">Make The Magic</a>
+		<a
+			class="button-primary header-cta"
+			href="/?order=1"
+			onclick={(event) => {
+				if (window.location.pathname === '/') {
+					event.preventDefault();
+					orderStudioOpen.set(true);
+				}
+			}}
+		>
+			Start Order
+		</a>
 	</header>
 
 	<main>
@@ -47,10 +59,10 @@
 	<footer class="site-footer">
 		<div>
 			<img class="footer-logo" src="/holographe/brand-logo.png" alt="Holographe logo" />
-			<p class="footer-copy">Little keepsakes for big family moments.</p>
+			<p class="footer-copy">Custom photo keepsakes made to feel easy to order and good to gift.</p>
 		</div>
 		<div class="footer-links">
-			<a href={resolve('/prices')}>Prices</a>
+			<a href={resolve('/prices')}>Pricing</a>
 			<a href={resolve('/contact')}>Contact</a>
 		</div>
 		<div>
