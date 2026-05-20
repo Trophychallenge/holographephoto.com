@@ -1,81 +1,98 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { orderStudioOpen } from '$lib/stores/order-studio';
+	import { featuredCheckoutOffers } from '$lib/pricing';
 
 	let { isTikTokVisitor = false } = $props();
+	const starterPrice = featuredCheckoutOffers[0]?.priceLabel ?? '$19.99';
+	let heroVideo: HTMLVideoElement | null = null;
 
-	const heroVideos = [
-		{
-			src: '/holographe/hero-premium.mp4',
-			poster: '/holographe/hero-premium-poster.jpg',
-			label: 'Glow'
-		},
-		{
-			src: '/holographe/3picsdishwasher.mp4',
-			poster: '/holographe/jess-holo-hero.webp',
-			label: 'Rainbow'
-		},
-		{
-			src: '/holographe/dishwasherview.mp4',
-			poster: '/holographe/jess-holo-hero.webp',
-			label: 'Shine'
-		}
-	] as const;
-
-	let activeVideo = $state(0);
+	onMount(() => {
+		if (heroVideo) heroVideo.playbackRate = 0.4;
+	});
 </script>
 
 <section class:tiktok-hero={isTikTokVisitor} class="hero section">
-	<div class="hero-media-shell" aria-hidden="true">
-		<div class="hero-media">
-			<video
-				class="hero-video"
-				src={heroVideos[activeVideo].src}
-				poster={heroVideos[activeVideo].poster}
-				autoplay
-				muted
-				loop
-				playsinline
-				preload="auto"
-			></video>
-			<div class="hero-overlay"></div>
-			<div class="hero-glow"></div>
-			<div class="hero-shine"></div>
-		</div>
-	</div>
-
 	<div class="page-wrap hero-shell">
-		<div class="hero-copy glass-card">
-			<div class="hero-copy-top">
-				{#if !isTikTokVisitor}
-					<img class="hero-logo" src="/holographe/brand-logo.png" alt="Holograph logo" />
-				{/if}
-				<p class="hero-kicker">Photo to holograph</p>
+		<div class="hero-grid">
+			<div class="hero-copy hero-story glass-card">
+				<div class="hero-copy-top">
+					{#if !isTikTokVisitor}
+						<img class="hero-logo" src="/holographe/brand-logo.png" alt="Holograph logo" />
+					{/if}
+					<p class="hero-kicker">Photo to holograph keepsake</p>
+				</div>
+
+				<div class="hero-copy-main">
+					<h1>Remember that holographic-card rush?</h1>
+					<p class="hero-subcopy">
+						That shimmer. That “this one’s different” feeling. We put it into your most important memory.
+						Custom. One of a kind.
+					</p>
+				</div>
+
+				<div class="hero-proof hero-proof-compact" aria-label="Order highlights">
+					<div class="proof-pill">
+						<strong>{starterPrice}</strong>
+						<span>starts here</span>
+					</div>
+					<div class="proof-pill">
+						<strong>Free ship</strong>
+						<span>US delivery</span>
+					</div>
+				</div>
+
+				<p class="hero-occasion-copy">
+					Birthdays, anniversaries, baby showers, graduations, pet memorials, sympathy gifts, and party favors.
+					Whatever the moment, we make it unforgettable.
+				</p>
 			</div>
 
-			<div class="hero-copy-main">
-				<h1>Your photo. In light.</h1>
+			<div class="hero-media-shell" aria-hidden="true">
+				<div class="hero-media">
+					<video
+						bind:this={heroVideo}
+						class="hero-video"
+						src="/holographe/hero-premium.mp4"
+						poster="/holographe/hero-premium-poster.jpg"
+						autoplay
+						muted
+						loop
+						playsinline
+						preload="metadata"
+						onloadedmetadata={() => {
+							if (heroVideo) heroVideo.playbackRate = 0.4;
+						}}
+					></video>
+					<div class="hero-overlay"></div>
+					<div class="hero-glow"></div>
+					<div class="hero-shine"></div>
+				</div>
 			</div>
 
-			<div class="actions">
-				<button class="button-primary" type="button" onclick={() => orderStudioOpen.set(true)}>
-					{isTikTokVisitor ? 'Start With Your Photo' : 'Start Order'}
-				</button>
-				<a class="button-secondary" href="/prices">View Bundles</a>
-			</div>
-		</div>
+			<div class="hero-copy hero-cta-card glass-card">
+				<p class="hero-kicker">See how it works</p>
+				<h2>Try it out.</h2>
+				<p class="hero-subcopy hero-subcopy-tight">Preview it, add an overlay, and checkout fast.</p>
 
-		<div class="hero-video-tabs" aria-label="Hero video views">
-			{#each heroVideos as video, index}
-				<button
-					type="button"
-					class:active-tab={activeVideo === index}
-					class="video-tab"
-					onclick={() => (activeVideo = index)}
-				>
-					<span></span>
-					{video.label}
-				</button>
-			{/each}
+				<div class="actions">
+					<button class="button-primary" type="button" onclick={() => orderStudioOpen.set(true)}>
+						{isTikTokVisitor ? 'Start With Yours' : 'Start With Yours'}
+					</button>
+					<a class="button-secondary" href="#preview-builder">See how it works</a>
+				</div>
+
+				<div class="hero-proof hero-proof-compact" aria-label="Process summary">
+					<div class="proof-pill">
+						<strong>3 steps</strong>
+						<span>upload, preview, checkout</span>
+					</div>
+					<div class="proof-pill">
+						<strong>Original saved</strong>
+						<span>ready for production</span>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -85,11 +102,11 @@
 <style>
 	.hero {
 		position: relative;
-		min-height: 46vh;
+		min-height: 58vh;
 		display: grid;
 		align-items: center;
-		padding: 3.35rem 0 0.55rem;
-		overflow: clip;
+		padding: 3.5rem 0 0.8rem;
+		overflow: hidden;
 	}
 
 	.hero.tiktok-hero {
@@ -105,17 +122,8 @@
 		position: absolute;
 	}
 
-	.hero-media-shell {
-		inset: 0;
-		display: grid;
-		place-items: center;
-		padding: 0.4rem 0.55rem 0.7rem;
-	}
-
 	.hero-media {
-		inset: auto;
-		width: min(100%, 640px);
-		height: min(100%, 27rem);
+		inset: 0;
 		border-radius: 1.4rem;
 		overflow: hidden;
 		border: 1px solid rgba(255, 255, 255, 0.08);
@@ -176,19 +184,23 @@
 	.hero-shell {
 		position: relative;
 		z-index: 1;
+		width: min(1100px, calc(100vw - 1.1rem));
+		margin: 0 auto;
+	}
+
+	.hero-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		align-content: end;
-		gap: 0.6rem;
-		min-height: 100%;
+		grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) minmax(0, 15rem);
+		align-items: stretch;
+		gap: 1rem;
 	}
 
 	.hero-copy {
 		display: grid;
-		gap: 0.7rem;
-		width: min(100%, 22rem);
-		padding: 0.9rem;
-		margin: 0.35rem 0 0 0.25rem;
+		gap: 0.8rem;
+		width: 100%;
+		padding: 1rem;
+		margin: 0;
 		border-radius: 1.2rem;
 		background:
 			linear-gradient(180deg, rgba(10, 10, 10, 0.34), rgba(10, 10, 10, 0.12)),
@@ -198,9 +210,19 @@
 		box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
 	}
 
+	.hero-story {
+		min-height: 100%;
+		justify-content: center;
+	}
+
+	.hero-cta-card {
+		min-height: 100%;
+		align-content: center;
+	}
+
 	.hero-copy-top,
 	.hero-copy-main,
-	.hero-video-tabs {
+	.hero-proof {
 		display: grid;
 		gap: 0.45rem;
 	}
@@ -229,6 +251,33 @@
 		color: rgba(247, 243, 238, 0.66);
 	}
 
+	.hero-subcopy {
+		max-width: 19rem;
+		font-size: 0.92rem;
+		line-height: 1.42;
+		color: rgba(247, 243, 238, 0.84);
+	}
+
+	.hero-occasion-copy {
+		max-width: 20rem;
+		font-size: 0.8rem;
+		line-height: 1.5;
+		color: rgba(247, 243, 238, 0.68);
+	}
+
+	h2 {
+		margin: 0;
+		font-family: 'Georgia', 'Iowan Old Style', serif;
+		font-size: clamp(1.5rem, 2.3vw, 2rem);
+		line-height: 0.96;
+		letter-spacing: -0.045em;
+		color: #f7f3ee;
+	}
+
+	.hero-subcopy-tight {
+		max-width: 15rem;
+	}
+
 	.hero-logo {
 		display: block;
 		width: clamp(7.8rem, 18vw, 10.5rem);
@@ -237,47 +286,54 @@
 		filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.28));
 	}
 
+	.hero-media-shell {
+		position: relative;
+		min-height: 31rem;
+		padding: 0.2rem 0;
+	}
+
+	.hero-proof {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.45rem;
+	}
+
+	.hero-proof-compact {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.proof-pill {
+		display: grid;
+		gap: 0.08rem;
+		padding: 0.55rem 0.6rem;
+		border-radius: 0.95rem;
+		background: rgba(255, 255, 255, 0.045);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+	}
+
+	.proof-pill strong,
+	.proof-pill span {
+		display: block;
+	}
+
+	.proof-pill strong {
+		font-size: 0.78rem;
+		font-weight: 700;
+		color: #f7f3ee;
+	}
+
+	.proof-pill span {
+		font-size: 0.62rem;
+		line-height: 1.3;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: rgba(247, 243, 238, 0.56);
+	}
+
 	.actions {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.55rem;
-	}
-
-	.hero-video-tabs {
-		grid-template-columns: repeat(3, minmax(0, auto));
-		gap: 0.45rem;
-		justify-content: start;
-	}
-
-	.video-tab {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		padding: 0.42rem 0.62rem;
-		border-radius: 999px;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		background: rgba(255, 255, 255, 0.04);
-		color: rgba(247, 243, 238, 0.74);
-		font-size: 0.66rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-
-	.video-tab span {
-		width: 0.42rem;
-		height: 0.42rem;
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.28);
-	}
-
-	.active-tab {
-		border-color: rgba(234, 211, 182, 0.32);
-		background: rgba(255, 255, 255, 0.08);
-		color: #f7f3ee;
-	}
-
-	.active-tab span {
-		background: #ead3b6;
 	}
 
 	.hero-bottom-fade {
@@ -306,13 +362,19 @@
 			padding: 3rem 0 0.45rem;
 		}
 
+		.hero-grid {
+			grid-template-columns: 1fr;
+			align-items: stretch;
+		}
+
 		.hero-media-shell {
-			padding-inline: 0.35rem;
+			order: -1;
+			min-height: 22rem;
+			padding-inline: 0.15rem;
 		}
 
 		.hero-media {
 			border-radius: 1.35rem;
-			height: min(100%, 22rem);
 		}
 
 		h1 {
@@ -321,12 +383,11 @@
 
 		.hero-copy {
 			padding: 0.78rem;
-			margin: 0.4rem 0 0 0;
 			border-radius: 0.95rem;
 		}
 
-		.hero-video-tabs {
-			grid-template-columns: repeat(3, minmax(0, auto));
+		.hero-proof {
+			grid-template-columns: 1fr;
 		}
 	}
 
@@ -338,7 +399,7 @@
 		.hero-media {
 			background:
 				linear-gradient(180deg, rgba(7, 7, 7, 0.22), rgba(7, 7, 7, 0.66)),
-				url('/holographe/jess-holo-hero.webp') center 38% / cover no-repeat;
+				url('/holographe/hero-premium-poster.jpg') center center / cover no-repeat;
 		}
 	}
 </style>

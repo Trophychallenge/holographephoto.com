@@ -23,6 +23,8 @@
 	let uploadedOverlayName = $state('');
 	let uploadedBaseBlobUrl = $state('');
 	let uploadedOverlayBlobUrl = $state('');
+	let uploadedBaseBlobPathname = $state('');
+	let uploadedOverlayBlobPathname = $state('');
 	let baseUploadState = $state<'idle' | 'uploading' | 'saved' | 'local' | 'error'>('idle');
 	let overlayUploadState = $state<'idle' | 'uploading' | 'saved' | 'local' | 'error'>('idle');
 	let baseUploadMessage = $state('');
@@ -57,7 +59,6 @@
 	let checkoutError = $state('');
 	let checkoutLoading = $state(false);
 	let orderPanelOpen = $state(false);
-	let designCompleted = $state(false);
 	let overlayToolsOpen = $state(false);
 
 	let baseUploadInput: HTMLInputElement | null = null;
@@ -82,6 +83,9 @@
 	const canOrder = $derived(
 		!hasUnsavedDesign && baseUploadState !== 'uploading' && overlayUploadState !== 'uploading' && !overlayProcessing
 	);
+	const uploadReady = $derived(Boolean(uploadedBaseName || uploadedBaseSrc));
+	const uploadSaved = $derived(Boolean(uploadedBaseBlobUrl) || !uploadedBaseName);
+	const canPersonalize = $derived(uploadReady && uploadSaved);
 	onMount(() => {
 		void syncBaseImage(currentBaseSrc);
 		if (currentOverlaySrc) void syncOverlayImage(currentOverlaySrc);
@@ -102,7 +106,6 @@
 	$effect(() => {
 		const unsubscribe = orderStudioOpen.subscribe((open) => {
 			orderPanelOpen = open;
-			if (!open) designCompleted = false;
 		});
 		return unsubscribe;
 	});
@@ -115,7 +118,7 @@
 		}
 
 		const urlHasOrder = typeof window !== 'undefined' && new URL(window.location.href).searchParams.get('order') === '1';
-		if (!urlHasOrder && orderPanelOpen && !designCompleted) orderPanelOpen = false;
+		if (!urlHasOrder && orderPanelOpen) orderPanelOpen = false;
 	});
 
 	$effect(() => {
@@ -127,6 +130,14 @@
 			url.searchParams.delete('order');
 		}
 		window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+	});
+
+	$effect(() => {
+		if (typeof document === 'undefined') return;
+		document.body.style.overflow = orderPanelOpen ? 'hidden' : '';
+		return () => {
+			document.body.style.overflow = '';
+		};
 	});
 
 	async function submitCheckoutForm(event: SubmitEvent) {
@@ -160,19 +171,9 @@
 		}
 	}
 
-	function openOrderPanel() {
-		orderPanelOpen = true;
-		orderStudioOpen.set(true);
-	}
-
 	function closeOrderPanel() {
 		orderPanelOpen = false;
-		designCompleted = false;
 		orderStudioOpen.set(false);
-	}
-
-	function completeDesign() {
-		designCompleted = true;
 	}
 
 	function loadImage(src: string) {
@@ -368,7 +369,10 @@
 
 	}
 
-	async function persistDesignAsset(file: File, slot: 'base' | 'overlay') {
+	async function persistDesignAsset(
+		file: File,
+		slot: 'base' | 'overlay'
+	): Promise<{ url: string; pathname: string }> {
 		const payload = new FormData();
 		payload.set('file', file);
 		payload.set('slot', slot);
@@ -378,12 +382,15 @@
 			body: payload
 		});
 
-		const result = (await response.json()) as { error?: string; url?: string };
-		if (!response.ok || !result.url) {
+		const result = (await response.json()) as { error?: string; url?: string; pathname?: string };
+		if (!response.ok || !result.url || !result.pathname) {
 			throw new Error(result.error || 'Upload failed.');
 		}
 
-		return result.url;
+		return {
+			url: result.url,
+			pathname: result.pathname
+		};
 	}
 
 	async function applyUploadedFile(file: File, type: 'base' | 'overlay') {
@@ -410,14 +417,16 @@
 		}
 
 		try {
-			const blobUrl = await persistDesignAsset(fileToUse, type);
+			const blob = await persistDesignAsset(fileToUse, type);
 
 			if (type === 'base') {
-				uploadedBaseBlobUrl = blobUrl;
+				uploadedBaseBlobUrl = blob.url;
+				uploadedBaseBlobPathname = blob.pathname;
 				baseUploadState = 'saved';
 				baseUploadMessage = 'Photo saved.';
 			} else {
-				uploadedOverlayBlobUrl = blobUrl;
+				uploadedOverlayBlobUrl = blob.url;
+				uploadedOverlayBlobPathname = blob.pathname;
 				overlayUploadState = 'saved';
 				overlayUploadMessage = 'Overlay cleaned and saved.';
 			}
@@ -446,12 +455,37 @@
 		await applyUploadedFile(file, type);
 	}
 
+	async function cleanOverlayBackground() {
+		if (!uploadedOverlaySrc) return;
+
+		overlayProcessing = true;
+		overlayUploadState = 'uploading';
+		overlayUploadMessage = 'Removing light background...';
+
+		try {
+			const response = await fetch(uploadedOverlaySrc);
+			const blob = await response.blob();
+			const sourceFile = new File([blob], uploadedOverlayName || 'overlay.png', {
+				type: blob.type || 'image/png'
+			});
+			const cleanedFile = await removeLightBackgroundFromFile(sourceFile);
+			await applyUploadedFile(cleanedFile, 'overlay');
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Cleanup failed.';
+			overlayUploadState = 'error';
+			overlayUploadMessage = message;
+		} finally {
+			overlayProcessing = false;
+		}
+	}
+
 	function clearUploadedImage(type: 'base' | 'overlay') {
 		if (type === 'base' && uploadedBaseSrc) {
 			URL.revokeObjectURL(uploadedBaseSrc);
 			uploadedBaseSrc = '';
 			uploadedBaseName = '';
 			uploadedBaseBlobUrl = '';
+			uploadedBaseBlobPathname = '';
 			baseUploadState = 'idle';
 			baseUploadMessage = '';
 			baseScale = 100;
@@ -465,12 +499,24 @@
 			uploadedOverlaySrc = '';
 			uploadedOverlayName = '';
 			uploadedOverlayBlobUrl = '';
+			uploadedOverlayBlobPathname = '';
 			overlayUploadState = 'idle';
 			overlayUploadMessage = '';
 			overlayEnabled = true;
 		}
 	}
+
+	function handleWindowKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && orderPanelOpen) closeOrderPanel();
+	}
+
+	function toggleRoundedEdges(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		roundedEdges = input.checked ? 'yes' : 'no';
+	}
 </script>
+
+<svelte:window onkeydown={handleWindowKeydown} />
 
 <section class="preview-section" id="preview-builder">
 	<input
@@ -527,6 +573,8 @@
 					<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
 					<input type="hidden" name="base_blob_url" value={uploadedBaseBlobUrl} />
 					<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
+					<input type="hidden" name="base_blob_pathname" value={uploadedBaseBlobPathname} />
+					<input type="hidden" name="overlay_blob_pathname" value={uploadedOverlayBlobPathname} />
 					<input type="hidden" name="view_mode" value="compare" />
 					<input type="hidden" name="gift_mode" value={giftMode ? 'gift' : 'standard'} />
 					<input type="hidden" name="rounded_edges" value={roundedEdges} />
@@ -553,7 +601,11 @@
 								</div>
 							</div>
 							<div class="studio-preview-meta">
+								<p class="label">Live preview</p>
 								<strong>{uploadedBaseName || 'Add your photo to begin.'}</strong>
+								<p>
+									Move fast here: upload a photo, choose a bundle, then add an optional overlay or note.
+								</p>
 								<div class="button-row">
 									<button type="button" class="soft-button" onclick={() => baseUploadInput?.click()}>
 										{uploadedBaseName ? 'Change photo' : 'Upload photo'}
@@ -603,8 +655,28 @@
 								<div class="step-head">
 									<span class="step-number">1</span>
 									<div>
+										<strong>Upload your photo</strong>
+										<p>Use the buttons on the preview card.</p>
+									</div>
+								</div>
+								<p class="checkout-helper">
+									Best results: one clear face or moment, cropped close, with decent light.
+								</p>
+								<p class:step-status-live={uploadReady} class="step-status">
+									{#if uploadedBaseName}
+										Photo added and previewing now.
+									{:else}
+										Waiting for your photo.
+									{/if}
+								</p>
+							</div>
+
+							<div class="step-card">
+								<div class="step-head">
+									<span class="step-number">2</span>
+									<div>
 										<strong>Choose your set</strong>
-										<p>Pick one.</p>
+										<p>Start simple. You can reorder later.</p>
 									</div>
 								</div>
 								<label class="checkout-pick">
@@ -617,22 +689,26 @@
 										{/each}
 									</select>
 								</label>
-								<p class="checkout-helper">Free shipping.</p>
+								<p class="checkout-helper">Free US shipping on every bundle.</p>
+								<div class="bundle-callout">
+									<strong>{currentBundleLabel}</strong>
+									<span>{currentBundlePrice}</span>
+								</div>
 							</div>
 
 							<div class="step-card">
 								<div class="step-head">
-									<span class="step-number">2</span>
+									<span class="step-number">3</span>
 									<div>
-										<strong>Optional overlay</strong>
-										<p>Add one if you want.</p>
+										<strong>Optional personalization</strong>
+										<p>Add overlay artwork, text, or a note.</p>
 									</div>
 								</div>
 								<div class="button-row">
-									<button type="button" class="soft-button" onclick={() => overlayUploadInput?.click()}>
+									<button type="button" class="soft-button" onclick={() => overlayUploadInput?.click()} disabled={!canPersonalize}>
 										Upload overlay
 									</button>
-									<button type="button" class="soft-button" onclick={() => overlayCameraInput?.click()}>
+									<button type="button" class="soft-button" onclick={() => overlayCameraInput?.click()} disabled={!canPersonalize}>
 										Take overlay
 									</button>
 									{#if uploadedOverlayName}
@@ -647,18 +723,30 @@
 								<button
 									type="button"
 									class="soft-button overlay-edit-trigger"
+									disabled={!canPersonalize}
 									onclick={() => (overlayToolsOpen = !overlayToolsOpen)}
 								>
 									{overlayToolsOpen ? 'Hide overlay edits' : 'Edit overlay'}
 								</button>
+								{#if !canPersonalize}
+									<p class="checkout-helper">Upload and save a photo first to unlock personalization tools.</p>
+								{/if}
 								{#if overlayToolsOpen}
 									<div class="overlay-tools">
-										<input
-											class="text-input"
-											type="text"
-											bind:value={textOverlay}
-											placeholder="Add words"
-										/>
+										<label class="toggle">
+											<input type="checkbox" bind:checked={overlayEnabled} />
+											<span>Show overlay</span>
+										</label>
+										<div class="button-row">
+											<button
+												type="button"
+												class="soft-button"
+												disabled={!uploadedOverlaySrc || overlayProcessing}
+												onclick={cleanOverlayBackground}
+											>
+												{overlayProcessing ? 'Cleaning...' : 'Remove light background'}
+											</button>
+										</div>
 										<div class="slider-grid">
 											<label>
 												<span>Size</span>
@@ -674,46 +762,42 @@
 											</label>
 										</div>
 										<label class="toggle">
-											<input type="checkbox" bind:checked={giftMode} />
-											<span>Gift order</span>
+											<input type="checkbox" checked={roundedEdges === 'yes'} onchange={toggleRoundedEdges} />
+											<span>Rounded corners</span>
 										</label>
 										<textarea
 											class="gift-message"
 											rows="2"
 											bind:value={personalRequest}
-											placeholder="Optional note"
+											placeholder="Optional note for your order"
 										></textarea>
 									</div>
 								{/if}
 							</div>
 
-							<div class="step-card action-card">
-								<div class="step-head">
-									<span class="step-number">3</span>
-									<div>
-										<strong>Complete</strong>
-										<p>Preview and continue.</p>
-									</div>
-								</div>
-								<button class="button-secondary quick-order-button" type="button" onclick={completeDesign}>
-									Complete
-								</button>
-							</div>
-
-							{#if designCompleted}
-								<div class="step-card summary-card">
+							<div class="step-card action-card summary-card">
 								<div class="step-head">
 									<span class="step-number">4</span>
 									<div>
-										<strong>Preview ready</strong>
-										<p>Order now.</p>
+										<strong>Checkout</strong>
+										<p>Preview looks right. Continue securely.</p>
 									</div>
 								</div>
-									<button class="button-primary quick-order-button" type="submit" disabled={!canOrder || checkoutLoading}>
-										{checkoutLoading ? 'Starting Checkout...' : canOrder ? `Order • ${currentBundlePrice}` : 'Finish Saving'}
-									</button>
-								</div>
-							{/if}
+								<p class:step-status-live={canOrder} class="step-status">
+									{#if checkoutLoading}
+										Starting secure checkout...
+									{:else if !uploadReady}
+										Add a photo to continue.
+									{:else if !canOrder}
+										Finish saving your upload first.
+									{:else}
+										Ready to order now.
+									{/if}
+								</p>
+								<button class="button-primary quick-order-button" type="submit" disabled={!uploadReady || !canOrder || checkoutLoading}>
+									{checkoutLoading ? 'Starting Checkout...' : uploadReady && canOrder ? `Order • ${currentBundlePrice}` : 'Upload Photo First'}
+								</button>
+							</div>
 						</div>
 					</div>
 				</form>
@@ -838,11 +922,17 @@
 		box-shadow: 0 10px 26px rgba(234, 211, 182, 0.08);
 	}
 
+	.soft-button:disabled {
+		opacity: 0.45;
+		cursor: not-allowed;
+		transform: none;
+		box-shadow: none;
+	}
+
 	.hidden-input {
 		display: none;
 	}
 
-	.text-input,
 	.gift-message,
 	.checkout-pick select {
 		width: 100%;
@@ -862,7 +952,6 @@
 		color: #f8f4ee;
 	}
 
-	.text-input::placeholder,
 	.gift-message::placeholder {
 		color: rgba(236, 228, 216, 0.42);
 	}
@@ -954,6 +1043,49 @@
 		color: rgba(237, 226, 213, 0.66);
 	}
 
+	.step-status {
+		padding: 0.72rem 0.84rem;
+		border-radius: 0.95rem;
+		background: rgba(255, 255, 255, 0.035);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		font-size: 0.84rem;
+		line-height: 1.45;
+		color: rgba(236, 228, 216, 0.72);
+	}
+
+	.step-status-live {
+		border-color: rgba(234, 211, 182, 0.16);
+		background: rgba(234, 211, 182, 0.08);
+		color: #f5efe7;
+	}
+
+	.bundle-callout {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding: 0.78rem 0.9rem;
+		border-radius: 1rem;
+		background:
+			linear-gradient(135deg, rgba(234, 211, 182, 0.12), rgba(217, 228, 248, 0.06)),
+			rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.bundle-callout strong,
+	.bundle-callout span {
+		color: #f8f4ee;
+	}
+
+	.bundle-callout strong {
+		font-size: 0.94rem;
+	}
+
+	.bundle-callout span {
+		font-size: 1rem;
+		font-weight: 700;
+	}
+
 	.upload-error {
 		color: #f5d3bf;
 	}
@@ -1014,7 +1146,7 @@
 		z-index: 1;
 		width: min(980px, calc(100vw - 1rem));
 		max-height: calc(100vh - 1rem);
-		padding: 1rem;
+		padding: 0.95rem;
 		border-radius: 1.5rem;
 		overflow: auto;
 	}
@@ -1097,6 +1229,40 @@
 	}
 
 	@media (max-width: 640px) {
+		.order-panel-shell {
+			padding: 0.25rem;
+		}
+
+		.order-panel {
+			max-height: calc(100vh - 0.5rem);
+			padding: 0.8rem;
+			border-radius: 1rem;
+		}
+
+		.order-panel-head {
+			gap: 0.5rem;
+		}
+
+		.order-panel-head h3 {
+			font-size: 1.2rem;
+		}
+
+		.step-card,
+		.studio-preview-meta {
+			padding: 0.9rem;
+			border-radius: 1rem;
+		}
+
+		.button-row {
+			display: grid;
+			grid-template-columns: 1fr;
+		}
+
+		.soft-button {
+			width: 100%;
+			justify-content: center;
+		}
+
 		.preview-stage {
 			min-height: 15rem;
 		}

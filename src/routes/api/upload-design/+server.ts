@@ -24,15 +24,23 @@ export const POST: RequestHandler = async ({ request }) => {
 	const filename = sanitizeFilename(file.name || `${slot}.png`);
 	const pathname = `orders/${slot}/${Date.now()}-${filename}`;
 
-	const blob = await put(pathname, file, {
-		access: 'public',
-		addRandomSuffix: true,
-		contentType: file.type || undefined
-	});
+	try {
+		const blob = await put(pathname, file, {
+			access: 'public',
+			addRandomSuffix: true,
+			contentType: file.type || undefined
+		});
 
-	return json({
-		url: blob.url,
-		pathname: blob.pathname,
-		uploadedAt: new Date().toISOString()
-	});
+		return json({
+			url: blob.url,
+			pathname: blob.pathname,
+			uploadedAt: new Date().toISOString()
+		});
+	} catch (error) {
+		console.error('upload-design failed', error);
+		return json(
+			{ error: 'Cloud save is unavailable right now. Please try again in a moment.' },
+			{ status: 503 }
+		);
+	}
 };

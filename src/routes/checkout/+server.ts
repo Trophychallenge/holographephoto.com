@@ -71,12 +71,16 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 
 	const formData = await request.formData();
 	const quantity = parseCheckoutQuantity(formData.get('quantity'));
+	const baseBlobUrl = String(formData.get('base_blob_url') ?? '');
+	const baseBlobPathname = String(formData.get('base_blob_pathname') ?? '');
 	const metadata = {
 		source: String(formData.get('source') ?? ''),
 		base_name: String(formData.get('base_name') ?? ''),
 		overlay_name: String(formData.get('overlay_name') ?? ''),
-		base_blob_url: String(formData.get('base_blob_url') ?? ''),
+		base_blob_url: baseBlobUrl,
 		overlay_blob_url: String(formData.get('overlay_blob_url') ?? ''),
+		base_blob_pathname: baseBlobPathname,
+		overlay_blob_pathname: String(formData.get('overlay_blob_pathname') ?? ''),
 		view_mode: String(formData.get('view_mode') ?? ''),
 		gift_mode: String(formData.get('gift_mode') ?? ''),
 		rounded_edges: String(formData.get('rounded_edges') ?? ''),
@@ -104,6 +108,11 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 
 	if (!offer) {
 		const message = 'That bundle size is not available online. Request a custom quote instead.';
+		return wantsJson ? jsonResponse({ error: message }, 400) : new Response(message, { status: 400 });
+	}
+
+	if (!baseBlobUrl || !baseBlobPathname) {
+		const message = 'Upload and save your photo before starting checkout.';
 		return wantsJson ? jsonResponse({ error: message }, 400) : new Response(message, { status: 400 });
 	}
 
