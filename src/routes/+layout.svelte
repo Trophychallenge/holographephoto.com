@@ -40,7 +40,7 @@
 		</nav>
 		<a
 			class="button-primary header-cta"
-			href="/?order=1"
+			href={`${resolve('/')}?order=1#preview-builder`}
 			onclick={(event) => {
 				if (window.location.pathname === '/') {
 					event.preventDefault();

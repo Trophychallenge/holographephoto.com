@@ -111,14 +111,9 @@
 	});
 
 	$effect(() => {
-		if (initialOpen) {
-			orderPanelOpen = true;
-			orderStudioOpen.set(true);
-			return;
-		}
-
-		const urlHasOrder = typeof window !== 'undefined' && new URL(window.location.href).searchParams.get('order') === '1';
-		if (!urlHasOrder && orderPanelOpen) orderPanelOpen = false;
+		if (!initialOpen) return;
+		orderPanelOpen = true;
+		orderStudioOpen.set(true);
 	});
 
 	$effect(() => {
@@ -604,7 +599,7 @@
 								<p class="label">Live preview</p>
 								<strong>{uploadedBaseName || 'Add your photo to begin.'}</strong>
 								<p>
-									Move fast here: upload a photo, choose a bundle, then add an optional overlay or note.
+									Move fast here: upload a photo, choose a bundle, then add an extra image or note.
 								</p>
 								<div class="button-row">
 									<button type="button" class="soft-button" onclick={() => baseUploadInput?.click()}>
@@ -701,19 +696,19 @@
 									<span class="step-number">3</span>
 									<div>
 										<strong>Optional personalization</strong>
-										<p>Add overlay artwork, text, or a note.</p>
+										<p>Add an extra image, text, or a note.</p>
 									</div>
 								</div>
 								<div class="button-row">
 									<button type="button" class="soft-button" onclick={() => overlayUploadInput?.click()} disabled={!canPersonalize}>
-										Upload overlay
+										Upload extra image
 									</button>
 									<button type="button" class="soft-button" onclick={() => overlayCameraInput?.click()} disabled={!canPersonalize}>
-										Take overlay
+										Take a photo
 									</button>
 									{#if uploadedOverlayName}
 										<button type="button" class="soft-button" onclick={() => clearUploadedImage('overlay')}>
-											Remove overlay
+											Remove extra image
 										</button>
 									{/if}
 								</div>
@@ -726,7 +721,7 @@
 									disabled={!canPersonalize}
 									onclick={() => (overlayToolsOpen = !overlayToolsOpen)}
 								>
-									{overlayToolsOpen ? 'Hide overlay edits' : 'Edit overlay'}
+									{overlayToolsOpen ? 'Hide extra image edits' : 'Edit extra image'}
 								</button>
 								{#if !canPersonalize}
 									<p class="checkout-helper">Upload and save a photo first to unlock personalization tools.</p>
@@ -735,7 +730,7 @@
 									<div class="overlay-tools">
 										<label class="toggle">
 											<input type="checkbox" bind:checked={overlayEnabled} />
-											<span>Show overlay</span>
+											<span>Show extra image</span>
 										</label>
 										<div class="button-row">
 											<button

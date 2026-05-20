@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { orderStudioOpen } from '$lib/stores/order-studio';
-	import { featuredCheckoutOffers } from '$lib/pricing';
 
 	let { isTikTokVisitor = false } = $props();
-	const starterPrice = featuredCheckoutOffers[0]?.priceLabel ?? '$19.99';
 	let heroVideo: HTMLVideoElement | null = null;
 
 	onMount(() => {
@@ -18,27 +16,28 @@
 			<div class="hero-copy hero-story glass-card">
 				<div class="hero-copy-top">
 					{#if !isTikTokVisitor}
-						<img class="hero-logo" src="/holographe/brand-logo.png" alt="Holograph logo" />
+						<div class="hero-logo-shell">
+							<img class="hero-logo" src="/holographe/brand-logo.png" alt="Holograph logo" />
+						</div>
 					{/if}
-					<p class="hero-kicker">Photo to holograph keepsake</p>
 				</div>
 
 				<div class="hero-copy-main">
-					<h1>Remember that holographic-card rush?</h1>
+					<h1>Remember that feeling you get when pulling a holographic card from the pack?</h1>
 					<p class="hero-subcopy">
 						That shimmer. That “this one’s different” feeling. We put it into your most important memory.
 						Custom. One of a kind.
 					</p>
 				</div>
 
-				<div class="hero-proof hero-proof-compact" aria-label="Order highlights">
+				<div class="hero-proof hero-proof-compact" aria-label="Keepsake highlights">
 					<div class="proof-pill">
-						<strong>{starterPrice}</strong>
-						<span>starts here</span>
+						<strong>Personal</strong>
+						<span>made from your photo</span>
 					</div>
 					<div class="proof-pill">
-						<strong>Free ship</strong>
-						<span>US delivery</span>
+						<strong>Giftable</strong>
+						<span>made to be remembered</span>
 					</div>
 				</div>
 
@@ -71,25 +70,32 @@
 			</div>
 
 			<div class="hero-copy hero-cta-card glass-card">
-				<p class="hero-kicker">See how it works</p>
-				<h2>Try it out.</h2>
-				<p class="hero-subcopy hero-subcopy-tight">Preview it, add an overlay, and checkout fast.</p>
+				<p class="hero-kicker">Who would love this?</p>
+				<h2>Try it with your favorite photo.</h2>
+				<p class="hero-subcopy hero-subcopy-tight">
+					Drop it below. I'd love to make it for you.
+				</p>
 
 				<div class="actions">
-					<button class="button-primary" type="button" onclick={() => orderStudioOpen.set(true)}>
-						{isTikTokVisitor ? 'Start With Yours' : 'Start With Yours'}
-					</button>
-					<a class="button-secondary" href="#preview-builder">See how it works</a>
+					<a class="button-primary" href="/?order=1#preview-builder" onclick={() => orderStudioOpen.set(true)}>
+						Upload Your Photo
+					</a>
+					<a class="button-secondary" href="#preview-builder">See the preview</a>
 				</div>
+
+				<p class="hero-microcopy">
+					Upload an extra image, handwritten note, paw print, or anything that makes it extra personal.
+					Every order is handcrafted with care.
+				</p>
 
 				<div class="hero-proof hero-proof-compact" aria-label="Process summary">
 					<div class="proof-pill">
-						<strong>3 steps</strong>
-						<span>upload, preview, checkout</span>
+						<strong>1 favorite photo</strong>
+						<span>is all you need</span>
 					</div>
 					<div class="proof-pill">
-						<strong>Original saved</strong>
-						<span>ready for production</span>
+						<strong>Live preview</strong>
+						<span>before you order</span>
 					</div>
 				</div>
 			</div>
@@ -208,6 +214,11 @@
 		border: 1px solid rgba(255, 255, 255, 0.09);
 		backdrop-filter: blur(18px);
 		box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+		transition:
+			transform 220ms ease,
+			border-color 220ms ease,
+			box-shadow 220ms ease,
+			background 220ms ease;
 	}
 
 	.hero-story {
@@ -216,8 +227,36 @@
 	}
 
 	.hero-cta-card {
+		position: relative;
 		min-height: 100%;
 		align-content: center;
+		overflow: hidden;
+	}
+
+	.hero-copy:hover {
+		transform: translateY(-3px);
+		border-color: rgba(255, 255, 255, 0.14);
+		box-shadow: 0 26px 50px rgba(0, 0, 0, 0.24);
+	}
+
+	.hero-cta-card::before {
+		content: '';
+		position: absolute;
+		inset: -20% auto auto -24%;
+		width: 70%;
+		height: 140%;
+		background: linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 42%);
+		opacity: 0.55;
+		transform: rotate(8deg);
+		pointer-events: none;
+		transition:
+			transform 280ms ease,
+			opacity 280ms ease;
+	}
+
+	.hero-cta-card:hover::before {
+		transform: translate3d(6%, 0, 0) rotate(8deg);
+		opacity: 0.8;
 	}
 
 	.hero-copy-top,
@@ -275,14 +314,35 @@
 	}
 
 	.hero-subcopy-tight {
-		max-width: 15rem;
+		max-width: 17rem;
+	}
+
+	.hero-microcopy {
+		max-width: 17rem;
+		font-size: 0.74rem;
+		line-height: 1.5;
+		color: rgba(247, 243, 238, 0.7);
+	}
+
+	.hero-logo-shell {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: fit-content;
+		padding: 0.45rem 0.7rem;
+		border-radius: 1rem;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 	}
 
 	.hero-logo {
 		display: block;
 		width: clamp(7.8rem, 18vw, 10.5rem);
-		height: auto;
-		margin-bottom: 0.1rem;
+		height: clamp(2.3rem, 4.2vw, 3rem);
+		object-fit: contain;
+		object-position: center;
+		margin: 0;
 		filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.28));
 	}
 
@@ -336,6 +396,34 @@
 		gap: 0.55rem;
 	}
 
+	:global(.hero .button-primary),
+	:global(.hero .button-secondary) {
+		transition:
+			transform 180ms ease,
+			box-shadow 180ms ease,
+			border-color 180ms ease,
+			background 180ms ease;
+	}
+
+	:global(.hero .button-primary) {
+		position: relative;
+		box-shadow:
+			0 14px 30px rgba(234, 211, 182, 0.12),
+			inset 0 1px 0 rgba(255, 255, 255, 0.18);
+	}
+
+	:global(.hero .button-primary:hover) {
+		transform: translateY(-1px) scale(1.01);
+		box-shadow:
+			0 18px 34px rgba(234, 211, 182, 0.18),
+			inset 0 1px 0 rgba(255, 255, 255, 0.22);
+	}
+
+	:global(.hero .button-secondary:hover) {
+		transform: translateY(-1px);
+		border-color: rgba(255, 255, 255, 0.16);
+	}
+
 	.hero-bottom-fade {
 		position: absolute;
 		left: 0;
@@ -354,6 +442,38 @@
 		to {
 			transform: scale(1.05) translate3d(-0.8%, -0.4%, 0);
 		}
+	}
+
+	@keyframes ctaPulse {
+		0%,
+		100% {
+			box-shadow:
+				0 14px 30px rgba(234, 211, 182, 0.12),
+				inset 0 1px 0 rgba(255, 255, 255, 0.18);
+		}
+
+		50% {
+			box-shadow:
+				0 18px 34px rgba(234, 211, 182, 0.18),
+				inset 0 1px 0 rgba(255, 255, 255, 0.22);
+		}
+	}
+
+	:global(.hero .button-primary) {
+		animation: ctaPulse 3.6s ease-in-out infinite;
+	}
+
+	.proof-pill {
+		transition:
+			transform 180ms ease,
+			border-color 180ms ease,
+			background 180ms ease;
+	}
+
+	.proof-pill:hover {
+		transform: translateY(-2px);
+		border-color: rgba(255, 255, 255, 0.13);
+		background: rgba(255, 255, 255, 0.06);
 	}
 
 	@media (max-width: 640px) {
@@ -394,6 +514,14 @@
 	@media (prefers-reduced-motion: reduce) {
 		.hero-video {
 			display: none;
+		}
+
+		.hero-copy,
+		.proof-pill,
+		:global(.hero .button-primary),
+		:global(.hero .button-secondary) {
+			animation: none;
+			transition: none;
 		}
 
 		.hero-media {
