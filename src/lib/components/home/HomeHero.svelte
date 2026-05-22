@@ -543,10 +543,12 @@
 		align-items: center;
 		justify-content: center;
 		width: fit-content;
-		padding: 0.42rem 0.72rem 0.34rem;
-		border-radius: 1rem;
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		padding: 0.34rem 0.66rem 0.28rem;
+		border-radius: 0.82rem;
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+			radial-gradient(circle at top left, rgba(255, 244, 229, 0.08), transparent 52%);
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 	}
 
