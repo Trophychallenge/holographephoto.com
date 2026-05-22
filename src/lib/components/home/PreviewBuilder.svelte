@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { removeLightBackgroundFromFile } from '$lib/browser/overlay-tools';
-	import { featuredCheckoutOffers } from '$lib/pricing';
+	import { featuredCheckoutOffers, getCheckoutOffer } from '$lib/pricing';
 	import { orderStudioOpen } from '$lib/stores/order-studio';
 
 	type TextStyle = 'serif' | 'handwritten' | 'clean' | 'modern' | 'classic';
@@ -87,6 +87,12 @@
 	const uploadReady = $derived(Boolean(uploadedBaseName || uploadedBaseSrc));
 	const uploadSaved = $derived(Boolean(uploadedBaseBlobUrl) || !uploadedBaseName);
 	const canPersonalize = $derived(uploadReady && uploadSaved);
+	const selectedOffer = $derived(getCheckoutOffer(Number.parseInt(selectedBundle, 10)) ?? null);
+	const selectedOfferCopiesLabel = $derived(
+		selectedOffer
+			? `${selectedOffer.quantity} ${selectedOffer.quantity === 1 ? 'copy' : 'copies'}`
+			: ''
+	);
 	onMount(() => {
 		void syncBaseImage(currentBaseSrc);
 		if (currentOverlaySrc) void syncOverlayImage(currentOverlaySrc);
@@ -639,15 +645,24 @@
 								</div>
 							</div>
 							<div class="preview-pill-row">
-								<div class="preview-pill">
+								<button
+									type="button"
+									class="preview-pill preview-pill-button"
+									onclick={() => baseUploadInput?.click()}
+								>
 									<strong>{uploadedBaseName || 'Upload photo'}</strong>
 									<span>{uploadReady ? 'Live preview ready' : 'Start here'}</span>
-								</div>
-								<div class="preview-pill">
+								</button>
+								<button
+									type="button"
+									class="preview-pill preview-pill-button"
+									onclick={() => overlayUploadInput?.click()}
+									disabled={!canPersonalize}
+								>
 									<strong>{uploadedOverlayName || 'Extra image optional'}</strong>
 									<span>{uploadedOverlayName ? 'Background cleaned' : 'Paw print, note, logo'}</span
 									>
-								</div>
+								</button>
 							</div>
 							{#if baseUploadMessage}
 								<p class:upload-error={baseUploadState === 'error'} class="upload-note">
@@ -831,7 +846,7 @@
 
 							<div class="studio-tool-card checkout-card">
 								<div class="tool-head">
-									<strong>Finish</strong>
+									<strong>Order</strong>
 								</div>
 								<label class="checkout-pick compact-pick">
 									<span>Set</span>
@@ -843,6 +858,12 @@
 										{/each}
 									</select>
 								</label>
+								{#if selectedOffer}
+									<p class="tool-note">
+										{selectedOffer.label} includes {selectedOfferCopiesLabel} of the same finished design.
+										Upload one main photo, then add an optional extra image, note, or modification.
+									</p>
+								{/if}
 								<p class:step-status-live={canOrder} class="step-status">
 									{#if checkoutLoading}
 										Starting secure checkout...
@@ -862,7 +883,7 @@
 									{checkoutLoading
 										? 'Starting Checkout...'
 										: uploadReady && canOrder
-											? 'Continue'
+											? 'Finish Order'
 											: 'Upload Photo First'}
 								</button>
 							</div>
@@ -1096,6 +1117,30 @@
 		border-radius: 0.9rem;
 		background: rgba(255, 255, 255, 0.03);
 		border: 1px solid rgba(255, 255, 255, 0.06);
+	}
+
+	.preview-pill-button {
+		cursor: pointer;
+		text-align: left;
+		transition:
+			transform 160ms ease,
+			border-color 160ms ease,
+			background 160ms ease,
+			box-shadow 160ms ease;
+	}
+
+	.preview-pill-button:hover:not(:disabled) {
+		transform: translateY(-1px);
+		border-color: rgba(234, 211, 182, 0.18);
+		background:
+			linear-gradient(135deg, rgba(234, 211, 182, 0.08), rgba(217, 228, 248, 0.06)),
+			rgba(255, 255, 255, 0.03);
+		box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
+	}
+
+	.preview-pill-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.58;
 	}
 
 	.preview-pill strong {

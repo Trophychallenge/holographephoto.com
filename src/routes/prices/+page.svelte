@@ -27,7 +27,17 @@
 		activeTierId = null;
 	}
 
-	function packageLink(quantity?: number, size?: string) {
+	function packageLink(tier?: (typeof primaryTiers)[number], size?: string) {
+		if (!tier) return resolve('/contact');
+		if (tier.studioFlow === 'custom-order') {
+			const params = new URLSearchParams({
+				package: tier.name,
+				size: size ?? tier.primarySize
+			});
+			return `${resolve('/contact')}?${params.toString()}`;
+		}
+
+		const quantity = tier.checkoutQuantity;
 		if (!quantity) return resolve('/contact');
 		const params = new URLSearchParams({ order: '1', package: String(quantity) });
 		if (size) params.set('size', size);
@@ -181,9 +191,9 @@
 
 				<a
 					class="button-primary modal-cta"
-					href={packageLink(activeTier.checkoutQuantity, selectedSizes[activeTier.id])}
+					href={packageLink(activeTier, selectedSizes[activeTier.id])}
 				>
-					Start Order
+					{activeTier.studioFlow === 'custom-order' ? 'Request Custom Order' : 'Start Order'}
 				</a>
 			</div>
 		</div>

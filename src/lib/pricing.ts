@@ -24,6 +24,7 @@ export type PackageTier = {
 	sizeOptions: string[];
 	upsells: string[];
 	perceivedValue: string;
+	studioFlow?: 'single-design' | 'custom-order';
 	checkoutQuantity?: number;
 	checkoutPrintSize?: string;
 	badge?: string;
@@ -164,6 +165,7 @@ export const packageTiers: PackageTier[] = [
 		sizeOptions: ['5x7', '8x10'],
 		upsells: ['Extra copies', 'Short custom overlay', 'Gift-ready wrap'],
 		perceivedValue: '$25–$35',
+		studioFlow: 'single-design',
 		checkoutQuantity: 1,
 		checkoutPrintSize: '8x10'
 	},
@@ -184,6 +186,7 @@ export const packageTiers: PackageTier[] = [
 		sizeOptions: ['5x7', '8x10'],
 		upsells: ['Extra copies', 'Rush shipping', 'Gift-ready wrap'],
 		perceivedValue: '$45–$60',
+		studioFlow: 'single-design',
 		checkoutQuantity: 3,
 		checkoutPrintSize: '8x10',
 		badge: 'Most popular'
@@ -206,6 +209,7 @@ export const packageTiers: PackageTier[] = [
 		sizeOptions: ['5x7', '8x10'],
 		upsells: ['Extra copies', 'Rush shipping', 'Custom note'],
 		perceivedValue: '$75–$95',
+		studioFlow: 'single-design',
 		checkoutQuantity: 5,
 		checkoutPrintSize: '8x10',
 		badge: 'Best value'
@@ -220,16 +224,15 @@ export const packageTiers: PackageTier[] = [
 		description:
 			'For events, creator kits, boutique gifting, or larger orders that need a cleaner per-piece price.',
 		included: [
-			'10 custom holographs',
-			'Bulk-friendly pricing',
+			'10+ custom holographs',
+			'Best for bulk or mixed requests',
 			'Free shipping',
-			'Contact support for larger runs'
+			'Handled by custom order'
 		],
 		sizeOptions: ['5x7', '8x10', 'Mixed sizes'],
 		upsells: ['Rush production', 'Extra units', 'Branded insert card'],
 		perceivedValue: '$145–$180',
-		checkoutQuantity: 10,
-		checkoutPrintSize: 'Mixed'
+		studioFlow: 'custom-order'
 	},
 	{
 		id: 'large-format',
