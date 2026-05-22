@@ -1247,9 +1247,15 @@
 			grid-template-columns: 1fr;
 		}
 
+		.studio-preview,
+		.studio-controls {
+			justify-items: center;
+		}
+
 		.preview-stage {
 			min-height: 17rem;
 			border-radius: 1.4rem;
+			width: 100%;
 		}
 
 		.preview-canvas {
@@ -1278,6 +1284,9 @@
 
 		.order-panel-head {
 			gap: 0.5rem;
+			grid-template-columns: 1fr;
+			justify-items: center;
+			text-align: center;
 		}
 
 		.order-panel-head h3 {
@@ -1285,13 +1294,28 @@
 		}
 
 		.studio-tool-card {
+			width: 100%;
 			padding: 0.9rem;
 			border-radius: 1rem;
+			justify-items: center;
+			text-align: center;
+		}
+
+		.tool-head,
+		.checkout-pick {
+			width: 100%;
+		}
+
+		.tool-head {
+			flex-direction: column;
+			justify-content: center;
+			text-align: center;
 		}
 
 		.button-row {
 			display: grid;
 			grid-template-columns: 1fr;
+			width: 100%;
 		}
 
 		.soft-button {
@@ -1309,6 +1333,7 @@
 
 		.preview-pill-row {
 			grid-template-columns: 1fr;
+			width: 100%;
 		}
 	}
 </style>

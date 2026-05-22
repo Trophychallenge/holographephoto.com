@@ -755,10 +755,35 @@
 			gap: 1.05rem;
 			padding: 1.15rem 1rem;
 			border-radius: 0.95rem;
+			justify-items: center;
+			text-align: center;
+		}
+
+		.hero-copy-top,
+		.hero-copy-main {
+			justify-items: center;
+		}
+
+		.hero-overline,
+		.hero-kicker {
+			justify-self: center;
+		}
+
+		.hero-subcopy,
+		.hero-occasion-copy,
+		.hero-microcopy,
+		.hero-subcopy-tight {
+			max-width: 100%;
+		}
+
+		.actions {
+			width: 100%;
+			justify-content: center;
 		}
 
 		.hero-proof {
 			grid-template-columns: 1fr;
+			width: 100%;
 		}
 	}
 
