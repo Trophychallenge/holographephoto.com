@@ -34,7 +34,6 @@
 	let baseScale = $state(100);
 	let baseX = $state(50);
 	let baseY = $state(50);
-	let photoToolsOpen = $state(false);
 	let overlayEnabled = $state(true);
 	let overlayScale = $state(30);
 	let overlayRotation = $state(-4);
@@ -59,7 +58,6 @@
 	let checkoutError = $state('');
 	let checkoutLoading = $state(false);
 	let orderPanelOpen = $state(false);
-	let overlayToolsOpen = $state(false);
 
 	let baseUploadInput: HTMLInputElement | null = null;
 	let baseCameraInput: HTMLInputElement | null = null;
@@ -72,16 +70,15 @@
 	const currentBaseSrc = $derived(uploadedBaseSrc || demoAfterSrc);
 	const currentBaseAlt = $derived(uploadedBaseName || 'Holograph sample preview');
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
-	const currentBundlePrice = $derived(
-		featuredCheckoutOffers.find((offer) => String(offer.quantity) === selectedBundle)?.priceLabel ?? '$19.99'
-	);
-	const currentBundleLabel = $derived(bundleLabels[selectedBundle] ?? 'Family Set');
 	const hasUnsavedDesign = $derived(
 		(Boolean(uploadedBaseName) && !uploadedBaseBlobUrl) ||
 			(Boolean(uploadedOverlayName) && !uploadedOverlayBlobUrl)
 	);
 	const canOrder = $derived(
-		!hasUnsavedDesign && baseUploadState !== 'uploading' && overlayUploadState !== 'uploading' && !overlayProcessing
+		!hasUnsavedDesign &&
+			baseUploadState !== 'uploading' &&
+			overlayUploadState !== 'uploading' &&
+			!overlayProcessing
 	);
 	const uploadReady = $derived(Boolean(uploadedBaseName || uploadedBaseSrc));
 	const uploadSaved = $derived(Boolean(uploadedBaseBlobUrl) || !uploadedBaseName);
@@ -124,7 +121,11 @@
 		} else {
 			url.searchParams.delete('order');
 		}
-		window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+		window.history.replaceState(
+			window.history.state,
+			'',
+			`${url.pathname}${url.search}${url.hash}`
+		);
 	});
 
 	$effect(() => {
@@ -274,7 +275,8 @@
 		context.fillStyle = '#080808';
 		context.fillRect(0, 0, width, height);
 
-		const card = { x: 18, y: 18, width: width - 36, height: height - 36, radius: 34 };
+		const cardRadius = roundedEdges === 'yes' ? 34 : 14;
+		const card = { x: 18, y: 18, width: width - 36, height: height - 36, radius: cardRadius };
 
 		context.save();
 		roundedRectPath(context, card.x, card.y, card.width, card.height, card.radius);
@@ -289,13 +291,7 @@
 		const offsetY = (baseY / 100) * overflowY;
 		context.fillStyle = '#050505';
 		context.fillRect(card.x, card.y, card.width, card.height);
-		context.drawImage(
-			image,
-			card.x - offsetX,
-			card.y - offsetY,
-			drawWidth,
-			drawHeight
-		);
+		context.drawImage(image, card.x - offsetX, card.y - offsetY, drawWidth, drawHeight);
 		context.restore();
 
 		context.save();
@@ -308,7 +304,10 @@
 		return card;
 	}
 
-	function drawOverlayImage(context: CanvasRenderingContext2D, card: ReturnType<typeof drawBaseCard>) {
+	function drawOverlayImage(
+		context: CanvasRenderingContext2D,
+		card: ReturnType<typeof drawBaseCard>
+	) {
 		if (!overlayEnabled || !overlayImageElement) return;
 
 		const targetWidth = card.width * (overlayScale / 100);
@@ -331,7 +330,10 @@
 		context.restore();
 	}
 
-	function drawTextOverlay(context: CanvasRenderingContext2D, card: ReturnType<typeof drawBaseCard>) {
+	function drawTextOverlay(
+		context: CanvasRenderingContext2D,
+		card: ReturnType<typeof drawBaseCard>
+	) {
 		const text = textOverlay.trim();
 		if (!text) return;
 
@@ -339,13 +341,22 @@
 		context.font = `600 ${textSize}px ${getTextFont(textStyle)}`;
 		context.textAlign = 'center';
 		context.textBaseline = 'middle';
-		context.shadowColor = textTone === 'charcoal' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.36)';
+		context.shadowColor =
+			textTone === 'charcoal' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.36)';
 		context.shadowBlur = 18;
 		context.lineWidth = textTone === 'charcoal' ? 5 : 3;
 		context.strokeStyle = textTone === 'charcoal' ? 'rgba(255,255,255,0.24)' : 'rgba(0,0,0,0.18)';
-		context.strokeText(text, card.x + card.width * (textX / 100), card.y + card.height * (textY / 100));
+		context.strokeText(
+			text,
+			card.x + card.width * (textX / 100),
+			card.y + card.height * (textY / 100)
+		);
 		context.fillStyle = getTextColor(textTone);
-		context.fillText(text, card.x + card.width * (textX / 100), card.y + card.height * (textY / 100));
+		context.fillText(
+			text,
+			card.x + card.width * (textX / 100),
+			card.y + card.height * (textY / 100)
+		);
 		context.restore();
 	}
 
@@ -361,7 +372,6 @@
 		const originalCard = drawBaseCard(originalContext, baseImageElement, originalCanvas);
 		drawTextOverlay(originalContext, originalCard);
 		drawOverlayImage(originalContext, originalCard);
-
 	}
 
 	async function persistDesignAsset(
@@ -426,7 +436,8 @@
 				overlayUploadMessage = 'Overlay cleaned and saved.';
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Cloud save is unavailable right now.';
+			const message =
+				error instanceof Error ? error.message : 'Cloud save is unavailable right now.';
 			const fallbackMessage =
 				message === 'Upload failed.' ? 'Cloud save is unavailable right now.' : message;
 
@@ -486,7 +497,6 @@
 			baseScale = 100;
 			baseX = 50;
 			baseY = 50;
-			photoToolsOpen = false;
 		}
 
 		if (type === 'overlay' && uploadedOverlaySrc) {
@@ -547,14 +557,20 @@
 
 	{#if orderPanelOpen}
 		<div class="order-panel-shell" role="dialog" aria-modal="true" aria-label="Order studio">
-			<button class="order-panel-backdrop" type="button" aria-label="Close order panel" onclick={closeOrderPanel}></button>
+			<button
+				class="order-panel-backdrop"
+				type="button"
+				aria-label="Close order panel"
+				onclick={closeOrderPanel}
+			></button>
 			<div class="order-panel glass-card studio-panel">
 				<div class="order-panel-head">
 					<div>
 						<p class="label">Order studio</p>
-						<h3>Upload, customize, complete.</h3>
+						<h3>Customize your piece.</h3>
 					</div>
-					<button type="button" class="checkout-error-close" onclick={closeOrderPanel}>Close</button>
+					<button type="button" class="checkout-error-close" onclick={closeOrderPanel}>Close</button
+					>
 				</div>
 				<form
 					id="homepage-order-form"
@@ -563,7 +579,11 @@
 					action="/checkout"
 					onsubmit={submitCheckoutForm}
 				>
-					<input type="hidden" name="source" value={isTikTokVisitor ? 'home-tiktok-preview' : 'home-live-preview'} />
+					<input
+						type="hidden"
+						name="source"
+						value={isTikTokVisitor ? 'home-tiktok-preview' : 'home-live-preview'}
+					/>
 					<input type="hidden" name="base_name" value={uploadedBaseName} />
 					<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
 					<input type="hidden" name="base_blob_url" value={uploadedBaseBlobUrl} />
@@ -585,96 +605,220 @@
 					<input type="hidden" name="shimmer_intensity" value={String(shimmer)} />
 					<input type="hidden" name="effect_mode" value="glow" />
 					<input type="hidden" name="base_position" value={`${baseX},${baseY},${baseScale}`} />
-					<input type="hidden" name="overlay_position" value={`${overlayX},${overlayY},${overlayScale},${overlayRotation}`} />
+					<input
+						type="hidden"
+						name="overlay_position"
+						value={`${overlayX},${overlayY},${overlayScale},${overlayRotation}`}
+					/>
 					<input type="hidden" name="text_position" value={`${textX},${textY},${textSize}`} />
 
 					<div class="studio-grid">
 						<div class="studio-preview">
-							<div class="preview-stage" aria-label="Holograph sample preview">
+							<div class="preview-stage" aria-label="Photo preview">
 								<div class="preview-card original-shell">
-									<canvas bind:this={originalCanvas} class="preview-canvas" aria-label={currentBaseAlt}></canvas>
+									<canvas
+										bind:this={originalCanvas}
+										class="preview-canvas"
+										aria-label={currentBaseAlt}
+									></canvas>
 								</div>
 							</div>
-							<div class="studio-preview-meta">
-								<p class="label">Live preview</p>
-								<strong>{uploadedBaseName || 'Add your photo to begin.'}</strong>
-								<p>
-									Move fast here: upload a photo, choose a bundle, then add an extra image or note.
+							<div class="preview-pill-row">
+								<div class="preview-pill">
+									<strong>{uploadedBaseName || 'Add your photo'}</strong>
+									<span>{uploadReady ? 'Live preview ready' : 'Start here'}</span>
+								</div>
+								<div class="preview-pill">
+									<strong>{uploadedOverlayName || 'Extra image optional'}</strong>
+									<span>{uploadedOverlayName ? 'Background cleaned' : 'Paw print, note, logo'}</span
+									>
+								</div>
+							</div>
+							{#if baseUploadMessage}
+								<p class:upload-error={baseUploadState === 'error'} class="upload-note">
+									{baseUploadMessage}
 								</p>
-								<div class="button-row">
-									<button type="button" class="soft-button" onclick={() => baseUploadInput?.click()}>
+							{/if}
+							{#if overlayUploadMessage}
+								<p class:upload-error={overlayUploadState === 'error'} class="upload-note">
+									{overlayUploadMessage}
+								</p>
+							{/if}
+						</div>
+
+						<div class="order-panel-stack studio-controls">
+							<div class="studio-tool-card">
+								<div class="tool-head">
+									<strong>Photo</strong>
+								</div>
+								<div class="button-row compact-buttons">
+									<button
+										type="button"
+										class="soft-button"
+										onclick={() => baseUploadInput?.click()}
+									>
 										{uploadedBaseName ? 'Change photo' : 'Upload photo'}
 									</button>
-									<button type="button" class="soft-button" onclick={() => baseCameraInput?.click()}>
+									<button
+										type="button"
+										class="soft-button"
+										onclick={() => baseCameraInput?.click()}
+									>
 										Take photo
 									</button>
 									{#if uploadedBaseName}
-										<button type="button" class="soft-button" onclick={() => clearUploadedImage('base')}>
+										<button
+											type="button"
+											class="soft-button"
+											onclick={() => clearUploadedImage('base')}
+										>
 											Remove
 										</button>
 									{/if}
 								</div>
-								<button
-									type="button"
-									class="soft-button photo-edit-trigger"
-									onclick={() => (photoToolsOpen = !photoToolsOpen)}
-								>
-									{photoToolsOpen ? 'Hide photo fit' : 'Adjust photo fit'}
-								</button>
-								{#if photoToolsOpen}
-									<div class="overlay-tools">
-										<div class="slider-grid">
-											<label>
-												<span>Zoom</span>
-												<input type="range" min="100" max="170" bind:value={baseScale} />
-											</label>
-											<label>
-												<span>Left / right</span>
-												<input type="range" min="0" max="100" bind:value={baseX} />
-											</label>
-											<label>
-												<span>Up / down</span>
-												<input type="range" min="0" max="100" bind:value={baseY} />
-											</label>
-										</div>
-									</div>
-								{/if}
-								{#if baseUploadMessage}
-									<p class:upload-error={baseUploadState === 'error'} class="upload-note">{baseUploadMessage}</p>
+								<div class="slider-grid compact-grid">
+									<label>
+										<span>Zoom</span>
+										<input
+											type="range"
+											min="100"
+											max="170"
+											bind:value={baseScale}
+											disabled={!uploadReady}
+										/>
+									</label>
+									<label>
+										<span>Left / right</span>
+										<input
+											type="range"
+											min="0"
+											max="100"
+											bind:value={baseX}
+											disabled={!uploadReady}
+										/>
+									</label>
+									<label>
+										<span>Up / down</span>
+										<input
+											type="range"
+											min="0"
+											max="100"
+											bind:value={baseY}
+											disabled={!uploadReady}
+										/>
+									</label>
+								</div>
+								{#if !uploadReady}
+									<p class="tool-note">Upload a photo first to fine-tune the crop.</p>
 								{/if}
 							</div>
-						</div>
 
-						<div class="order-panel-stack studio-controls">
-							<div class="step-card">
-								<div class="step-head">
-									<span class="step-number">1</span>
-									<div>
-										<strong>Upload your photo</strong>
-										<p>Use the buttons on the preview card.</p>
-									</div>
+							<div class="studio-tool-card">
+								<div class="tool-head">
+									<strong>Personal touches</strong>
+									<label class="toggle compact-toggle">
+										<input
+											type="checkbox"
+											checked={roundedEdges === 'yes'}
+											onchange={toggleRoundedEdges}
+										/>
+										<span>Rounded corners</span>
+									</label>
 								</div>
-								<p class="checkout-helper">
-									Best results: one clear face or moment, cropped close, with decent light.
-								</p>
-								<p class:step-status-live={uploadReady} class="step-status">
-									{#if uploadedBaseName}
-										Photo added and previewing now.
-									{:else}
-										Waiting for your photo.
-									{/if}
-								</p>
+								<div class="button-row compact-buttons">
+									<button
+										type="button"
+										class="soft-button"
+										onclick={() => overlayUploadInput?.click()}
+										disabled={!canPersonalize}
+									>
+										Upload extra image
+									</button>
+									<button
+										type="button"
+										class="soft-button"
+										onclick={() => overlayCameraInput?.click()}
+										disabled={!canPersonalize}
+									>
+										Take a photo
+									</button>
+									<button
+										type="button"
+										class="soft-button"
+										disabled={!uploadedOverlaySrc || overlayProcessing}
+										onclick={cleanOverlayBackground}
+									>
+										{overlayProcessing ? 'Cleaning...' : 'Remove background'}
+									</button>
+								</div>
+								{#if uploadedOverlayName}
+									<div class="button-row compact-buttons">
+										<button
+											type="button"
+											class="soft-button"
+											onclick={() => clearUploadedImage('overlay')}
+										>
+											Remove extra image
+										</button>
+										<label class="toggle compact-toggle">
+											<input type="checkbox" bind:checked={overlayEnabled} />
+											<span>Show extra image</span>
+										</label>
+									</div>
+								{/if}
+								<div class="slider-grid compact-grid">
+									<label>
+										<span>Extra image size</span>
+										<input
+											type="range"
+											min="18"
+											max="60"
+											bind:value={overlayScale}
+											disabled={!uploadedOverlaySrc}
+										/>
+									</label>
+									<label>
+										<span>Height</span>
+										<input
+											type="range"
+											min="30"
+											max="72"
+											bind:value={overlayY}
+											disabled={!uploadedOverlaySrc}
+										/>
+									</label>
+									<label>
+										<span>Rotate</span>
+										<input
+											type="range"
+											min="-20"
+											max="20"
+											bind:value={overlayRotation}
+											disabled={!uploadedOverlaySrc}
+										/>
+									</label>
+								</div>
+								{#if !uploadedOverlaySrc}
+									<p class="tool-note">
+										Add an extra image if you want a paw print, note, or logo on the card.
+									</p>
+								{/if}
+								<details class="studio-note-details">
+									<summary>Add a note</summary>
+									<textarea
+										class="gift-message compact-note"
+										rows="2"
+										bind:value={personalRequest}
+										placeholder="Optional note"
+									></textarea>
+								</details>
 							</div>
 
-							<div class="step-card">
-								<div class="step-head">
-									<span class="step-number">2</span>
-									<div>
-										<strong>Choose your set</strong>
-										<p>Start simple. You can reorder later.</p>
-									</div>
+							<div class="studio-tool-card checkout-card">
+								<div class="tool-head">
+									<strong>Finish</strong>
 								</div>
-								<label class="checkout-pick">
+								<label class="checkout-pick compact-pick">
 									<span>Set</span>
 									<select name="quantity" bind:value={selectedBundle}>
 										{#each featuredCheckoutOffers as offer (offer.quantity)}
@@ -684,113 +828,27 @@
 										{/each}
 									</select>
 								</label>
-								<p class="checkout-helper">Free US shipping on every bundle.</p>
-								<div class="bundle-callout">
-									<strong>{currentBundleLabel}</strong>
-									<span>{currentBundlePrice}</span>
-								</div>
-							</div>
-
-							<div class="step-card">
-								<div class="step-head">
-									<span class="step-number">3</span>
-									<div>
-										<strong>Optional personalization</strong>
-										<p>Add an extra image, text, or a note.</p>
-									</div>
-								</div>
-								<div class="button-row">
-									<button type="button" class="soft-button" onclick={() => overlayUploadInput?.click()} disabled={!canPersonalize}>
-										Upload extra image
-									</button>
-									<button type="button" class="soft-button" onclick={() => overlayCameraInput?.click()} disabled={!canPersonalize}>
-										Take a photo
-									</button>
-									{#if uploadedOverlayName}
-										<button type="button" class="soft-button" onclick={() => clearUploadedImage('overlay')}>
-											Remove extra image
-										</button>
-									{/if}
-								</div>
-								{#if overlayUploadMessage}
-									<p class:upload-error={overlayUploadState === 'error'} class="upload-note">{overlayUploadMessage}</p>
-								{/if}
-								<button
-									type="button"
-									class="soft-button overlay-edit-trigger"
-									disabled={!canPersonalize}
-									onclick={() => (overlayToolsOpen = !overlayToolsOpen)}
-								>
-									{overlayToolsOpen ? 'Hide extra image edits' : 'Edit extra image'}
-								</button>
-								{#if !canPersonalize}
-									<p class="checkout-helper">Upload and save a photo first to unlock personalization tools.</p>
-								{/if}
-								{#if overlayToolsOpen}
-									<div class="overlay-tools">
-										<label class="toggle">
-											<input type="checkbox" bind:checked={overlayEnabled} />
-											<span>Show extra image</span>
-										</label>
-										<div class="button-row">
-											<button
-												type="button"
-												class="soft-button"
-												disabled={!uploadedOverlaySrc || overlayProcessing}
-												onclick={cleanOverlayBackground}
-											>
-												{overlayProcessing ? 'Cleaning...' : 'Remove light background'}
-											</button>
-										</div>
-										<div class="slider-grid">
-											<label>
-												<span>Size</span>
-												<input type="range" min="18" max="60" bind:value={overlayScale} />
-											</label>
-											<label>
-												<span>Lift</span>
-												<input type="range" min="30" max="72" bind:value={overlayY} />
-											</label>
-											<label>
-												<span>Rotate</span>
-												<input type="range" min="-20" max="20" bind:value={overlayRotation} />
-											</label>
-										</div>
-										<label class="toggle">
-											<input type="checkbox" checked={roundedEdges === 'yes'} onchange={toggleRoundedEdges} />
-											<span>Rounded corners</span>
-										</label>
-										<textarea
-											class="gift-message"
-											rows="2"
-											bind:value={personalRequest}
-											placeholder="Optional note for your order"
-										></textarea>
-									</div>
-								{/if}
-							</div>
-
-							<div class="step-card action-card summary-card">
-								<div class="step-head">
-									<span class="step-number">4</span>
-									<div>
-										<strong>Checkout</strong>
-										<p>Preview looks right. Continue securely.</p>
-									</div>
-								</div>
 								<p class:step-status-live={canOrder} class="step-status">
 									{#if checkoutLoading}
 										Starting secure checkout...
 									{:else if !uploadReady}
-										Add a photo to continue.
+										Upload a photo to continue.
 									{:else if !canOrder}
 										Finish saving your upload first.
 									{:else}
-										Ready to order now.
+										Preview looks good. Continue when ready.
 									{/if}
 								</p>
-								<button class="button-primary quick-order-button" type="submit" disabled={!uploadReady || !canOrder || checkoutLoading}>
-									{checkoutLoading ? 'Starting Checkout...' : uploadReady && canOrder ? `Order • ${currentBundlePrice}` : 'Upload Photo First'}
+								<button
+									class="button-primary quick-order-button"
+									type="submit"
+									disabled={!uploadReady || !canOrder || checkoutLoading}
+								>
+									{checkoutLoading
+										? 'Starting Checkout...'
+										: uploadReady && canOrder
+											? 'Continue'
+											: 'Upload Photo First'}
 								</button>
 							</div>
 						</div>
@@ -803,7 +861,9 @@
 	{#if checkoutError}
 		<div class="checkout-error-shell">
 			<div class="checkout-error-card glass-card">
-				<button type="button" class="checkout-error-close" onclick={() => (checkoutError = '')}>Close</button>
+				<button type="button" class="checkout-error-close" onclick={() => (checkoutError = '')}
+					>Close</button
+				>
 				<p class="label">Checkout issue</p>
 				<h3>We could not start checkout.</h3>
 				<p class="micro">{checkoutError}</p>
@@ -815,7 +875,6 @@
 <style>
 	.preview-section {
 		position: relative;
-		z-index: 18;
 	}
 
 	h3,
@@ -828,55 +887,31 @@
 		line-height: 1.45;
 	}
 
-	.step-card {
+	.studio-tool-card {
 		display: grid;
-		gap: 0.8rem;
-		padding: 1rem;
-		border-radius: 1.1rem;
+		gap: 0.58rem;
+		padding: 0.78rem;
+		border-radius: 1rem;
 		background: rgba(255, 255, 255, 0.025);
 		border: 1px solid rgba(255, 255, 255, 0.06);
 	}
 
-	.step-head {
-		display: grid;
-		grid-template-columns: auto 1fr;
+	.tool-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		gap: 0.75rem;
-		align-items: start;
 	}
 
-	.step-head strong,
-	.step-head p {
-		margin: 0;
-	}
-
-	.step-head strong {
-		font-size: 0.98rem;
+	.tool-head strong {
+		font-size: 0.9rem;
 		color: #f5efe7;
-	}
-
-	.step-head p,
-	.checkout-helper {
-		font-size: 0.84rem;
-		line-height: 1.5;
-		color: rgba(236, 228, 216, 0.72);
-	}
-
-	.step-number {
-		display: inline-grid;
-		place-items: center;
-		width: 1.9rem;
-		height: 1.9rem;
-		border-radius: 999px;
-		background: linear-gradient(135deg, rgba(247, 243, 238, 0.96), rgba(235, 214, 186, 0.92));
-		color: #111;
-		font-size: 0.82rem;
-		font-weight: 700;
 	}
 
 	.quick-order-button {
 		width: 100%;
-		min-height: 3.2rem;
-		font-size: 1rem;
+		min-height: 3rem;
+		font-size: 0.98rem;
 		font-weight: 700;
 		letter-spacing: 0.04em;
 	}
@@ -893,18 +928,24 @@
 	.button-row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.6rem;
+		gap: 0.45rem;
 	}
 
 	.soft-button {
-		padding: 0.8rem 1rem;
+		padding: 0.68rem 0.88rem;
 		border-radius: 999px;
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		background:
-			linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(234, 211, 182, 0.08), rgba(217, 228, 248, 0.05)),
+			linear-gradient(
+				135deg,
+				rgba(255, 255, 255, 0.06),
+				rgba(234, 211, 182, 0.08),
+				rgba(217, 228, 248, 0.05)
+			),
 			rgba(255, 255, 255, 0.025);
 		color: #f5efe7;
 		font-weight: 600;
+		font-size: 0.84rem;
 		transition:
 			transform 160ms ease,
 			border-color 160ms ease,
@@ -959,18 +1000,13 @@
 		font-weight: 600;
 	}
 
-	.overlay-tools {
-		display: grid;
-		gap: 0.75rem;
-		padding: 0.85rem 0.9rem;
-		border-radius: 1rem;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.06);
+	.compact-toggle {
+		font-size: 0.74rem;
 	}
 
 	.slider-grid {
 		display: grid;
-		gap: 0.7rem;
+		gap: 0.5rem;
 	}
 
 	.slider-grid label {
@@ -979,9 +1015,9 @@
 	}
 
 	.slider-grid span {
-		font-size: 0.7rem;
+		font-size: 0.64rem;
 		font-weight: 700;
-		letter-spacing: 0.12em;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		color: rgba(237, 226, 213, 0.56);
 	}
@@ -993,23 +1029,10 @@
 
 	.preview-stage {
 		position: relative;
-		min-height: 20rem;
+		min-height: 21.5rem;
 		border-radius: 1.15rem;
 		overflow: hidden;
-		background:
-			radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 28%),
-			linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
-			linear-gradient(160deg, rgba(24, 24, 24, 0.8), rgba(8, 8, 8, 0.96));
-	}
-
-	.preview-stage::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-		background:
-			radial-gradient(circle at 62% 28%, rgba(255, 255, 255, 0.1), transparent 15%),
-			linear-gradient(115deg, rgba(255, 255, 255, 0.05), transparent 32%, rgba(234, 211, 182, 0.04), transparent 68%);
+		background: linear-gradient(180deg, rgba(18, 18, 20, 0.96), rgba(8, 8, 10, 0.98));
 	}
 
 	.preview-card {
@@ -1017,14 +1040,15 @@
 		inset: 0;
 		display: grid;
 		place-items: center;
-		padding: 0.45rem;
+		padding: 0.65rem;
 	}
 
 	.preview-canvas {
-		width: min(18rem, 88%);
+		width: min(18.75rem, 92%);
 		aspect-ratio: 4 / 5;
 		height: auto;
-		border-radius: 0.85rem;
+		border-radius: 1rem;
+		box-shadow: 0 20px 44px rgba(0, 0, 0, 0.34);
 	}
 
 	.checkout-pick {
@@ -1038,13 +1062,44 @@
 		color: rgba(237, 226, 213, 0.66);
 	}
 
+	.tool-note {
+		font-size: 0.76rem;
+		line-height: 1.45;
+		color: rgba(236, 228, 216, 0.62);
+	}
+
+	.preview-pill-row {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.45rem;
+	}
+
+	.preview-pill {
+		display: grid;
+		gap: 0.12rem;
+		padding: 0.62rem 0.72rem;
+		border-radius: 0.9rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+	}
+
+	.preview-pill strong {
+		font-size: 0.78rem;
+		color: #f8f4ee;
+	}
+
+	.preview-pill span {
+		font-size: 0.68rem;
+		color: rgba(236, 228, 216, 0.66);
+	}
+
 	.step-status {
-		padding: 0.72rem 0.84rem;
-		border-radius: 0.95rem;
+		padding: 0.62rem 0.74rem;
+		border-radius: 0.85rem;
 		background: rgba(255, 255, 255, 0.035);
 		border: 1px solid rgba(255, 255, 255, 0.06);
-		font-size: 0.84rem;
-		line-height: 1.45;
+		font-size: 0.78rem;
+		line-height: 1.35;
 		color: rgba(236, 228, 216, 0.72);
 	}
 
@@ -1052,33 +1107,6 @@
 		border-color: rgba(234, 211, 182, 0.16);
 		background: rgba(234, 211, 182, 0.08);
 		color: #f5efe7;
-	}
-
-	.bundle-callout {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.75rem;
-		padding: 0.78rem 0.9rem;
-		border-radius: 1rem;
-		background:
-			linear-gradient(135deg, rgba(234, 211, 182, 0.12), rgba(217, 228, 248, 0.06)),
-			rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-	}
-
-	.bundle-callout strong,
-	.bundle-callout span {
-		color: #f8f4ee;
-	}
-
-	.bundle-callout strong {
-		font-size: 0.94rem;
-	}
-
-	.bundle-callout span {
-		font-size: 1rem;
-		font-weight: 700;
 	}
 
 	.upload-error {
@@ -1122,10 +1150,10 @@
 	.order-panel-shell {
 		position: fixed;
 		inset: 0;
-		z-index: 1100;
+		z-index: 9999;
 		display: grid;
 		place-items: center;
-		padding: 0.75rem;
+		padding: 0.7rem;
 	}
 
 	.order-panel-backdrop {
@@ -1139,20 +1167,19 @@
 	.order-panel {
 		position: relative;
 		z-index: 1;
-		width: min(980px, calc(100vw - 1rem));
-		max-height: calc(100vh - 1rem);
-		padding: 0.95rem;
+		width: min(1120px, calc(100vw - 1.8rem));
+		max-height: calc(100vh - 1.4rem);
+		padding: 0.76rem;
 		border-radius: 1.5rem;
-		overflow: auto;
+		overflow: hidden;
 	}
 
 	.order-panel-head,
 	.order-panel-form,
 	.order-panel-stack,
-	.studio-preview,
-	.studio-preview-meta {
+	.studio-preview {
 		display: grid;
-		gap: 0.8rem;
+		gap: 0.55rem;
 	}
 
 	.order-panel-head {
@@ -1162,49 +1189,62 @@
 
 	.studio-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1.08fr) minmax(20rem, 0.92fr);
-		gap: 1rem;
-		align-items: start;
+		grid-template-columns: minmax(0, 1.08fr) minmax(21rem, 0.92fr);
+		gap: 0.7rem;
+		align-items: stretch;
 	}
 
 	.studio-preview {
-		position: sticky;
-		top: 0;
+		align-content: start;
 	}
 
-	.studio-preview-meta {
-		padding: 0.95rem 1rem;
-		border-radius: 1.15rem;
-		background: rgba(255, 255, 255, 0.03);
+	.studio-controls {
+		align-content: start;
+	}
+
+	.order-panel-stack {
+		grid-auto-rows: min-content;
+	}
+
+	.compact-buttons {
+		gap: 0.5rem;
+	}
+
+	.compact-grid {
+		gap: 0.42rem;
+	}
+
+	.compact-note {
+		min-height: 2.9rem;
+	}
+
+	.studio-note-details {
+		border-radius: 0.9rem;
 		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: rgba(255, 255, 255, 0.02);
+		padding: 0.15rem 0.2rem 0.2rem;
 	}
 
-	.studio-preview-meta strong {
-		font-size: 1rem;
-		color: #f8f4ee;
+	.studio-note-details summary {
+		cursor: pointer;
+		list-style: none;
+		padding: 0.45rem 0.55rem;
+		font-size: 0.76rem;
+		font-weight: 600;
+		color: rgba(247, 241, 232, 0.82);
 	}
 
-	.studio-preview-meta p {
-		color: rgba(236, 228, 216, 0.72);
-		font-size: 0.84rem;
-		line-height: 1.5;
+	.studio-note-details summary::-webkit-details-marker {
+		display: none;
 	}
 
-	.action-card :global(.button-secondary) {
-		width: 100%;
-	}
-
-	.summary-card :global(.button-primary) {
-		width: 100%;
+	.studio-note-details[open] summary {
+		padding-bottom: 0.3rem;
 	}
 
 	@media (max-width: 860px) {
 		.studio-grid {
 			grid-template-columns: 1fr;
-		}
-
-		.studio-preview {
-			position: static;
 		}
 
 		.preview-stage {
@@ -1218,8 +1258,10 @@
 
 		.order-panel {
 			width: min(100%, calc(100vw - 0.5rem));
+			max-height: calc(100vh - 0.5rem);
 			padding: 0.85rem;
 			border-radius: 1.2rem;
+			overflow: auto;
 		}
 	}
 
@@ -1242,8 +1284,7 @@
 			font-size: 1.2rem;
 		}
 
-		.step-card,
-		.studio-preview-meta {
+		.studio-tool-card {
 			padding: 0.9rem;
 			border-radius: 1rem;
 		}
@@ -1264,6 +1305,10 @@
 
 		.preview-canvas {
 			width: min(13rem, 90%);
+		}
+
+		.preview-pill-row {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

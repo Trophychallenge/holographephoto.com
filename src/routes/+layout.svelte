@@ -20,36 +20,35 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<title>Holograph</title>
-	<meta
-		name="description"
-		content="Turn a favorite photo into a warm, light-catching keepsake."
-	/>
+	<meta name="description" content="Turn a favorite photo into a warm, light-catching keepsake." />
 </svelte:head>
 
 <div class="site-shell">
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
 			<span class="brand-badge">
-				<img class="brand-logo" src="/holographe/brand-logo.png" alt="Holographe logo" />
+				<img class="brand-logo" src="/holographe/brand-wordmark.png" alt="Holographe logo" />
 			</span>
 		</a>
+		<div class="header-cta-shell">
+			<a
+				class="button-primary header-cta"
+				href={`${resolve('/')}?order=1#preview-builder`}
+				onclick={(event) => {
+					if (window.location.pathname === '/') {
+						event.preventDefault();
+						orderStudioOpen.set(true);
+					}
+				}}
+			>
+				Start Order
+			</a>
+		</div>
 		<nav class="site-nav" aria-label="Main navigation">
 			{#each navItems as item (item.href)}
 				<a href={resolve(item.href)}>{item.label}</a>
 			{/each}
 		</nav>
-		<a
-			class="button-primary header-cta"
-			href={`${resolve('/')}?order=1#preview-builder`}
-			onclick={(event) => {
-				if (window.location.pathname === '/') {
-					event.preventDefault();
-					orderStudioOpen.set(true);
-				}
-			}}
-		>
-			Start Order
-		</a>
 	</header>
 
 	<main>
@@ -58,7 +57,9 @@
 
 	<footer class="site-footer">
 		<div>
-			<img class="footer-logo" src="/holographe/brand-logo.png" alt="Holographe logo" />
+			<span class="brand-badge brand-badge-soft footer-brand-badge">
+				<img class="footer-logo" src="/holographe/brand-wordmark.png" alt="Holographe logo" />
+			</span>
 			<p class="footer-copy">Custom photo keepsakes made to feel easy to order and good to gift.</p>
 		</div>
 		<div class="footer-links">
