@@ -17,16 +17,17 @@ function buildCheckoutParams({
 	quantity,
 	totalAmountCents,
 	offerLabel,
+	offerDescription,
 	metadata
 }: {
 	origin: string;
 	quantity: number;
 	totalAmountCents: number;
 	offerLabel: string;
+	offerDescription: string;
 	metadata?: Record<string, string>;
 }) {
 	const params = new URLSearchParams();
-	const itemLabel = `${quantity} custom Holograph magnet${quantity === 1 ? '' : 's'}`;
 
 	params.set('mode', 'payment');
 	params.set('success_url', `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`);
@@ -42,11 +43,8 @@ function buildCheckoutParams({
 	params.set('line_items[0][quantity]', '1');
 	params.set('line_items[0][price_data][currency]', 'usd');
 	params.set('line_items[0][price_data][unit_amount]', String(totalAmountCents));
-	params.set('line_items[0][price_data][product_data][name]', itemLabel);
-	params.set(
-		'line_items[0][price_data][product_data][description]',
-		'Personalized holographic keepsake bundle with free shipping and optional handwriting or artwork overlay.'
-	);
+	params.set('line_items[0][price_data][product_data][name]', offerLabel);
+	params.set('line_items[0][price_data][product_data][description]', offerDescription);
 	params.set('metadata[product]', 'custom-holographic-photo-magnet');
 	params.set('metadata[quantity]', String(quantity));
 	params.set('metadata[offer]', offerLabel);
@@ -66,7 +64,9 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 
 	if (!env.STRIPE_SECRET_KEY) {
 		const message = 'Stripe is not configured yet. Add STRIPE_SECRET_KEY before using checkout.';
-		return wantsJson ? jsonResponse({ error: message }, 503) : new Response(message, { status: 503 });
+		return wantsJson
+			? jsonResponse({ error: message }, 503)
+			: new Response(message, { status: 503 });
 	}
 
 	const formData = await request.formData();
@@ -101,19 +101,25 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 
 	if (!quantity) {
 		const message = 'Select one of the available sale bundle sizes.';
-		return wantsJson ? jsonResponse({ error: message }, 400) : new Response(message, { status: 400 });
+		return wantsJson
+			? jsonResponse({ error: message }, 400)
+			: new Response(message, { status: 400 });
 	}
 
 	const offer = getCheckoutOffer(quantity);
 
 	if (!offer) {
 		const message = 'That bundle size is not available online. Request a custom quote instead.';
-		return wantsJson ? jsonResponse({ error: message }, 400) : new Response(message, { status: 400 });
+		return wantsJson
+			? jsonResponse({ error: message }, 400)
+			: new Response(message, { status: 400 });
 	}
 
 	if (!baseBlobUrl || !baseBlobPathname) {
 		const message = 'Upload and save your photo before starting checkout.';
-		return wantsJson ? jsonResponse({ error: message }, 400) : new Response(message, { status: 400 });
+		return wantsJson
+			? jsonResponse({ error: message }, 400)
+			: new Response(message, { status: 400 });
 	}
 
 	const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
@@ -126,7 +132,8 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 			origin: url.origin,
 			quantity,
 			totalAmountCents: offer.totalAmountCents,
-			offerLabel: offer.label,
+			offerLabel: offer.checkoutName,
+			offerDescription: offer.checkoutDescription,
 			metadata
 		})
 	});
@@ -143,7 +150,9 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 
 	if (!session.url) {
 		const message = 'Stripe did not return a checkout URL.';
-		return wantsJson ? jsonResponse({ error: message }, 502) : new Response(message, { status: 502 });
+		return wantsJson
+			? jsonResponse({ error: message }, 502)
+			: new Response(message, { status: 502 });
 	}
 
 	if (wantsJson) {

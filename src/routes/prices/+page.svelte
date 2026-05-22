@@ -1,711 +1,736 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { featuredCheckoutOffers, largerCheckoutOffers } from '$lib/pricing';
+	import { addOns, packageTiers } from '$lib/pricing';
 
-	let checkoutError = $state('');
-	let checkoutLoading = $state(false);
+	const primaryTiers = packageTiers.slice(0, 4);
+	const palette = ['warm', 'cool', 'rose', 'ice'] as const;
 
-	async function submitCheckoutForm(event: SubmitEvent) {
-		event.preventDefault();
-		const form = event.currentTarget as HTMLFormElement;
-		checkoutError = '';
-		checkoutLoading = true;
+	let activeTierId = $state<string | null>(null);
+	let selectedSizes = $state<Record<string, string>>(
+		Object.fromEntries(
+			primaryTiers.map((tier) => [tier.id, tier.sizeOptions[0] ?? tier.primarySize])
+		)
+	);
 
-		try {
-			const response = await fetch(form.action, {
-				method: 'POST',
-				body: new FormData(form),
-				headers: {
-					accept: 'application/json',
-					'x-holograph-ajax': '1'
-				}
-			});
+	const activeTier = $derived(primaryTiers.find((tier) => tier.id === activeTierId) ?? null);
+	const activePalette = $derived(
+		activeTier
+			? (palette[primaryTiers.findIndex((tier) => tier.id === activeTier.id)] ?? 'warm')
+			: 'warm'
+	);
 
-			const result = (await response.json().catch(() => ({}))) as { error?: string; url?: string };
+	function openTier(id: string) {
+		activeTierId = id;
+	}
 
-			if (!response.ok || !result.url) {
-				checkoutError = result.error || 'Checkout could not start right now. Please try again.';
-				return;
-			}
+	function closeTier() {
+		activeTierId = null;
+	}
 
-			window.location.href = result.url;
-		} catch {
-			checkoutError = 'Checkout could not start right now. Please try again.';
-		} finally {
-			checkoutLoading = false;
-		}
+	function packageLink(quantity?: number, size?: string) {
+		if (!quantity) return resolve('/contact');
+		const params = new URLSearchParams({ order: '1', package: String(quantity) });
+		if (size) params.set('size', size);
+		return `${resolve('/')}?${params.toString()}#preview-builder`;
+	}
+
+	function handleWindowKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && activeTierId) closeTier();
 	}
 </script>
 
 <svelte:head>
-	<title>Prices | Holograph</title>
+	<title>Pricing | Holograph</title>
 	<meta
 		name="description"
-		content="Simple bundle pricing for your Holograph keepsakes."
+		content="Choose a Holograph package, open it like a premium selection screen, and start your order."
 	/>
 </svelte:head>
 
-<section class="section prices-page">
-	<div class="page-wrap prices-layout" id="secure-checkout">
-		<section class="bulk-hero glass-card">
-			<a class="bulk-hero-photo" href="#bulk-photo-lightbox">
-				<img
-					src="/holographe/bulk.jpg"
-					alt="Wrapped bulk Holograph orders with pink ribbon"
-				/>
-			</a>
-			<div class="bulk-hero-copy">
-				<p class="eyebrow">Bulk and gifting</p>
-				<h1>Simple bundle pricing for gifts, family sets, and events.</h1>
-				<p class="hero-subcopy">Choose a set size and head straight to checkout. Keep custom notes optional.</p>
-			</div>
+<svelte:window onkeydown={handleWindowKeydown} />
+
+<section class="section pricing-page">
+	<div class="pricing-stage">
+		<section class="pricing-hero glass-card">
+			<p class="eyebrow">Selection Screen</p>
+			<h1>Choose your set.</h1>
+			<p>Open a tier. Pick a size. Start your order.</p>
 		</section>
 
-		<section class="hero-band glass-card">
-			<div class="hero-copy">
-				<p class="eyebrow">Simple pricing</p>
-				<h2>Pick your set and buy.</h2>
-				<p class="hero-subcopy">The fastest order is just your photo and your bundle size.</p>
-			</div>
-
-			<div class="spotlight-card">
-				<p class="spotlight-kicker">Most-loved</p>
-				<div class="spotlight-price">
-					<span>Starting at</span>
-					<strong>$19.99</strong>
-				</div>
-				<p class="spotlight-copy">Free shipping. Secure checkout. No extra setup needed.</p>
-				<div class="spotlight-tags">
-					<span>Free shipping</span>
-					<span>Premium finish</span>
-					<span>Quick checkout</span>
-				</div>
-				<a class="button-primary" href="#bundle-shop">Choose Your Bundle</a>
-			</div>
+		<section class="selection-grid" aria-label="Package selection">
+			{#each primaryTiers as tier, index (tier.id)}
+				<button
+					type="button"
+					class={`selection-card glass-card ${palette[index]}`}
+					onclick={() => openTier(tier.id)}
+				>
+					<span class="selection-frame"></span>
+					<span class="selection-aura"></span>
+					<span class="selection-scan"></span>
+					<span class="selection-orb">
+						<span class="orb-ring"></span>
+						<span class="orb-core"></span>
+					</span>
+					<p class="selection-tier">Tier {index + 1}</p>
+					<h2>{tier.name}</h2>
+					<p class="selection-price">{tier.priceLabel}</p>
+					<p class="selection-meta">{tier.quantityLabel}</p>
+					<div class="selection-bars" aria-hidden="true">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					<div class="selection-pips" aria-hidden="true">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					{#if tier.badge}
+						<span class="selection-badge">{tier.badge}</span>
+					{/if}
+				</button>
+			{/each}
 		</section>
 
-		<section class="bundle-stage" id="bundle-shop">
-			<div class="section-head">
-				<span class="eyebrow">Bundle shop</span>
-				<h2>Choose the bundle that fits.</h2>
-				<p>Upload your photo on the homepage, then use one of these quick checkout options.</p>
-			</div>
-
-			<div class="bundle-grid">
-				<article class="bundle-card featured-card">
-					<div class="bundle-top">
-						<div>
-							<p class="kicker">Most-loved bundles</p>
-							<h3>Small gift sets</h3>
-						</div>
-						<div class="bundle-chip">Free shipping</div>
-					</div>
-
-					<div class="bundle-list" aria-label="Featured bundles">
-						{#each featuredCheckoutOffers as offer (offer.quantity)}
-							<div class:bundle-row={true} class:bundle-row-featured={offer.quantity === 3}>
-								<div class="bundle-copy">
-									<p class="bundle-label">{offer.label}</p>
-									<h4>{offer.quantity} for {offer.priceLabel}</h4>
-									<p>
-										{offer.quantity === 1
-											? 'One keepsake.'
-											: offer.quantity === 3
-												? 'A small gift set.'
-												: 'A fuller set.'}
-									</p>
-								</div>
-								<div class="bundle-side">
-									<span>{offer.highlight}</span>
-									<small>{offer.subtitle}</small>
-								</div>
-							</div>
-						{/each}
-					</div>
-
-					<form class="checkout-form" method="POST" action="/checkout" onsubmit={submitCheckoutForm}>
-						<input type="hidden" name="print_size" value="8x10" />
-						<input type="hidden" name="rounded_edges" value="yes" />
-						<label>
-							<span>Featured bundle</span>
-							<select name="quantity">
-								{#each featuredCheckoutOffers as offer (offer.quantity)}
-									<option value={offer.quantity}>
-										{offer.quantity} for {offer.priceLabel}
-									</option>
-								{/each}
-							</select>
-						</label>
-						<p class="checkout-helper">Rounded edges are included by default. Add extra notes later if needed.</p>
-						<button class="button-primary" type="submit" disabled={checkoutLoading}>
-							{checkoutLoading ? 'Starting Checkout...' : 'Buy Now'}
-						</button>
-					</form>
-				</article>
-
-				<article class="bundle-card elevated-card">
-					<div class="bundle-top">
-						<div>
-							<p class="kicker">Larger gifting moments</p>
-							<h3>Larger sets</h3>
-						</div>
-						<div class="bundle-chip warm">Occasion-ready</div>
-					</div>
-
-					<div class="bundle-list" aria-label="Larger bundles">
-						{#each largerCheckoutOffers as offer (offer.quantity)}
-							<div class="bundle-row">
-								<div class="bundle-copy">
-									<p class="bundle-label">{offer.label}</p>
-									<h4>{offer.quantity} for {offer.priceLabel}</h4>
-									<p>
-										{offer.quantity === 10
-											? 'Small batch.'
-											: offer.quantity === 20
-												? 'Larger gifting.'
-												: offer.quantity === 40
-													? 'Big event set.'
-													: offer.subtitle}
-									</p>
-								</div>
-								<div class="bundle-side">
-									<span>{offer.highlight}</span>
-									<small>{offer.subtitle}</small>
-								</div>
-							</div>
-						{/each}
-					</div>
-
-					<form class="checkout-form" method="POST" action="/checkout" onsubmit={submitCheckoutForm}>
-						<input type="hidden" name="print_size" value="8x10" />
-						<input type="hidden" name="rounded_edges" value="yes" />
-						<label>
-							<span>Larger bundle</span>
-							<select name="quantity">
-								{#each largerCheckoutOffers as offer (offer.quantity)}
-									<option value={offer.quantity}>
-										{offer.quantity} for {offer.priceLabel}
-									</option>
-								{/each}
-							</select>
-						</label>
-						<p class="checkout-helper">Rounded edges are included by default. Need a custom request? Use the contact page.</p>
-						<button class="button-primary" type="submit" disabled={checkoutLoading}>
-							{checkoutLoading ? 'Starting Checkout...' : 'Buy Now'}
-						</button>
-					</form>
-				</article>
-			</div>
-		</section>
-
-		<section class="concierge-band glass-card">
-			<div class="concierge-copy">
-				<p class="eyebrow">Concierge option</p>
-				<h2>Need 50+ or custom?</h2>
-				<p>Ask for a private quote for events, keepsake tables, or larger gifting runs.</p>
-			</div>
-
-			<div class="concierge-actions">
-				<div class="concierge-note">
-					<p class="kicker">Private quote</p>
-					<p>Best for events, gifts, and larger orders.</p>
-				</div>
-				<a class="button-secondary" href="/contact">Contact</a>
+		<section class="mini-band glass-card">
+			<p class="eyebrow">Extras</p>
+			<div class="extras-inline">
+				{#each addOns as item}
+					<span>{item.name} · {item.priceLabel}</span>
+				{/each}
 			</div>
 		</section>
 	</div>
-</section>
 
-<div class="lightbox-shell" id="bulk-photo-lightbox">
-	<a class="lightbox-backdrop" href="#secure-checkout" aria-label="Close bulk photo"></a>
-	<div class="lightbox-card">
-		<a class="lightbox-close" href="#secure-checkout" aria-label="Close bulk photo">Close</a>
-		<img src="/holographe/bulk.jpg" alt="Wrapped bulk Holograph orders with pink ribbon" />
-	</div>
-</div>
+	{#if activeTier}
+		<div class="selection-modal-shell">
+			<button
+				type="button"
+				class="selection-modal-backdrop"
+				aria-label="Close package window"
+				onclick={closeTier}
+			></button>
+			<div
+				class={`selection-modal glass-card ${activePalette}`}
+				role="dialog"
+				aria-modal="true"
+				aria-label={activeTier.name}
+			>
+				<span class="modal-halo modal-halo-a" aria-hidden="true"></span>
+				<span class="modal-halo modal-halo-b" aria-hidden="true"></span>
+				<span class="modal-grid" aria-hidden="true"></span>
+				<button
+					type="button"
+					class="selection-close"
+					aria-label="Close package window"
+					onclick={closeTier}
+				>
+					Close
+				</button>
 
-{#if checkoutError}
-	<div class="checkout-error-shell">
-		<div class="checkout-error-card glass-card">
-			<button type="button" class="checkout-error-close" onclick={() => (checkoutError = '')}>Close</button>
-			<p class="kicker">Checkout issue</p>
-			<h2>We could not start checkout.</h2>
-			<p>{checkoutError}</p>
+				<div class="selection-modal-top">
+					<div class="selection-emblem" aria-hidden="true">
+						<span class="orb-ring"></span>
+						<span class="orb-core"></span>
+					</div>
+					<p class="eyebrow">Package Selected</p>
+					<div class="modal-powerbar" aria-hidden="true">
+						<span></span>
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					<h2>{activeTier.name}</h2>
+					<p class="modal-price">{activeTier.priceLabel}</p>
+					<p class="modal-copy">{activeTier.description}</p>
+				</div>
+
+				<div class="modal-panel">
+					<p class="panel-label">Choose a size</p>
+					<div class="size-grid">
+						{#each activeTier.sizeOptions as option}
+							<button
+								type="button"
+								class:selected-size={selectedSizes[activeTier.id] === option}
+								class="size-chip"
+								onclick={() => (selectedSizes[activeTier.id] = option)}
+							>
+								{option}
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="modal-panel">
+					<p class="panel-label">What’s included</p>
+					<div class="loot-grid">
+						{#each activeTier.included as item}
+							<div class="loot-card">
+								<span class="loot-dot"></span>
+								<p>{item}</p>
+							</div>
+						{/each}
+					</div>
+				</div>
+
+				<div class="modal-stats">
+					<span>{activeTier.quantityLabel}</span>
+					<span>{selectedSizes[activeTier.id]}</span>
+					<span>{activeTier.perceivedValue}</span>
+				</div>
+
+				<a
+					class="button-primary modal-cta"
+					href={packageLink(activeTier.checkoutQuantity, selectedSizes[activeTier.id])}
+				>
+					Start Order
+				</a>
+			</div>
 		</div>
-	</div>
-{/if}
+	{/if}
+</section>
 
 <style>
 	h1,
 	h2,
-	h3,
-	h4,
 	p {
 		margin: 0;
 	}
 
 	h1,
-	h2,
-	h3,
-	h4 {
-		font-family: 'Georgia', 'Iowan Old Style', serif;
+	h2 {
+		font-family: 'Cormorant Garamond', 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
 		letter-spacing: -0.04em;
-		color: #f8f8f5;
+		color: #f8f4ee;
 	}
 
 	h1 {
-		font-size: clamp(1.7rem, 3.2vw, 2.55rem);
-		line-height: 0.98;
-		max-width: 11ch;
+		font-size: clamp(2rem, 4vw, 2.7rem);
+		line-height: 0.96;
 	}
 
 	h2 {
-		font-size: clamp(1.2rem, 1.9vw, 1.7rem);
-		line-height: 1.02;
-	}
-
-	h3 {
-		font-size: clamp(0.98rem, 1.3vw, 1.18rem);
-		line-height: 1.06;
-	}
-
-	h4 {
-		font-size: 0.92rem;
-		line-height: 1.08;
+		font-size: clamp(1.35rem, 2vw, 1.9rem);
+		line-height: 1.04;
 	}
 
 	p {
-		color: var(--muted);
-		line-height: 1.52;
-		font-size: 0.88rem;
+		line-height: 1.6;
+		color: rgba(238, 231, 221, 0.76);
 	}
 
-	.prices-page {
-		padding-top: 0.7rem;
-	}
-
-	.prices-layout {
-		display: grid;
-		gap: 0.7rem;
-	}
-
-	.bulk-hero {
-		display: grid;
-		grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
-		gap: 0.75rem;
-		padding: 0.72rem;
-		align-items: center;
-	}
-
-	.bulk-hero-photo {
+	.pricing-page {
 		display: block;
-		overflow: hidden;
-		border-radius: 1.1rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.08),
-			0 24px 50px rgba(4, 10, 22, 0.2);
 	}
 
-	.bulk-hero-photo img {
-		display: block;
-		width: 100%;
-		height: 15rem;
-		object-fit: cover;
-	}
-
-	.lightbox-shell {
-		position: fixed;
-		inset: 0;
-		z-index: 65;
+	.pricing-stage {
+		width: var(--frame-rail);
+		margin: 0 auto;
 		display: grid;
-		place-items: center;
-		padding: 1rem;
-		opacity: 0;
-		pointer-events: none;
-		transition: opacity 180ms ease;
+		justify-items: center;
+		align-items: start;
+		gap: 1rem;
 	}
 
-	.lightbox-shell:target {
-		opacity: 1;
-		pointer-events: auto;
-	}
-
-	.lightbox-backdrop {
-		position: absolute;
-		inset: 0;
-		background: rgba(4, 4, 6, 0.84);
-		backdrop-filter: blur(16px);
-	}
-
-	.lightbox-card {
-		position: relative;
-		z-index: 1;
-		width: min(78rem, calc(100vw - 2rem));
+	.pricing-hero,
+	.mini-band {
+		width: min(100%, 44rem);
 		display: grid;
-		gap: 0.75rem;
-		justify-items: end;
-	}
-
-	.lightbox-card img {
-		display: block;
-		width: 100%;
-		max-height: calc(100vh - 4rem);
-		object-fit: contain;
-		border-radius: 1.5rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		box-shadow: 0 32px 90px rgba(0, 0, 0, 0.42);
-		background: rgba(8, 8, 10, 0.9);
-	}
-
-	.lightbox-close {
-		font-size: 0.76rem;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: rgba(248, 244, 238, 0.72);
-	}
-
-	.checkout-error-shell {
-		position: fixed;
-		inset: 0;
-		z-index: 70;
-		display: grid;
-		place-items: center;
-		padding: 1rem;
-		background: rgba(4, 4, 6, 0.78);
-		backdrop-filter: blur(16px);
-	}
-
-	.checkout-error-card {
-		width: min(32rem, calc(100vw - 2rem));
-		display: grid;
-		gap: 0.75rem;
-		padding: 1.2rem;
+		justify-items: center;
 		text-align: center;
+		gap: 0.55rem;
+		padding: 1.1rem;
 	}
 
-	.checkout-error-close {
-		justify-self: end;
-		padding: 0;
-		border: 0;
-		background: transparent;
-		color: rgba(248, 244, 238, 0.72);
-		font-size: 0.76rem;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-	}
-
-	.bulk-hero-copy {
-		display: grid;
-		gap: 0.45rem;
-	}
-
-	.hero-band,
-	.concierge-band {
-		display: grid;
-		grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
-		gap: 0.65rem;
-		padding: 0.72rem;
-	}
-
-	.hero-copy,
-	.spotlight-card,
-	.bundle-card,
-	.concierge-copy,
-	.concierge-actions,
-	.concierge-note {
-		display: grid;
-		gap: 0.62rem;
-	}
-
-	.hero-subcopy {
-		max-width: 30rem;
-		font-size: 0.84rem;
-	}
-
-	.spotlight-card {
-		align-content: start;
-		padding: 0.72rem;
-		border-radius: 1rem;
-		background:
-			radial-gradient(circle at top left, rgba(122, 240, 255, 0.16), transparent 34%),
-			radial-gradient(circle at bottom right, rgba(255, 111, 145, 0.14), transparent 36%),
-			linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
-			rgba(8, 16, 30, 0.76);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-	}
-
-	.spotlight-kicker,
-	.kicker,
-	.checkout-form span,
-	.bundle-side span {
-		font-size: 0.64rem;
-		font-weight: 700;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-	}
-
-	.spotlight-kicker,
-	.kicker,
-	.checkout-form span {
-		color: var(--accent);
-	}
-
-	.spotlight-price {
-		display: grid;
-		gap: 0.1rem;
-	}
-
-	.spotlight-price span {
-		font-size: 0.72rem;
-		color: rgba(248, 248, 244, 0.74);
-	}
-
-	.spotlight-price strong {
-		font-family: 'Georgia', 'Iowan Old Style', serif;
-		font-size: clamp(1.55rem, 3.3vw, 2.15rem);
-		line-height: 0.92;
-		letter-spacing: -0.05em;
-		color: #fff5de;
-	}
-
-	.spotlight-copy {
-		color: rgba(245, 245, 240, 0.78);
-	}
-
-	.spotlight-tags {
+	.selection-grid {
 		display: flex;
 		flex-wrap: wrap;
+		justify-content: center;
+		align-items: stretch;
+		gap: 0.9rem;
+		width: min(100%, 54rem);
+		margin: 0 auto;
+	}
+
+	.selection-card {
+		position: relative;
+		display: grid;
+		justify-items: center;
+		align-content: start;
 		gap: 0.45rem;
-	}
-
-	.spotlight-tags span {
-		padding: 0.38rem 0.58rem;
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.05);
+		flex: 0 1 16.5rem;
+		max-width: 16.5rem;
+		width: 100%;
+		padding: 1rem 0.9rem 1.1rem;
 		border: 1px solid rgba(255, 255, 255, 0.08);
-		font-size: 0.68rem;
-		color: rgba(248, 248, 244, 0.82);
-	}
-
-	.bundle-stage,
-	.bundle-grid,
-	.bundle-list {
-		display: grid;
-		gap: 0.62rem;
-	}
-
-	.checkout-helper {
-		color: rgba(245, 245, 240, 0.72);
-		font-size: 0.82rem;
-		line-height: 1.5;
-	}
-
-	.bundle-grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.bundle-card {
-		padding: 0.7rem;
-		border-radius: 1rem;
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
-			linear-gradient(160deg, rgba(9, 18, 34, 0.92), rgba(8, 13, 24, 0.9));
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		box-shadow: 0 28px 60px rgba(4, 10, 22, 0.24);
-	}
-
-	.featured-card {
-		border-color: rgba(224, 205, 162, 0.24);
-	}
-
-	.elevated-card {
-		background:
-			radial-gradient(circle at top right, rgba(255, 182, 92, 0.12), transparent 26%),
-			linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018)),
-			linear-gradient(160deg, rgba(9, 18, 34, 0.92), rgba(8, 13, 24, 0.9));
-	}
-
-	.bundle-top {
-		display: flex;
-		align-items: start;
-		justify-content: space-between;
-		gap: 0.55rem;
-	}
-
-	.bundle-chip {
-		flex: none;
-		padding: 0.4rem 0.58rem;
-		border-radius: 999px;
-		background: rgba(122, 240, 255, 0.12);
-		border: 1px solid rgba(122, 240, 255, 0.2);
-		font-size: 0.68rem;
-		color: #ecfbff;
-	}
-
-	.bundle-chip.warm {
-		background: rgba(255, 182, 92, 0.12);
-		border-color: rgba(255, 182, 92, 0.18);
-		color: #fff1d8;
-	}
-
-	.bundle-row {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 0.6rem;
-		padding: 0.6rem;
-		border-radius: 0.8rem;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		cursor: pointer;
+		overflow: hidden;
 		transition:
 			transform 180ms ease,
 			border-color 180ms ease,
-			background 180ms ease,
-			box-shadow 180ms ease;
+			box-shadow 180ms ease,
+			filter 180ms ease;
 	}
 
-	.bundle-row:hover {
-		transform: translateY(-2px);
-		border-color: rgba(255, 255, 255, 0.13);
-		background: rgba(255, 255, 255, 0.045);
-		box-shadow: 0 18px 38px rgba(4, 10, 22, 0.18);
+	.selection-card:hover {
+		transform: translateY(-4px) scale(1.015);
+		border-color: rgba(255, 255, 255, 0.18);
+		box-shadow:
+			0 26px 54px rgba(0, 0, 0, 0.32),
+			0 0 40px rgba(255, 228, 196, 0.08);
+		filter: saturate(1.08);
 	}
 
-	.bundle-row-featured {
-		border-color: rgba(122, 240, 255, 0.2);
-		background:
-			linear-gradient(135deg, rgba(122, 240, 255, 0.08), rgba(255, 111, 145, 0.05)),
-			rgba(255, 255, 255, 0.04);
+	.selection-frame,
+	.selection-scan {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
 	}
 
-	.bundle-copy {
+	.selection-aura {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: radial-gradient(circle at top center, rgba(255, 255, 255, 0.1), transparent 34%);
+	}
+
+	.selection-frame {
+		inset: 0.35rem;
+		border-radius: 1.35rem;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+			0 0 18px rgba(255, 255, 255, 0.03);
+	}
+
+	.selection-scan {
+		background: linear-gradient(
+			180deg,
+			transparent 0%,
+			rgba(255, 255, 255, 0.05) 20%,
+			transparent 40%,
+			transparent 100%
+		);
+		opacity: 0.8;
+		mix-blend-mode: screen;
+	}
+
+	.selection-orb,
+	.selection-emblem {
+		position: relative;
 		display: grid;
-		gap: 0.18rem;
+		place-items: center;
+		width: 4.4rem;
+		height: 4.4rem;
+		border-radius: 999px;
+		background: radial-gradient(
+			circle,
+			rgba(255, 255, 255, 0.12),
+			rgba(255, 255, 255, 0.02) 58%,
+			transparent 70%
+		);
 	}
 
-	.bundle-label {
-		font-size: 0.66rem;
+	.orb-ring,
+	.orb-core {
+		position: absolute;
+		border-radius: 999px;
+	}
+
+	.orb-ring {
+		inset: 0.52rem;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		box-shadow:
+			0 0 20px rgba(255, 228, 196, 0.14),
+			inset 0 0 12px rgba(255, 255, 255, 0.06);
+	}
+
+	.orb-core {
+		width: 0.85rem;
+		height: 0.85rem;
+		background: linear-gradient(135deg, #ffe3bc, #d7e6ff);
+		box-shadow: 0 0 18px rgba(255, 227, 187, 0.42);
+	}
+
+	.selection-tier,
+	.panel-label {
+		font-size: 0.64rem;
+		font-weight: 700;
+		letter-spacing: 0.22em;
 		text-transform: uppercase;
-		letter-spacing: 0.14em;
-		color: rgba(248, 248, 244, 0.52);
+		color: rgba(215, 225, 241, 0.64);
 	}
 
-	.bundle-side {
-		display: grid;
-		align-content: start;
-		justify-items: end;
-		gap: 0.35rem;
-		text-align: right;
+	.selection-price,
+	.modal-price {
+		font-family: 'Cormorant Garamond', 'Georgia', 'Iowan Old Style', serif;
+		font-size: 2rem;
+		line-height: 0.9;
+		color: #fff7ec;
 	}
 
-	.bundle-side span {
-		color: var(--accent);
+	.selection-meta {
+		font-size: 0.82rem;
+		color: rgba(238, 231, 221, 0.66);
 	}
 
-	.bundle-side small {
-		color: rgba(248, 248, 244, 0.58);
+	.selection-bars {
+		display: inline-flex;
+		align-items: end;
+		justify-content: center;
+		gap: 0.24rem;
+		padding-top: 0.15rem;
+	}
+
+	.selection-bars span {
+		display: block;
+		width: 0.42rem;
+		border-radius: 999px;
+		background: linear-gradient(180deg, rgba(255, 230, 193, 0.95), rgba(209, 226, 255, 0.58));
+		box-shadow: 0 0 14px rgba(255, 228, 190, 0.16);
+	}
+
+	.selection-bars span:nth-child(1) {
+		height: 0.55rem;
+		opacity: 0.55;
+	}
+	.selection-bars span:nth-child(2) {
+		height: 0.82rem;
+		opacity: 0.8;
+	}
+	.selection-bars span:nth-child(3) {
+		height: 1.08rem;
+	}
+
+	.selection-pips {
+		display: inline-flex;
+		gap: 0.34rem;
+	}
+
+	.selection-pips span {
+		width: 0.38rem;
+		height: 0.38rem;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.16);
+		box-shadow: 0 0 12px rgba(255, 233, 201, 0.18);
+	}
+
+	.selection-pips span:nth-child(2) {
+		background: linear-gradient(135deg, rgba(255, 231, 196, 0.9), rgba(214, 228, 255, 0.92));
+	}
+
+	.selection-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.36rem 0.62rem;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.08);
 		font-size: 0.68rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: rgba(244, 238, 228, 0.82);
 	}
 
-	.checkout-form {
-		display: grid;
-		gap: 0.5rem;
-		margin-top: 0.25rem;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.checkout-form label {
-		display: grid;
-		gap: 0.4rem;
-	}
-
-	.checkout-form button {
-		grid-column: 1 / -1;
-	}
-
-	.checkout-form select,
-	.checkout-form input {
-		padding: 0.68rem 0.78rem;
-		border-radius: 0.78rem;
-		border: 1px solid rgba(255, 255, 255, 0.12);
+	.warm {
 		background:
-			linear-gradient(180deg, rgba(15, 15, 17, 0.96), rgba(11, 11, 13, 0.94)),
-			rgba(255, 255, 255, 0.03);
-		color: #f8f4ee;
-		font-size: 0.88rem;
-		color-scheme: dark;
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+			linear-gradient(180deg, rgba(38, 22, 10, 0.42), rgba(10, 10, 10, 0.22)),
+			radial-gradient(circle at top left, rgba(255, 214, 168, 0.14), transparent 38%);
+	}
+	.cool {
+		background:
+			linear-gradient(180deg, rgba(16, 24, 40, 0.44), rgba(10, 10, 10, 0.22)),
+			radial-gradient(circle at top right, rgba(176, 214, 255, 0.14), transparent 38%);
+	}
+	.rose {
+		background:
+			linear-gradient(180deg, rgba(38, 18, 28, 0.42), rgba(10, 10, 10, 0.22)),
+			radial-gradient(circle at bottom left, rgba(255, 189, 219, 0.14), transparent 38%);
+	}
+	.ice {
+		background:
+			linear-gradient(180deg, rgba(16, 22, 32, 0.42), rgba(10, 10, 10, 0.22)),
+			radial-gradient(circle at bottom right, rgba(189, 225, 255, 0.14), transparent 38%);
 	}
 
-	.checkout-form select option {
-		background: #111214;
-		color: #f8f4ee;
+	.extras-inline {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.45rem;
 	}
 
-	.concierge-actions {
+	.extras-inline span {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.42rem 0.66rem;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		font-size: 0.7rem;
+		color: rgba(243, 236, 227, 0.7);
+	}
+
+	.selection-modal-shell {
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+		display: grid;
+		place-items: center;
+		padding: 0.8rem;
+	}
+
+	.selection-modal-backdrop {
+		position: absolute;
+		inset: 0;
+		border: 0;
+		background: rgba(4, 5, 8, 0.76);
+		backdrop-filter: blur(16px);
+	}
+
+	.selection-modal {
+		position: relative;
+		z-index: 1;
+		width: min(560px, calc(100vw - 1rem));
+		display: grid;
+		gap: 0.9rem;
+		padding: 1.1rem;
+		text-align: center;
+		justify-items: center;
+		overflow: hidden;
+		box-shadow:
+			0 34px 90px rgba(0, 0, 0, 0.48),
+			0 0 60px rgba(255, 229, 196, 0.1);
+		animation: modal-rise 220ms ease-out;
+	}
+
+	.selection-close {
+		position: absolute;
+		top: 0.9rem;
+		right: 0.9rem;
+		z-index: 3;
+		padding: 0.42rem 0.64rem;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(255, 255, 255, 0.04);
+		color: rgba(248, 244, 238, 0.72);
+		font-size: 0.76rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.selection-close:hover {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	.modal-halo,
+	.modal-grid {
+		position: absolute;
+		pointer-events: none;
+	}
+
+	.modal-halo {
+		width: 13rem;
+		height: 13rem;
+		border-radius: 999px;
+		filter: blur(24px);
+		opacity: 0.34;
+	}
+
+	.modal-halo-a {
+		top: -3rem;
+		left: -2rem;
+		background: radial-gradient(circle, rgba(255, 213, 168, 0.52), transparent 64%);
+	}
+
+	.modal-halo-b {
+		right: -2.5rem;
+		bottom: -3rem;
+		background: radial-gradient(circle, rgba(187, 219, 255, 0.42), transparent 64%);
+	}
+
+	.modal-grid {
+		inset: 0;
+		opacity: 0.2;
+		background-image:
+			linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+		background-size: 28px 28px;
+		mask-image: radial-gradient(circle at center, black 26%, transparent 92%);
+	}
+
+	.selection-modal-top,
+	.modal-panel {
+		position: relative;
+		z-index: 1;
 		display: grid;
 		gap: 0.7rem;
-		align-content: center;
+		width: 100%;
+		justify-items: center;
 	}
 
-	.concierge-note {
-		padding: 0.68rem;
-		border-radius: 0.8rem;
-		background: rgba(255, 255, 255, 0.03);
+	.selection-modal-top {
+		padding-top: 0.55rem;
+	}
+
+	.modal-powerbar {
+		display: inline-grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 0.34rem;
+		width: min(11rem, 100%);
+	}
+
+	.modal-powerbar span {
+		display: block;
+		height: 0.34rem;
+		border-radius: 999px;
+		background: linear-gradient(90deg, rgba(255, 229, 196, 0.9), rgba(213, 230, 255, 0.9));
+		box-shadow: 0 0 16px rgba(255, 228, 196, 0.18);
+	}
+
+	.modal-powerbar span:nth-child(1) {
+		opacity: 0.45;
+	}
+
+	.modal-powerbar span:nth-child(2) {
+		opacity: 0.7;
+	}
+
+	.modal-powerbar span:nth-child(3) {
+		opacity: 0.88;
+	}
+
+	.modal-copy {
+		max-width: 30rem;
+	}
+
+	.size-grid,
+	.modal-stats {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.55rem;
+		width: 100%;
+	}
+
+	.size-chip,
+	.modal-stats span {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.62rem 0.92rem;
+		border-radius: 999px;
 		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(255, 255, 255, 0.04);
+		color: #f6f1ea;
 	}
 
-	@media (max-width: 960px) {
-		.bulk-hero,
-		.hero-band,
-		.concierge-band,
-		.bundle-grid {
-			grid-template-columns: 1fr;
+	.size-chip {
+		cursor: pointer;
+		transition:
+			transform 160ms ease,
+			border-color 160ms ease,
+			background 160ms ease;
+	}
+
+	.size-chip:hover,
+	.selected-size {
+		transform: translateY(-1px);
+		border-color: rgba(255, 236, 214, 0.24);
+		background:
+			radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 54%),
+			linear-gradient(135deg, rgba(255, 239, 214, 0.22), rgba(215, 227, 255, 0.16));
+		box-shadow:
+			0 0 22px rgba(255, 230, 196, 0.14),
+			inset 0 1px 0 rgba(255, 255, 255, 0.12);
+	}
+
+	.loot-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.55rem;
+		width: 100%;
+	}
+
+	.loot-card {
+		display: grid;
+		justify-items: center;
+		gap: 0.35rem;
+		padding: 0.72rem;
+		border-radius: 1rem;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+	}
+
+	.loot-dot {
+		width: 0.45rem;
+		height: 0.45rem;
+		border-radius: 999px;
+		background: linear-gradient(135deg, #ffe0b5, #d7e6ff);
+		box-shadow: 0 0 14px rgba(255, 232, 204, 0.24);
+	}
+
+	.modal-cta {
+		position: relative;
+		z-index: 1;
+		width: min(100%, 18rem);
+		min-height: 3.3rem;
+		font-size: 1.02rem;
+		box-shadow:
+			0 22px 56px rgba(242, 198, 154, 0.28),
+			0 0 28px rgba(215, 227, 255, 0.14);
+	}
+
+	.modal-cta:hover {
+		transform: translateY(-2px) scale(1.015);
+	}
+
+	@keyframes modal-rise {
+		from {
+			opacity: 0;
+			transform: translateY(16px) scale(0.98);
 		}
 
-		.checkout-form {
-			grid-template-columns: 1fr;
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
 		}
 	}
 
 	@media (max-width: 640px) {
-		h1 {
-			font-size: clamp(1.7rem, 7.5vw, 2.2rem);
-		}
-
-		h2 {
-			font-size: clamp(1.18rem, 5.2vw, 1.5rem);
-		}
-
-		h3 {
-			font-size: 1rem;
-		}
-
-		.bulk-hero,
-		.hero-band,
-		.concierge-band,
-		.bundle-card {
-			padding: 0.68rem;
-		}
-
-		.bundle-top,
-		.bundle-row {
+		.loot-grid {
 			grid-template-columns: 1fr;
 		}
 
-		.bundle-top {
-			display: grid;
+		.pricing-hero,
+		.mini-band,
+		.selection-card,
+		.selection-modal {
+			padding: 0.95rem;
 		}
 
-		.bundle-side {
-			justify-items: start;
-			text-align: left;
+		.selection-grid {
+			width: 100%;
 		}
 
-		.spotlight-tags {
-			gap: 0.45rem;
+		.selection-card {
+			flex-basis: 100%;
+			max-width: 100%;
+		}
+
+		.selection-modal {
+			width: min(100%, calc(100vw - 0.8rem));
+		}
+	}
+
+	@media (max-width: 860px) and (min-width: 641px) {
+		.selection-card {
+			flex-basis: calc(50% - 0.45rem);
+			max-width: calc(50% - 0.45rem);
 		}
 	}
 </style>

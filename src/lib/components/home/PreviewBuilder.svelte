@@ -9,13 +9,17 @@
 
 	const demoAfterSrc = '/holographe/jess-holo-hero.webp';
 
-	const bundleLabels: Record<string, string> = {
-		'1': '1 Holograph',
-		'3': 'Set of 3',
-		'5': 'Family Set'
-	};
-
-	let { isTikTokVisitor = false, initialOpen = false } = $props();
+	let {
+		isTikTokVisitor = false,
+		initialOpen = false,
+		initialBundle,
+		initialPrintSize
+	} = $props<{
+		isTikTokVisitor?: boolean;
+		initialOpen?: boolean;
+		initialBundle?: string;
+		initialPrintSize?: string;
+	}>();
 
 	let uploadedBaseSrc = $state('');
 	let uploadedBaseName = $state('');
@@ -111,6 +115,17 @@
 		if (!initialOpen) return;
 		orderPanelOpen = true;
 		orderStudioOpen.set(true);
+	});
+
+	$effect(() => {
+		if (!initialBundle) return;
+		if (!featuredCheckoutOffers.some((offer) => String(offer.quantity) === initialBundle)) return;
+		selectedBundle = initialBundle;
+	});
+
+	$effect(() => {
+		if (!initialPrintSize) return;
+		printSize = initialPrintSize;
 	});
 
 	$effect(() => {
@@ -625,7 +640,7 @@
 							</div>
 							<div class="preview-pill-row">
 								<div class="preview-pill">
-									<strong>{uploadedBaseName || 'Add your photo'}</strong>
+									<strong>{uploadedBaseName || 'Upload photo'}</strong>
 									<span>{uploadReady ? 'Live preview ready' : 'Start here'}</span>
 								</div>
 								<div class="preview-pill">
@@ -823,7 +838,7 @@
 									<select name="quantity" bind:value={selectedBundle}>
 										{#each featuredCheckoutOffers as offer (offer.quantity)}
 											<option value={offer.quantity}>
-												{bundleLabels[String(offer.quantity)] ?? `${offer.quantity} Holographs`} · {offer.priceLabel}
+												{offer.label} · {offer.priceLabel}
 											</option>
 										{/each}
 									</select>

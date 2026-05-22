@@ -314,7 +314,7 @@
 						<span>Bundle</span>
 						<select name="quantity" bind:value={selectedBundle}>
 							{#each checkoutOffers as offer (offer.quantity)}
-								<option value={offer.quantity}>{offer.quantity} for {offer.priceLabel}</option>
+								<option value={offer.quantity}>{offer.label} · {offer.priceLabel}</option>
 							{/each}
 						</select>
 					</label>
@@ -322,14 +322,14 @@
 						<button
 							class="button-primary"
 							type="submit"
-							disabled={
-								baseUploadState === 'uploading' ||
+							disabled={baseUploadState === 'uploading' ||
 								overlayUploadState === 'uploading' ||
 								overlayProcessing ||
-								hasUnsavedDesign
-							}
+								hasUnsavedDesign}
 						>
-							{baseUploadState === 'uploading' || overlayUploadState === 'uploading' || overlayProcessing
+							{baseUploadState === 'uploading' ||
+							overlayUploadState === 'uploading' ||
+							overlayProcessing
 								? 'Saving design...'
 								: 'Buy this design'}
 						</button>
@@ -686,21 +686,22 @@
 							<button
 								class="button-primary"
 								type="submit"
-								disabled={
-									baseUploadState === 'uploading' ||
+								disabled={baseUploadState === 'uploading' ||
 									overlayUploadState === 'uploading' ||
 									overlayProcessing ||
-									hasUnsavedDesign
-								}
+									hasUnsavedDesign}
 							>
-								{baseUploadState === 'uploading' || overlayUploadState === 'uploading' || overlayProcessing
+								{baseUploadState === 'uploading' ||
+								overlayUploadState === 'uploading' ||
+								overlayProcessing
 									? 'Saving design...'
 									: 'Buy this design'}
 							</button>
 						</form>
 						{#if hasUnsavedDesign}
 							<p class="upload-note checkout-note">
-								Finish cloud save before ordering so your uploaded design is attached to the payment.
+								Finish cloud save before ordering so your uploaded design is attached to the
+								payment.
 							</p>
 						{/if}
 						<a class="button-secondary" href="/contact">Contact</a>

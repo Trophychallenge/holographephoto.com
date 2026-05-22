@@ -3,28 +3,38 @@
 	import { onMount } from 'svelte';
 	import HomeHero from '$lib/components/home/HomeHero.svelte';
 	import PreviewBuilder from '$lib/components/home/PreviewBuilder.svelte';
+	import { checkoutOffers } from '$lib/pricing';
 
 	let isTikTokVisitor = $state(false);
 	const initialOrderOpen = $derived(page.url.searchParams.get('order') === '1');
+	const initialBundle = $derived(
+		checkoutOffers.some((offer) => String(offer.quantity) === page.url.searchParams.get('package'))
+			? page.url.searchParams.get('package') || undefined
+			: undefined
+	);
+	const initialPrintSize = $derived(page.url.searchParams.get('size') || undefined);
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
-		const source = `${params.get('utm_source') ?? ''} ${params.get('ref') ?? ''} ${document.referrer}`.toLowerCase();
+		const source =
+			`${params.get('utm_source') ?? ''} ${params.get('ref') ?? ''} ${document.referrer}`.toLowerCase();
 		isTikTokVisitor = source.includes('tiktok');
 	});
 </script>
 
 <svelte:head>
 	<title>Holograph | Your Favorite Photo, Reimagined In Light</title>
-	<meta
-		name="description"
-		content="Upload a photo and turn it into a light-catching keepsake."
-	/>
+	<meta name="description" content="Upload a photo and turn it into a light-catching keepsake." />
 </svelte:head>
 
 <div class="page-shell">
 	<HomeHero {isTikTokVisitor} />
-	<PreviewBuilder {isTikTokVisitor} initialOpen={initialOrderOpen} />
+	<PreviewBuilder
+		{isTikTokVisitor}
+		initialOpen={initialOrderOpen}
+		{initialBundle}
+		{initialPrintSize}
+	/>
 </div>
 
 <style>
@@ -61,5 +71,4 @@
 			radial-gradient(circle at 80% 42%, rgba(198, 213, 255, 0.03), transparent 14%);
 		opacity: 0.52;
 	}
-
 </style>
