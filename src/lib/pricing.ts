@@ -224,15 +224,17 @@ export const packageTiers: PackageTier[] = [
 		description:
 			'For events, creator kits, boutique gifting, or larger orders that need a cleaner per-piece price.',
 		included: [
-			'10+ custom holographs',
-			'Best for bulk or mixed requests',
-			'Free shipping',
-			'Handled by custom order'
+			'10 custom holographs',
+			'Best for one design in a larger run',
+			'Live preview before checkout',
+			'Free shipping'
 		],
 		sizeOptions: ['5x7', '8x10', 'Mixed sizes'],
 		upsells: ['Rush production', 'Extra units', 'Branded insert card'],
 		perceivedValue: '$145–$180',
-		studioFlow: 'custom-order'
+		studioFlow: 'single-design',
+		checkoutQuantity: 10,
+		checkoutPrintSize: 'Mixed sizes'
 	},
 	{
 		id: 'large-format',

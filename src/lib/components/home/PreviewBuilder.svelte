@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { removeLightBackgroundFromFile } from '$lib/browser/overlay-tools';
-	import { featuredCheckoutOffers, getCheckoutOffer } from '$lib/pricing';
+	import { checkoutOffers, getCheckoutOffer } from '$lib/pricing';
 	import { orderStudioOpen } from '$lib/stores/order-studio';
 
 	type TextStyle = 'serif' | 'handwritten' | 'clean' | 'modern' | 'classic';
@@ -58,7 +58,7 @@
 	let giftMode = $state(false);
 	let giftMessage = $state('');
 	let shipDirect = $state(true);
-	let selectedBundle = $state(String(featuredCheckoutOffers[0]?.quantity ?? 1));
+	let selectedBundle = $state(String(checkoutOffers[0]?.quantity ?? 1));
 	let checkoutError = $state('');
 	let checkoutLoading = $state(false);
 	let orderPanelOpen = $state(false);
@@ -125,7 +125,7 @@
 
 	$effect(() => {
 		if (!initialBundle) return;
-		if (!featuredCheckoutOffers.some((offer) => String(offer.quantity) === initialBundle)) return;
+		if (!checkoutOffers.some((offer) => String(offer.quantity) === initialBundle)) return;
 		selectedBundle = initialBundle;
 	});
 
@@ -312,7 +312,25 @@
 		const offsetY = (baseY / 100) * overflowY;
 		context.fillStyle = '#050505';
 		context.fillRect(card.x, card.y, card.width, card.height);
+		context.filter = `brightness(${brightness}%) saturate(${92 + shimmer * 0.22}%)`;
 		context.drawImage(image, card.x - offsetX, card.y - offsetY, drawWidth, drawHeight);
+		context.filter = 'none';
+
+		const shimmerAlpha = Math.max(0, Math.min(0.22, shimmer / 420));
+		context.globalCompositeOperation = 'screen';
+		const shimmerGradient = context.createLinearGradient(
+			card.x,
+			card.y,
+			card.x + card.width,
+			card.y + card.height
+		);
+		shimmerGradient.addColorStop(0, `rgba(255, 238, 208, ${shimmerAlpha * 0.3})`);
+		shimmerGradient.addColorStop(0.45, `rgba(255, 255, 255, ${shimmerAlpha})`);
+		shimmerGradient.addColorStop(0.7, `rgba(210, 228, 255, ${shimmerAlpha * 0.62})`);
+		shimmerGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+		context.fillStyle = shimmerGradient;
+		context.fillRect(card.x, card.y, card.width, card.height);
+		context.globalCompositeOperation = 'source-over';
 		context.restore();
 
 		context.save();
@@ -741,6 +759,31 @@
 								{#if !uploadReady}
 									<p class="tool-note">Upload a photo first to fine-tune the crop.</p>
 								{/if}
+								<details class="studio-note-details">
+									<summary>Light finish</summary>
+									<div class="slider-grid compact-grid effect-grid">
+										<label>
+											<span>Brightness</span>
+											<input
+												type="range"
+												min="85"
+												max="120"
+												bind:value={brightness}
+												disabled={!uploadReady}
+											/>
+										</label>
+										<label>
+											<span>Shimmer</span>
+											<input
+												type="range"
+												min="0"
+												max="100"
+												bind:value={shimmer}
+												disabled={!uploadReady}
+											/>
+										</label>
+									</div>
+								</details>
 							</div>
 
 							<div class="studio-tool-card">
@@ -808,7 +851,17 @@
 										/>
 									</label>
 									<label>
-										<span>Height</span>
+										<span>Left / right</span>
+										<input
+											type="range"
+											min="10"
+											max="90"
+											bind:value={overlayX}
+											disabled={!uploadedOverlaySrc}
+										/>
+									</label>
+									<label>
+										<span>Up / down</span>
 										<input
 											type="range"
 											min="30"
@@ -851,7 +904,7 @@
 								<label class="checkout-pick compact-pick">
 									<span>Set</span>
 									<select name="quantity" bind:value={selectedBundle}>
-										{#each featuredCheckoutOffers as offer (offer.quantity)}
+										{#each checkoutOffers as offer (offer.quantity)}
 											<option value={offer.quantity}>
 												{offer.label} · {offer.priceLabel}
 											</option>
