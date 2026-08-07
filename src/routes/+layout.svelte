@@ -13,6 +13,7 @@
 	const navItems = [
 		{ href: '/', label: 'Home' },
 		{ href: '/prices', label: 'Pricing' },
+		{ href: '/games/rival-quest', label: 'Games' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
 </script>
@@ -33,7 +34,7 @@
 		<div class="header-cta-shell">
 			<a
 				class="button-primary header-cta"
-				href={`${resolve('/')}?order=1#preview-builder`}
+				href={resolve('/?order=1#preview-builder')}
 				onclick={(event) => {
 					if (window.location.pathname === '/') {
 						event.preventDefault();
@@ -64,6 +65,7 @@
 		</div>
 		<div class="footer-links">
 			<a href={resolve('/prices')}>Pricing</a>
+			<a href={resolve('/games/rival-quest')}>Games</a>
 			<a href={resolve('/contact')}>Contact</a>
 		</div>
 		<div>

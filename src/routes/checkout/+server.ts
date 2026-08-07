@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getCheckoutOffer, parseCheckoutQuantity } from '$lib/pricing';
+import { rivalQuestProduct } from '$lib/products/rival-quest';
 
 function jsonResponse(body: Record<string, string>, status = 200) {
 	return new Response(JSON.stringify(body), {
@@ -57,6 +58,65 @@ function buildCheckoutParams({
 	return params;
 }
 
+export function _buildRivalQuestCheckoutParams(origin: string) {
+	const params = new URLSearchParams();
+
+	params.set('mode', 'payment');
+	params.set('success_url', `${origin}/games/rival-quest/success?session_id={CHECKOUT_SESSION_ID}`);
+	params.set('cancel_url', `${origin}/games/rival-quest?checkout=cancelled`);
+	params.set('allow_promotion_codes', 'true');
+	params.set(
+		'custom_text[submit][message]',
+		'After checkout, your verified download link will appear on the order confirmation page.'
+	);
+	params.set('line_items[0][quantity]', '1');
+	params.set('line_items[0][price_data][currency]', rivalQuestProduct.currency);
+	params.set('line_items[0][price_data][unit_amount]', String(rivalQuestProduct.priceCents));
+	params.set('line_items[0][price_data][product_data][name]', rivalQuestProduct.name);
+	params.set(
+		'line_items[0][price_data][product_data][description]',
+		rivalQuestProduct.checkoutDescription
+	);
+	params.set('metadata[product]', rivalQuestProduct.metadataProduct);
+	params.set('metadata[product_type]', rivalQuestProduct.productType);
+	params.set('metadata[delivery]', 'verified-download');
+	params.set('metadata[shipping_required]', 'false');
+	params.set('metadata[download_filename]', rivalQuestProduct.downloadFilename);
+	params.set('metadata[total_amount_cents]', String(rivalQuestProduct.priceCents));
+
+	return params;
+}
+
+async function createStripeCheckoutSession({
+	fetch,
+	params
+}: {
+	fetch: typeof globalThis.fetch;
+	params: URLSearchParams;
+}) {
+	const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+		method: 'POST',
+		headers: {
+			Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		body: params
+	});
+
+	if (!stripeResponse.ok) {
+		const errorBody = await stripeResponse.text();
+		throw new Response(`Stripe checkout error: ${errorBody}`, { status: stripeResponse.status });
+	}
+
+	const session = (await stripeResponse.json()) as { url?: string };
+
+	if (!session.url) {
+		throw new Response('Stripe did not return a checkout URL.', { status: 502 });
+	}
+
+	return session.url;
+}
+
 export const POST: RequestHandler = async ({ request, fetch, url }) => {
 	const wantsJson =
 		request.headers.get('x-holograph-ajax') === '1' ||
@@ -70,6 +130,29 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 	}
 
 	const formData = await request.formData();
+	const product = String(formData.get('product') ?? '');
+
+	if (product === rivalQuestProduct.id) {
+		try {
+			const checkoutUrl = await createStripeCheckoutSession({
+				fetch,
+				params: _buildRivalQuestCheckoutParams(url.origin)
+			});
+
+			if (wantsJson) {
+				return jsonResponse({ url: checkoutUrl });
+			}
+
+			throw redirect(303, checkoutUrl);
+		} catch (error) {
+			if (error instanceof Response) {
+				return wantsJson ? jsonResponse({ error: await error.text() }, error.status) : error;
+			}
+
+			throw error;
+		}
+	}
+
 	const quantity = parseCheckoutQuantity(formData.get('quantity'));
 	const baseBlobUrl = String(formData.get('base_blob_url') ?? '');
 	const baseBlobPathname = String(formData.get('base_blob_pathname') ?? '');
@@ -122,42 +205,33 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 			: new Response(message, { status: 400 });
 	}
 
-	const stripeResponse = await fetch('https://api.stripe.com/v1/checkout/sessions', {
-		method: 'POST',
-		headers: {
-			Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
-		body: buildCheckoutParams({
-			origin: url.origin,
-			quantity,
-			totalAmountCents: offer.totalAmountCents,
-			offerLabel: offer.checkoutName,
-			offerDescription: offer.checkoutDescription,
-			metadata
-		})
-	});
+	let checkoutUrl: string;
+	try {
+		checkoutUrl = await createStripeCheckoutSession({
+			fetch,
+			params: buildCheckoutParams({
+				origin: url.origin,
+				quantity,
+				totalAmountCents: offer.totalAmountCents,
+				offerLabel: offer.checkoutName,
+				offerDescription: offer.checkoutDescription,
+				metadata
+			})
+		});
+	} catch (error) {
+		if (error instanceof Response) {
+			const message = await error.text();
+			return wantsJson
+				? jsonResponse({ error: message }, error.status)
+				: new Response(message, { status: error.status });
+		}
 
-	if (!stripeResponse.ok) {
-		const errorBody = await stripeResponse.text();
-		const message = `Stripe checkout error: ${errorBody}`;
-		return wantsJson
-			? jsonResponse({ error: message }, stripeResponse.status)
-			: new Response(message, { status: stripeResponse.status });
-	}
-
-	const session = (await stripeResponse.json()) as { url?: string };
-
-	if (!session.url) {
-		const message = 'Stripe did not return a checkout URL.';
-		return wantsJson
-			? jsonResponse({ error: message }, 502)
-			: new Response(message, { status: 502 });
+		throw error;
 	}
 
 	if (wantsJson) {
-		return jsonResponse({ url: session.url });
+		return jsonResponse({ url: checkoutUrl });
 	}
 
-	throw redirect(303, session.url);
+	throw redirect(303, checkoutUrl);
 };
