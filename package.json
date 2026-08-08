@@ -4,8 +4,11 @@
 	"version": "0.0.1",
 	"type": "module",
 	"dependencies": {
+		"@neondatabase/serverless": "^1.1.0",
 		"@vercel/analytics": "^2.0.1",
-		"@vercel/blob": "^2.7.0"
+		"@vercel/blob": "^2.7.0",
+		"drizzle-orm": "^0.45.2",
+		"pdf-lib": "^1.17.1"
 	},
 	"scripts": {
 		"dev": "vite dev",
@@ -14,6 +17,8 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test": "vitest run"
@@ -28,6 +33,7 @@
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.18",
 		"@types/node": "^24",
+		"drizzle-kit": "^0.31.10",
 		"eslint": "^9.39.2",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.14.0",

@@ -327,8 +327,8 @@
 					<p class="eyebrow">Digital download</p>
 					<strong>{rivalQuestProduct.priceLabel}</strong>
 					<p>
-						Preview note: checkout records your builder choices. Dynamic custom PDF assembly is the
-						next implementation step; this preview still delivers the existing private ZIP.
+						Checkout records your builder choices and the protected download creates your customized
+						printable PDF after payment.
 					</p>
 				</div>
 				<button class="button-primary buy-button" type="submit">

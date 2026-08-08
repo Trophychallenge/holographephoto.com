@@ -1,8 +1,5 @@
-import { rivalQuestProduct } from '$lib/products/rival-quest';
-import {
-	getRivalQuestDownload,
-	verifyRivalQuestCheckoutSession
-} from '$lib/server/rival-quest-delivery';
+import { verifyRivalQuestCheckoutSession } from '$lib/server/rival-quest-delivery';
+import { generateRivalQuestPdf, getRivalQuestPdfFilename } from '$lib/server/rival-quest-pdf';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ fetch, url }) => {
@@ -22,19 +19,24 @@ export const GET: RequestHandler = async ({ fetch, url }) => {
 	}
 
 	try {
-		const source = await getRivalQuestDownload();
+		const pdfBytes = await generateRivalQuestPdf(verification.config);
 
-		return new Response(source.stream, {
+		const body = pdfBytes.buffer.slice(
+			pdfBytes.byteOffset,
+			pdfBytes.byteOffset + pdfBytes.byteLength
+		) as ArrayBuffer;
+
+		return new Response(body, {
 			headers: {
-				'content-type': source.blob.contentType || 'application/zip',
-				'content-disposition': `attachment; filename="${rivalQuestProduct.downloadFilename}"`,
+				'content-type': 'application/pdf',
+				'content-disposition': `attachment; filename="${getRivalQuestPdfFilename(verification.config)}"`,
 				'cache-control': 'private, no-store',
 				'x-content-type-options': 'nosniff'
 			}
 		});
 	} catch {
 		return new Response(
-			'Your payment is verified, but the download file is temporarily unavailable. Email admin@holographephoto.com with your Stripe receipt email for help.',
+			'Your payment is verified, but the customized PDF is temporarily unavailable. Email admin@holographephoto.com with your Stripe receipt email for help.',
 			{ status: 503 }
 		);
 	}

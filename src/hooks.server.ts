@@ -46,7 +46,10 @@ function isAuthorized(header: string | null, expectedUsername: string, expectedP
 }
 
 export const handle: Handle = async ({ event, resolve }) => {
-	if (!event.url.pathname.startsWith('/admin/orders')) {
+	if (
+		!event.url.pathname.startsWith('/admin/orders') &&
+		!event.url.pathname.startsWith('/admin/inventory')
+	) {
 		return resolve(event);
 	}
 
@@ -61,7 +64,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return unauthorizedResponse('Admin order access is not configured.', 503);
 	}
 
-	if (!isAuthorized(event.request.headers.get('authorization'), expectedUsername, expectedPassword)) {
+	if (
+		!isAuthorized(event.request.headers.get('authorization'), expectedUsername, expectedPassword)
+	) {
 		return unauthorizedResponse('Authentication required.');
 	}
 

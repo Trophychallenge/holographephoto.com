@@ -2,7 +2,6 @@
 	import { dev } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
-	import { orderStudioOpen } from '$lib/stores/order-studio';
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 
@@ -12,16 +11,17 @@
 
 	const navItems = [
 		{ href: '/', label: 'Home' },
+		{ href: '/collections/halloween', label: 'Halloween Edition' },
 		{ href: '/prices', label: 'Pricing' },
 		{ href: '/games/rival-quest', label: 'Games' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
-	const startOrderHref = `${resolve('/')}?order=1#preview-builder`;
+	const startOrderHref = resolve('/customize');
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>Holograph</title>
+	<title>Holographe</title>
 	<meta name="description" content="Turn a favorite photo into a warm, light-catching keepsake." />
 </svelte:head>
 
@@ -33,18 +33,7 @@
 			</span>
 		</a>
 		<div class="header-cta-shell">
-			<a
-				class="button-primary header-cta"
-				href={startOrderHref}
-				onclick={(event) => {
-					if (window.location.pathname === '/') {
-						event.preventDefault();
-						orderStudioOpen.set(true);
-					}
-				}}
-			>
-				Start Order
-			</a>
+			<a class="button-primary header-cta" href={startOrderHref}> Start Order </a>
 		</div>
 		<nav class="site-nav" aria-label="Main navigation">
 			{#each navItems as item (item.href)}
@@ -65,6 +54,7 @@
 			<p class="footer-copy">Custom photo keepsakes made to feel easy to order and good to gift.</p>
 		</div>
 		<div class="footer-links">
+			<a href={resolve('/collections/halloween')}>Halloween Edition</a>
 			<a href={resolve('/prices')}>Pricing</a>
 			<a href={resolve('/games/rival-quest')}>Games</a>
 			<a href={resolve('/contact')}>Contact</a>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import { orderStudioOpen } from '$lib/stores/order-studio';
 
@@ -17,7 +18,7 @@
 				<div class="hero-copy-top">
 					{#if !isTikTokVisitor}
 						<div class="hero-logo-shell">
-							<img class="hero-logo" src="/holographe/brand-wordmark.png" alt="Holograph logo" />
+							<img class="hero-logo" src="/holographe/brand-wordmark.png" alt="Holographe logo" />
 						</div>
 					{/if}
 				</div>
@@ -85,11 +86,7 @@
 				</p>
 
 				<div class="actions">
-					<a
-						class="button-primary"
-						href="/?order=1#preview-builder"
-						onclick={() => orderStudioOpen.set(true)}
-					>
+					<a class="button-primary" href={resolve('/')} onclick={() => orderStudioOpen.set(true)}>
 						Upload Your Photo
 					</a>
 					<a class="button-secondary" href="#preview-builder">See the preview</a>

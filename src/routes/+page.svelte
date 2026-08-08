@@ -1,40 +1,17 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import HomeHero from '$lib/components/home/HomeHero.svelte';
-	import PreviewBuilder from '$lib/components/home/PreviewBuilder.svelte';
-	import { checkoutOffers } from '$lib/pricing';
-
-	let isTikTokVisitor = $state(false);
-	const initialOrderOpen = $derived(page.url.searchParams.get('order') === '1');
-	const initialBundle = $derived(
-		checkoutOffers.some((offer) => String(offer.quantity) === page.url.searchParams.get('package'))
-			? page.url.searchParams.get('package') || undefined
-			: undefined
-	);
-	const initialPrintSize = $derived(page.url.searchParams.get('size') || undefined);
-
-	onMount(() => {
-		const params = new URLSearchParams(window.location.search);
-		const source =
-			`${params.get('utm_source') ?? ''} ${params.get('ref') ?? ''} ${document.referrer}`.toLowerCase();
-		isTikTokVisitor = source.includes('tiktok');
-	});
+	import HalloweenFeature from '$lib/components/home/HalloweenFeature.svelte';
 </script>
 
 <svelte:head>
-	<title>Holograph | Your Favorite Photo, Reimagined In Light</title>
-	<meta name="description" content="Upload a photo and turn it into a light-catching keepsake." />
+	<title>The Holographe Halloween Collection | Holographe</title>
+	<meta
+		name="description"
+		content="Limited seasonal magnetic decor designed to come alive in the light."
+	/>
 </svelte:head>
 
 <div class="page-shell">
-	<HomeHero {isTikTokVisitor} />
-	<PreviewBuilder
-		{isTikTokVisitor}
-		initialOpen={initialOrderOpen}
-		{initialBundle}
-		{initialPrintSize}
-	/>
+	<HalloweenFeature />
 </div>
 
 <style>

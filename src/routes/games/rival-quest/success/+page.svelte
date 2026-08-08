@@ -42,7 +42,7 @@
 				<h1>Your Rival Quest download is ready.</h1>
 				<p>
 					We verified your Stripe payment for {data.customerEmail}. Use the button below to download
-					the original ZIP file.
+					your customized printable PDF.
 				</p>
 				{#if data.config}
 					<div class="download-summary">
@@ -56,15 +56,8 @@
 						{/if}
 					</div>
 				{/if}
-				<p class="preview-note">
-					Preview note: customized PDF assembly is not live yet. This button currently delivers the
-					existing Rival Quest ZIP while your validated builder choices are recorded with the order.
-				</p>
-
 				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-				<a class="button-primary" href={downloadHref}>
-					Download {data.product.downloadFilename}
-				</a>
+				<a class="button-primary" href={downloadHref}> Download customized PDF </a>
 			{:else}
 				<h1>We could not verify this download yet.</h1>
 				<p>{data.message}</p>
@@ -135,13 +128,6 @@
 		width: 100%;
 		border-radius: 0.85rem;
 		background: rgba(244, 193, 124, 0.14);
-	}
-
-	.preview-note {
-		padding: 0.8rem 0.9rem;
-		border: 1px solid rgba(244, 193, 124, 0.28);
-		border-radius: 0.9rem;
-		background: rgba(244, 193, 124, 0.08);
 	}
 
 	@media (max-width: 640px) {

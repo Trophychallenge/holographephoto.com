@@ -26,6 +26,27 @@ PUSHOVER_USER_KEY=pushover_user_key_replace_me
 
 `BLOB_READ_WRITE_TOKEN` is required for storing uploaded customer design files in Vercel Blob so they can be tied to checkout metadata.
 `STRIPE_WEBHOOK_SECRET` is required for the `/api/stripe-webhook` endpoint so successful Checkout payments are recorded server-side.
+
+## Halloween Edition inventory
+
+Halloween inventory uses Neon PostgreSQL when configured. It tracks both per-SKU limits and the private collection-wide production capacity; no stock counts are exposed to customers.
+
+Required server-side variables:
+
+```bash
+DATABASE_URL=postgresql://pooled_neon_connection_string_here
+DIRECT_DATABASE_URL=postgresql://direct_neon_connection_string_here
+INVENTORY_CRON_SECRET=replace_with_a_long_random_secret
+```
+
+Generate migrations with `npm run db:generate`. Apply the reviewed migration later with
+`npm run db:migrate`; do not run that command until Neon is configured and the migration has been approved.
+
+`POST /api/internal/inventory/cleanup` releases expired reservations and requires
+`Authorization: Bearer $INVENTORY_CRON_SECRET`. A future Vercel Cron job may call this endpoint;
+it is intentionally not configured by this repository.
+
+The owner-only `/admin/inventory` route uses the same Basic Auth credentials as `/admin/orders`.
 `RIVAL_QUEST_BLOB_PATHNAME` must point to `Rival_Quest_Digital_Party_Game.zip` inside a private Vercel Blob store; never place that ZIP in `static/` or commit it to Git.
 `RIVAL_QUEST_BLOB_STORE_ID` is optional when Vercel OIDC/project Blob configuration already resolves the intended private store, and is useful when the project has more than one Blob store.
 `RIVAL_QUEST_BLOB_READ_WRITE_TOKEN` is a preview-only fallback for the dedicated private Rival Quest store when Vercel cannot connect the store through OIDC because another Blob store already owns the default `BLOB_READ_WRITE_TOKEN` variable.

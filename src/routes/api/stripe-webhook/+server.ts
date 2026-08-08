@@ -8,10 +8,12 @@ import {
 } from '$lib/server/stripe';
 import { storePaidOrder } from '$lib/server/orders';
 import { sendPushoverOrderAlert } from '$lib/server/pushover';
+import { fulfillReservation, releaseReservationForExpiredCheckout } from '$lib/server/inventory';
 
 const HANDLED_EVENT_TYPES = new Set([
 	'checkout.session.completed',
-	'checkout.session.async_payment_succeeded'
+	'checkout.session.async_payment_succeeded',
+	'checkout.session.expired'
 ]);
 
 export const POST: RequestHandler = async ({ request, fetch }) => {
@@ -45,8 +47,18 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 
 	try {
 		const session = await fetchCheckoutSession(fetch, sessionId);
+		const hasInventoryReservation = Boolean(session.metadata?.inventory_reservation_id);
 
-		if (session.payment_status === 'paid' || event.type === 'checkout.session.async_payment_succeeded') {
+		if (event.type === 'checkout.session.expired') {
+			if (hasInventoryReservation) await releaseReservationForExpiredCheckout(sessionId);
+			return new Response('OK', { status: 200 });
+		}
+
+		if (
+			session.payment_status === 'paid' ||
+			event.type === 'checkout.session.async_payment_succeeded'
+		) {
+			if (hasInventoryReservation) await fulfillReservation(sessionId);
 			const stored = await storePaidOrder({ session, event });
 
 			// Only notify once for a newly stored paid order so webhook retries don't spam the phone.
