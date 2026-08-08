@@ -3,6 +3,11 @@ import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getCheckoutOffer, parseCheckoutQuantity } from '$lib/pricing';
 import { rivalQuestProduct } from '$lib/products/rival-quest';
+import {
+	getRivalQuestMetadata,
+	parseRivalQuestConfiguration,
+	type RivalQuestConfiguration
+} from '$lib/products/rival-quest-builder';
 
 function jsonResponse(body: Record<string, string>, status = 200) {
 	return new Response(JSON.stringify(body), {
@@ -58,8 +63,9 @@ function buildCheckoutParams({
 	return params;
 }
 
-export function _buildRivalQuestCheckoutParams(origin: string) {
+export function _buildRivalQuestCheckoutParams(origin: string, config: RivalQuestConfiguration) {
 	const params = new URLSearchParams();
+	const metadata = getRivalQuestMetadata(config);
 
 	params.set('mode', 'payment');
 	params.set('success_url', `${origin}/games/rival-quest/success?session_id={CHECKOUT_SESSION_ID}`);
@@ -83,6 +89,9 @@ export function _buildRivalQuestCheckoutParams(origin: string) {
 	params.set('metadata[shipping_required]', 'false');
 	params.set('metadata[download_filename]', rivalQuestProduct.downloadFilename);
 	params.set('metadata[total_amount_cents]', String(rivalQuestProduct.priceCents));
+	for (const [key, value] of Object.entries(metadata)) {
+		params.set(`metadata[${key}]`, value);
+	}
 
 	return params;
 }
@@ -133,10 +142,17 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 	const product = String(formData.get('product') ?? '');
 
 	if (product === rivalQuestProduct.id) {
+		const configResult = parseRivalQuestConfiguration(Object.fromEntries(formData));
+		if (!configResult.ok) {
+			return wantsJson
+				? jsonResponse({ error: configResult.message }, 400)
+				: new Response(configResult.message, { status: 400 });
+		}
+
 		try {
 			const checkoutUrl = await createStripeCheckoutSession({
 				fetch,
-				params: _buildRivalQuestCheckoutParams(url.origin)
+				params: _buildRivalQuestCheckoutParams(url.origin, configResult.config)
 			});
 
 			if (wantsJson) {

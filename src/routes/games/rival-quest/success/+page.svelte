@@ -1,11 +1,19 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { track } from '@vercel/analytics/sveltekit';
+	import {
+		getRivalQuestSummary,
+		rivalQuestAgeRanges,
+		rivalQuestPartyLengths,
+		rivalQuestPlayerCounts,
+		rivalQuestSettings
+	} from '$lib/products/rival-quest-builder';
 
 	let { data } = $props();
 	const downloadHref = $derived(
 		`${resolve('/games/rival-quest/download')}?session_id=${encodeURIComponent(data.sessionId)}`
 	);
+	const summary = $derived(data.config ? getRivalQuestSummary(data.config) : '');
 
 	$effect(() => {
 		if (data.verified) {
@@ -36,7 +44,24 @@
 					We verified your Stripe payment for {data.customerEmail}. Use the button below to download
 					the original ZIP file.
 				</p>
+				{#if data.config}
+					<div class="download-summary">
+						<strong>{summary}</strong>
+						<span>{rivalQuestSettings[data.config.setting].label}</span>
+						<span>{rivalQuestAgeRanges[data.config.ageRange]}</span>
+						<span>{rivalQuestPlayerCounts[data.config.playerCount]} players</span>
+						<span>{rivalQuestPartyLengths[data.config.partyLength]}</span>
+						{#if data.config.partyName}
+							<span>{data.config.partyName}</span>
+						{/if}
+					</div>
+				{/if}
+				<p class="preview-note">
+					Preview note: customized PDF assembly is not live yet. This button currently delivers the
+					existing Rival Quest ZIP while your validated builder choices are recorded with the order.
+				</p>
 
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 				<a class="button-primary" href={downloadHref}>
 					Download {data.product.downloadFilename}
 				</a>
@@ -90,6 +115,33 @@
 
 	.success-card .button-primary {
 		width: fit-content;
+	}
+
+	.download-summary {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.download-summary strong,
+	.download-summary span {
+		padding: 0.55rem 0.75rem;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.08);
+		color: #f8f4ee;
+	}
+
+	.download-summary strong {
+		width: 100%;
+		border-radius: 0.85rem;
+		background: rgba(244, 193, 124, 0.14);
+	}
+
+	.preview-note {
+		padding: 0.8rem 0.9rem;
+		border: 1px solid rgba(244, 193, 124, 0.28);
+		border-radius: 0.9rem;
+		background: rgba(244, 193, 124, 0.08);
 	}
 
 	@media (max-width: 640px) {

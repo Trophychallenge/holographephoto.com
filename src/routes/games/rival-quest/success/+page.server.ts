@@ -1,6 +1,9 @@
 import { rivalQuestProduct } from '$lib/products/rival-quest';
+import type { RivalQuestConfiguration } from '$lib/products/rival-quest-builder';
 import { verifyRivalQuestCheckoutSession } from '$lib/server/rival-quest-delivery';
 import type { PageServerLoad } from './$types';
+
+const emptyConfig = null satisfies RivalQuestConfiguration | null;
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
 	const sessionId = url.searchParams.get('session_id');
@@ -15,6 +18,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 				message: verification.message,
 				sessionId: sessionId ?? '',
 				customerEmail: '',
+				config: emptyConfig,
 				product: rivalQuestProduct
 			};
 		}
@@ -25,6 +29,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 			message: '',
 			sessionId: verification.session.id,
 			customerEmail: verification.customerEmail,
+			config: verification.config,
 			product: rivalQuestProduct
 		};
 	} catch {
@@ -35,6 +40,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 				'We received your return from Stripe, but checkout verification is temporarily unavailable.',
 			sessionId: sessionId ?? '',
 			customerEmail: '',
+			config: emptyConfig,
 			product: rivalQuestProduct
 		};
 	}

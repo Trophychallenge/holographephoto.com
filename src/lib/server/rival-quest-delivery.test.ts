@@ -28,7 +28,16 @@ const paidSession = {
 		email: 'customer@example.com'
 	},
 	metadata: {
-		product: rivalQuestProduct.metadataProduct
+		product: rivalQuestProduct.metadataProduct,
+		builder_version: 'party-builder-mvp-1',
+		setting: 'pool',
+		team_one: 'unicorns',
+		team_two: 'dragons',
+		age_range: 'ages-7-9',
+		player_count: '9-14',
+		party_length: 'full',
+		party_name: 'Ava Birthday Bash',
+		configuration_summary: 'Unicorn Herd vs. Dragon Clan - Pool Party Edition'
 	},
 	payment_status: 'paid',
 	status: 'complete'
@@ -50,6 +59,11 @@ describe('Rival Quest checkout verification', () => {
 		expect(result.ok).toBe(true);
 		if (result.ok) {
 			expect(result.customerEmail).toBe('customer@example.com');
+			expect(result.config).toMatchObject({
+				setting: 'pool',
+				teamOne: 'unicorns',
+				teamTwo: 'dragons'
+			});
 		}
 	});
 
@@ -69,6 +83,21 @@ describe('Rival Quest checkout verification', () => {
 		const result = verifyRivalQuestCheckoutSessionRecord({
 			...paidSession,
 			metadata: { product: 'custom-holographic-photo-magnet' }
+		});
+
+		expect(result).toMatchObject({
+			ok: false,
+			status: 403
+		});
+	});
+
+	it('rejects paid sessions with invalid builder metadata', () => {
+		const result = verifyRivalQuestCheckoutSessionRecord({
+			...paidSession,
+			metadata: {
+				...paidSession.metadata,
+				team_two: 'unicorns'
+			}
 		});
 
 		expect(result).toMatchObject({

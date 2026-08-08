@@ -1,6 +1,10 @@
 import { get } from '@vercel/blob';
 import { env } from '$env/dynamic/private';
 import { rivalQuestProduct, isRivalQuestMetadata } from '$lib/products/rival-quest';
+import {
+	parseRivalQuestMetadata,
+	type RivalQuestConfiguration
+} from '$lib/products/rival-quest-builder';
 import { fetchCheckoutSession, type StripeCheckoutSession } from '$lib/server/stripe';
 
 export type RivalQuestSessionVerification =
@@ -8,6 +12,7 @@ export type RivalQuestSessionVerification =
 			ok: true;
 			session: StripeCheckoutSession;
 			customerEmail: string;
+			config: RivalQuestConfiguration;
 	  }
 	| {
 			ok: false;
@@ -60,10 +65,20 @@ export function verifyRivalQuestCheckoutSessionRecord(
 		};
 	}
 
+	const configResult = parseRivalQuestMetadata(session.metadata);
+	if (!configResult.ok) {
+		return {
+			ok: false,
+			status: 403,
+			message: configResult.message
+		};
+	}
+
 	return {
 		ok: true,
 		session,
-		customerEmail
+		customerEmail,
+		config: configResult.config
 	};
 }
 
@@ -95,9 +110,7 @@ export async function getRivalQuestDownload() {
 		access: 'private',
 		useCache: false,
 		...(token ? { token } : {}),
-		...(!token && env.RIVAL_QUEST_BLOB_STORE_ID
-			? { storeId: env.RIVAL_QUEST_BLOB_STORE_ID }
-			: {})
+		...(!token && env.RIVAL_QUEST_BLOB_STORE_ID ? { storeId: env.RIVAL_QUEST_BLOB_STORE_ID } : {})
 	});
 
 	if (!result?.stream) {

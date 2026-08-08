@@ -13,15 +13,20 @@ vi.mock('@vercel/analytics/sveltekit', () => ({
 }));
 
 describe('/games/rival-quest page', () => {
-	it('renders the digital product landing page with previews and checkout copy', () => {
+	it('renders the Party Builder questionnaire with previews and progress', () => {
 		const { body } = render(RivalQuestPage);
 
-		expect(body).toContain('Rival Quest: Dragon Clan vs. Werewolf Pack Printable Party Game');
+		expect(body).toContain('Build your Rival Quest party');
 		expect(body).toContain('Instant Digital Download');
-		expect(body).toContain('Buy Digital Game - $9.99');
+		expect(body).toContain('Step 1 of 5');
+		expect(body).toContain('Where is your quest happening?');
+		expect(body).toContain('Indoor Party');
+		expect(body).toContain('Outdoor Adventure');
+		expect(body).toContain('Pool Party');
 		expect(body).toContain('/games/rival-quest/listing-01.jpg');
-		expect(body).toContain('Adult supervision is required');
+		expect(body).toContain('Printable kit system');
 		expect(body).toContain('Premium holographic card sets');
-		expect(body).toContain('No physical product is included');
+		expect(body).toContain('No shipping');
+		expect(body).toContain('Friendly rivals');
 	});
 });
