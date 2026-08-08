@@ -3,6 +3,9 @@
 	import { track } from '@vercel/analytics/sveltekit';
 
 	let { data } = $props();
+	const downloadHref = $derived(
+		`${resolve('/games/rival-quest/download')}?session_id=${encodeURIComponent(data.sessionId)}`
+	);
 
 	$effect(() => {
 		if (data.verified) {
@@ -34,12 +37,7 @@
 					the original ZIP file.
 				</p>
 
-				<a
-					class="button-primary"
-					href={resolve(
-						`/games/rival-quest/download?session_id=${encodeURIComponent(data.sessionId)}`
-					)}
-				>
+				<a class="button-primary" href={downloadHref}>
 					Download {data.product.downloadFilename}
 				</a>
 			{:else}

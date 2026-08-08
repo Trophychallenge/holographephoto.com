@@ -8,9 +8,12 @@ export const rivalQuestProduct = {
 	currency: 'usd',
 	productType: 'digital',
 	downloadFilename: 'Rival_Quest_Digital_Party_Game.zip',
+	blobPathname: 'digital-products/rival-quest/Rival_Quest_Digital_Party_Game.zip',
 	checkoutDescription:
 		'Instant digital download of the Rival Quest printable Dragon Clan vs. Werewolf Pack party game kit.',
-	downloadSourceEnv: 'RIVAL_QUEST_DOWNLOAD_URL',
+	downloadPathnameEnv: 'RIVAL_QUEST_BLOB_PATHNAME',
+	blobStoreIdEnv: 'RIVAL_QUEST_BLOB_STORE_ID',
+	blobTokenEnv: 'RIVAL_QUEST_BLOB_READ_WRITE_TOKEN',
 	images: [
 		{
 			src: '/games/rival-quest/listing-01.jpg',

@@ -1,3 +1,4 @@
+import { get } from '@vercel/blob';
 import { env } from '$env/dynamic/private';
 import { rivalQuestProduct, isRivalQuestMetadata } from '$lib/products/rival-quest';
 import { fetchCheckoutSession, type StripeCheckoutSession } from '$lib/server/stripe';
@@ -86,23 +87,22 @@ export async function verifyRivalQuestCheckoutSession({
 	return verifyRivalQuestCheckoutSessionRecord(session);
 }
 
-export async function fetchRivalQuestDownload(fetch: typeof globalThis.fetch) {
-	if (!env.RIVAL_QUEST_DOWNLOAD_URL) {
-		throw new Error('Missing RIVAL_QUEST_DOWNLOAD_URL.');
-	}
+export async function getRivalQuestDownload() {
+	const pathname = env.RIVAL_QUEST_BLOB_PATHNAME || rivalQuestProduct.blobPathname;
+	const token = env.RIVAL_QUEST_BLOB_READ_WRITE_TOKEN;
 
-	const response = await fetch(env.RIVAL_QUEST_DOWNLOAD_URL, {
-		headers: {
-			accept: 'application/zip',
-			...(env.RIVAL_QUEST_DOWNLOAD_BEARER_TOKEN
-				? { authorization: `Bearer ${env.RIVAL_QUEST_DOWNLOAD_BEARER_TOKEN}` }
-				: {})
-		}
+	const result = await get(pathname, {
+		access: 'private',
+		useCache: false,
+		...(token ? { token } : {}),
+		...(!token && env.RIVAL_QUEST_BLOB_STORE_ID
+			? { storeId: env.RIVAL_QUEST_BLOB_STORE_ID }
+			: {})
 	});
 
-	if (!response.ok || !response.body) {
+	if (!result?.stream) {
 		throw new Error('Rival Quest download source is unavailable.');
 	}
 
-	return response;
+	return result;
 }

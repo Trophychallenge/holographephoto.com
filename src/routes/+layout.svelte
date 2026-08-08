@@ -16,6 +16,7 @@
 		{ href: '/games/rival-quest', label: 'Games' },
 		{ href: '/contact', label: 'Contact' }
 	] as const;
+	const startOrderHref = `${resolve('/')}?order=1#preview-builder`;
 </script>
 
 <svelte:head>
@@ -34,7 +35,7 @@
 		<div class="header-cta-shell">
 			<a
 				class="button-primary header-cta"
-				href={resolve('/?order=1#preview-builder')}
+				href={startOrderHref}
 				onclick={(event) => {
 					if (window.location.pathname === '/') {
 						event.preventDefault();

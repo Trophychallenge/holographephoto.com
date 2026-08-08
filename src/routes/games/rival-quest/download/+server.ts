@@ -1,6 +1,6 @@
 import { rivalQuestProduct } from '$lib/products/rival-quest';
 import {
-	fetchRivalQuestDownload,
+	getRivalQuestDownload,
 	verifyRivalQuestCheckoutSession
 } from '$lib/server/rival-quest-delivery';
 import type { RequestHandler } from './$types';
@@ -22,11 +22,11 @@ export const GET: RequestHandler = async ({ fetch, url }) => {
 	}
 
 	try {
-		const source = await fetchRivalQuestDownload(fetch);
+		const source = await getRivalQuestDownload();
 
-		return new Response(source.body, {
+		return new Response(source.stream, {
 			headers: {
-				'content-type': 'application/zip',
+				'content-type': source.blob.contentType || 'application/zip',
 				'content-disposition': `attachment; filename="${rivalQuestProduct.downloadFilename}"`,
 				'cache-control': 'private, no-store',
 				'x-content-type-options': 'nosniff'
