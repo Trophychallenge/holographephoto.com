@@ -12,6 +12,7 @@
 	const navItems = [
 		{ href: '/', label: 'Home' },
 		{ href: '/collections/halloween', label: 'Halloween Edition' },
+		{ href: '/customize', label: 'Custom' },
 		{ href: '/prices', label: 'Pricing' },
 		{ href: '/games/rival-quest', label: 'Games' },
 		{ href: '/contact', label: 'Contact' }
@@ -51,10 +52,11 @@
 			<span class="brand-badge brand-badge-soft footer-brand-badge">
 				<img class="footer-logo" src="/holographe/brand-wordmark.png" alt="Holographe logo" />
 			</span>
-			<p class="footer-copy">Custom photo keepsakes made to feel easy to order and good to gift.</p>
+			<p class="footer-copy">Photo keepsakes, seasonal decor, and creative games.</p>
 		</div>
 		<div class="footer-links">
 			<a href={resolve('/collections/halloween')}>Halloween Edition</a>
+			<a href={resolve('/customize')}>Custom Photo Magnets</a>
 			<a href={resolve('/prices')}>Pricing</a>
 			<a href={resolve('/games/rival-quest')}>Games</a>
 			<a href={resolve('/contact')}>Contact</a>

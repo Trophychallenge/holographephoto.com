@@ -72,7 +72,7 @@
 	let overlayImageElement = $state<HTMLImageElement | null>(null);
 
 	const currentBaseSrc = $derived(uploadedBaseSrc || demoAfterSrc);
-	const currentBaseAlt = $derived(uploadedBaseName || 'Holograph sample preview');
+	const currentBaseAlt = $derived(uploadedBaseName || 'Holographe sample preview');
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
 	const hasUnsavedDesign = $derived(
 		(Boolean(uploadedBaseName) && !uploadedBaseBlobUrl) ||

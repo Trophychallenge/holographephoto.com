@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>Contact | Holograph</title>
+	<title>Contact | Holographe</title>
 	<meta name="description" content="Contact us for questions, feedback, or help with your order." />
 </svelte:head>
 
@@ -9,8 +9,8 @@
 			<div class="contact-glow" aria-hidden="true"></div>
 			<div class="contact-copy">
 				<p class="eyebrow">Contact</p>
-				<h1>Need help with an order, a gift, or a custom request?</h1>
-				<p>Reach us directly.</p>
+				<h1>Questions about an order or custom request?</h1>
+				<p>We’re happy to help.</p>
 			</div>
 
 			<div class="contact-actions">
@@ -70,8 +70,12 @@
 		width: 14rem;
 		height: 14rem;
 		border-radius: 999px;
-		background:
-			radial-gradient(circle, rgba(234, 211, 182, 0.22), rgba(234, 211, 182, 0.04) 42%, transparent 68%);
+		background: radial-gradient(
+			circle,
+			rgba(234, 211, 182, 0.22),
+			rgba(234, 211, 182, 0.04) 42%,
+			transparent 68%
+		);
 		filter: blur(18px);
 		pointer-events: none;
 	}

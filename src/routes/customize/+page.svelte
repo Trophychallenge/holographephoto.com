@@ -282,10 +282,10 @@
 </script>
 
 <svelte:head>
-	<title>Customize | Holograph</title>
+	<title>Customize | Holographe</title>
 	<meta
 		name="description"
-		content="Use the Holograph customizer to upload your photo, add an overlay, preview the keepsake, and order."
+		content="Upload a photo, add an overlay, preview your keepsake, and order."
 	/>
 </svelte:head>
 

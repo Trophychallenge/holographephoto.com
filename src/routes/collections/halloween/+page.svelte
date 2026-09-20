@@ -46,10 +46,7 @@
 			<p class="eyebrow">Holographe Exclusive</p>
 			<h1>Halloween Edition</h1>
 			<p>Limited seasonal release.</p>
-			<p class="hero-editorial">
-				A limited collection of holographic magnetic decor designed to transform everyday surfaces
-				into statement Halloween installations.
-			</p>
+			<p class="hero-editorial">Holographic magnetic decor for a memorable Halloween display.</p>
 			<p class="hero-note">Watch it come alive in the light.</p>
 		</div>
 		<div class="collection-video">
@@ -60,7 +57,7 @@
 	<section class="reference-section" aria-labelledby="reference-heading">
 		<div class="reference-copy">
 			<p class="eyebrow">The collection</p>
-			<h2 id="reference-heading">Six worlds. One seasonal release.</h2>
+			<h2 id="reference-heading">Six designs. One seasonal release.</h2>
 		</div>
 		<figure class="collection-reference">
 			<img
@@ -76,7 +73,7 @@
 		<div class="section-intro">
 			<p class="eyebrow">Choose your nightmare</p>
 			<h2 id="design-heading">Choose your nightmare.</h2>
-			<p>Six limited worlds, each composed as an edition.</p>
+			<p>Choose the design that fits your night.</p>
 		</div>
 
 		<div class="design-grid" role="radiogroup" aria-label="Halloween design">
@@ -90,7 +87,6 @@
 					onclick={() => (selectedDesignSlug = design.slug)}
 				>
 					<div class="design-placeholder" aria-hidden="true">
-						<span>Holographe Exclusive</span>
 						<strong>{design.name}</strong>
 						<small>{design.placeholderLabel}</small>
 					</div>
@@ -101,16 +97,14 @@
 				</button>
 			{/each}
 		</div>
-		<p class="asset-note">
-			Individual design artwork is not yet supplied; these cards are labeled placeholders.
-		</p>
+		<p class="asset-note">Additional design artwork will be added as it becomes available.</p>
 	</section>
 
 	<section class="shop-section" aria-labelledby="format-heading">
 		<div class="section-intro">
 			<p class="eyebrow">Make it yours</p>
 			<h2 id="format-heading">Choose your edition.</h2>
-			<p>From one statement panel to the complete nine-piece installation.</p>
+			<p>Choose one panel, a 2×2 mini mural, or the full nine-piece mural.</p>
 		</div>
 
 		<div class="package-grid" role="radiogroup" aria-label="Halloween package">
@@ -188,8 +182,7 @@
 			Continue to Reserve
 		</a>
 		<p class="configuration-note">
-			Exact Stripe variant pricing is not configured yet. Your selection can be reviewed, not
-			purchased.
+			Choose your variant on the next page, then continue to secure checkout.
 		</p>
 	</section>
 </div>
@@ -322,7 +315,6 @@
 			radial-gradient(circle at 18% 75%, rgba(109, 70, 151, 0.36), transparent 32%),
 			linear-gradient(135deg, #100d16, #1c1012 62%, #090a0e);
 	}
-	.design-placeholder span,
 	.design-placeholder small {
 		font-size: 0.62rem;
 		letter-spacing: 0.13em;

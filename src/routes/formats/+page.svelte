@@ -16,11 +16,8 @@
 </script>
 
 <svelte:head>
-	<title>Personalization | Holograph</title>
-	<meta
-		name="description"
-		content="Choose the style that fits your photo best."
-	/>
+	<title>Personalization | Holographe</title>
+	<meta name="description" content="Choose the style that fits your photo best." />
 </svelte:head>
 
 <section class="section formats-page">
@@ -29,7 +26,7 @@
 			<div class="hero-copy">
 				<p class="eyebrow">Styles</p>
 				<h1>Three easy ways to personalize.</h1>
-				<p class="hero-subcopy">Clean. Sweet. Simple.</p>
+				<p class="hero-subcopy">Keep it simple, add a detail, or layer in more.</p>
 			</div>
 
 			<div class="hero-card">

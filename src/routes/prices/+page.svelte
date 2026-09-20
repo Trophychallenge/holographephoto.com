@@ -50,11 +50,8 @@
 </script>
 
 <svelte:head>
-	<title>Pricing | Holograph</title>
-	<meta
-		name="description"
-		content="Choose a Holograph package, open it like a premium selection screen, and start your order."
-	/>
+	<title>Pricing | Holographe</title>
+	<meta name="description" content="Choose a Holographe package and start your order." />
 </svelte:head>
 
 <svelte:window onkeydown={handleWindowKeydown} />
@@ -62,9 +59,9 @@
 <section class="section pricing-page">
 	<div class="pricing-stage">
 		<section class="pricing-hero glass-card">
-			<p class="eyebrow">Selection Screen</p>
+			<p class="eyebrow">Pricing</p>
 			<h1>Choose your set.</h1>
-			<p>Open a tier. Pick a size. Start your order.</p>
+			<p>Pick a set, then choose your size.</p>
 		</section>
 
 		<section class="selection-grid" aria-label="Package selection">

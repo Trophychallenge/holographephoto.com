@@ -7,6 +7,7 @@
 	const product = $derived(data.product);
 	const design = $derived(data.design);
 	const productPackage = $derived(data.productPackage);
+	const variant = $derived(data.variant);
 </script>
 
 <svelte:head>
@@ -30,10 +31,7 @@
 			<p class="lead">{product.description}</p>
 			<div class="product-notes">
 				<p>A Holographe Exclusive</p>
-				<p>
-					Designed in-house and created to transform an everyday surface into statement Halloween
-					decor.
-				</p>
+				<p>Designed in-house to make an everyday surface feel different.</p>
 				<p>Watch it come alive in the light.</p>
 				<p>Limited seasonal release.</p>
 			</div>
@@ -45,10 +43,44 @@
 					<p>Price: {productPackage.priceLabel}</p>
 					<p>Quantity: {data.quantity}</p>
 				</section>
+				{#if productPackage.variants.length > 1}
+					<fieldset class="variant-picker">
+						<legend>Edition detail</legend>
+						{#each productPackage.variants as option (option.id)}
+							<label>
+								<input
+									type="radio"
+									name="variant"
+									value={option.id}
+									checked={variant?.id === option.id}
+									onchange={(event) => {
+										const next = new URL(window.location.href);
+										next.searchParams.set(
+											'variant',
+											(event.currentTarget as HTMLInputElement).value
+										);
+										window.location.href = next.toString();
+									}}
+								/>
+								<span>{option.label ?? option.id}</span>
+							</label>
+						{/each}
+					</fieldset>
+				{/if}
+				{#if variant}
+					<form method="POST" action="/checkout" class="reserve-form">
+						<input type="hidden" name="product" value="halloween-seasonal-release" />
+						<input type="hidden" name="design_slug" value={design.slug} />
+						<input type="hidden" name="package_id" value={productPackage.id} />
+						<input type="hidden" name="variant_id" value={variant.id} />
+						<input type="hidden" name="quantity" value={data.quantity} />
+						<button type="submit" class="reserve-button">Reserve Your Edition</button>
+					</form>
+				{/if}
 			{/if}
 			<p class="availability-note">
-				Stripe pricing configuration is still pending. This selection is ready for review, not
-				purchase.
+				Your edition is reserved only after inventory is confirmed and the secure checkout session
+				is created.
 			</p>
 		</div>
 	</div>
@@ -162,6 +194,47 @@
 		margin: 0;
 		color: var(--muted);
 		font-size: 0.9rem;
+	}
+
+	.variant-picker {
+		display: grid;
+		gap: 0.6rem;
+		margin: 1.2rem 0;
+		padding: 0;
+		border: 0;
+	}
+
+	.variant-picker legend {
+		margin-bottom: 0.35rem;
+		color: var(--muted);
+		font-size: 0.72rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.variant-picker label {
+		display: flex;
+		gap: 0.55rem;
+		align-items: center;
+		color: var(--muted);
+		font-size: 0.85rem;
+	}
+
+	.reserve-form {
+		margin-top: 1.2rem;
+	}
+
+	.reserve-button {
+		width: 100%;
+		padding: 0.9rem 1rem;
+		border: 1px solid rgba(234, 195, 143, 0.45);
+		border-radius: 999px;
+		background: rgba(235, 183, 111, 0.12);
+		color: var(--text);
+		font: inherit;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		cursor: pointer;
 	}
 
 	@media (max-width: 720px) {

@@ -272,6 +272,20 @@ export async function releaseReservationForExpiredCheckout(checkoutSessionId: st
 	});
 }
 
+export async function releaseReservation(reservationId: string) {
+	return withDatabaseTransaction(async (client) => {
+		const result = await client.query<ReservationRow>(
+			`SELECT id, sku, quantity, production_units_reserved, stripe_checkout_session_id, status
+			 FROM inventory_reservations WHERE id = $1 FOR UPDATE`,
+			[reservationId]
+		);
+		const reservation = result.rows[0];
+		return reservation
+			? releaseReservationInTransaction(client, reservation, 'released', 'checkout-failure')
+			: false;
+	});
+}
+
 export async function getInventoryDashboard() {
 	await releaseExpiredReservations();
 	return withDatabaseClient(async (client) => {

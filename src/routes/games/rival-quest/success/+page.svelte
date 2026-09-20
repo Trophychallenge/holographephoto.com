@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<title>Rival Quest Download | Holograph</title>
+	<title>Rival Quest Download | Holographe</title>
 	<meta
 		name="description"
 		content="Download your verified Rival Quest printable party game purchase."

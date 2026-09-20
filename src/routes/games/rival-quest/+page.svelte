@@ -108,7 +108,7 @@
 </script>
 
 <svelte:head>
-	<title>Rival Quest Party Builder | Holograph</title>
+	<title>Rival Quest Party Builder | Holographe</title>
 	<meta
 		name="description"
 		content="Build a printable Rival Quest party game with your setting, friendly rival teams, age range, player count, and party length."

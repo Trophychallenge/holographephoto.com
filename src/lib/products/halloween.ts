@@ -20,6 +20,7 @@ export type HalloweenPackage = {
 export type HalloweenPackageVariant = {
 	id: string;
 	priceCents: number;
+	label?: string;
 	stripePriceId?: string;
 };
 
@@ -61,8 +62,8 @@ export const halloweenPackages: HalloweenPackage[] = [
 		description: 'One statement panel.',
 		stripeStatus: 'range-needs-variant-prices',
 		variants: [
-			{ id: 'single.standard', priceCents: 1499 },
-			{ id: 'single.personalized', priceCents: 1799 }
+			{ id: 'single.standard', label: 'Standard', priceCents: 1499 },
+			{ id: 'single.personalized', label: 'Personalized', priceCents: 1799 }
 		],
 		futureOptionKeys: ['panel-number']
 	},
@@ -75,8 +76,8 @@ export const halloweenPackages: HalloweenPackage[] = [
 		description: 'A cohesive 2×2 panel composition.',
 		stripeStatus: 'range-needs-variant-prices',
 		variants: [
-			{ id: 'mini4.standard', priceCents: 4499 },
-			{ id: 'mini4.personalized', priceCents: 4999 }
+			{ id: 'mini4.standard', label: 'Standard', priceCents: 4499 },
+			{ id: 'mini4.personalized', label: 'Personalized', priceCents: 4999 }
 		],
 		futureOptionKeys: ['2x2-grouping']
 	},
@@ -89,7 +90,7 @@ export const halloweenPackages: HalloweenPackage[] = [
 		description: 'The complete nine-piece mural.',
 		badge: 'Complete Mural',
 		stripeStatus: 'exact-price-needs-stripe-price',
-		variants: [{ id: 'full.standard', priceCents: 7999 }],
+		variants: [{ id: 'full.standard', label: 'Standard', priceCents: 7999 }],
 		futureOptionKeys: []
 	},
 	{
@@ -101,8 +102,8 @@ export const halloweenPackages: HalloweenPackage[] = [
 		description: 'A personalized mural request, prepared around your direction.',
 		stripeStatus: 'range-needs-variant-prices',
 		variants: [
-			{ id: 'custom.personalized', priceCents: 9499 },
-			{ id: 'custom.full', priceCents: 11999 }
+			{ id: 'custom.personalized', label: 'Personalized', priceCents: 9499 },
+			{ id: 'custom.full', label: 'Fully custom', priceCents: 11999 }
 		],
 		futureOptionKeys: ['personalization-details', 'custom-upload']
 	}
@@ -158,4 +159,13 @@ export function getHalloweenDesign(slug: string | null) {
 
 export function getHalloweenPackage(id: string | null) {
 	return halloweenPackages.find((productPackage) => productPackage.id === id);
+}
+
+export function getHalloweenVariant(packageId: string | null, variantId: string | null) {
+	const productPackage = getHalloweenPackage(packageId);
+	return productPackage?.variants.find((variant) => variant.id === variantId);
+}
+
+export function getHalloweenVariantSku(designSlug: string, variantId: string) {
+	return `halloween:${designSlug}:${variantId}`;
 }

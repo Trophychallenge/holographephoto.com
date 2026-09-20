@@ -3,8 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Checkout Canceled | Holograph</title>
-	<meta name="description" content="Your Holograph checkout was canceled. No payment was taken." />
+	<title>Checkout Canceled | Holographe</title>
+	<meta name="description" content="Your Holographe checkout was canceled. No payment was taken." />
 </svelte:head>
 
 <section class="section">

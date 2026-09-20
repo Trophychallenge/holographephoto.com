@@ -8,6 +8,21 @@ import {
 	parseRivalQuestConfiguration,
 	type RivalQuestConfiguration
 } from '$lib/products/rival-quest-builder';
+import {
+	getHalloweenDesign,
+	getHalloweenPackage,
+	getHalloweenVariant,
+	getHalloweenVariantSku
+} from '$lib/products/halloween';
+import {
+	releaseReservation,
+	reserveHalloweenInventory,
+	attachReservationToCheckout
+} from '$lib/server/inventory';
+
+function halloweenInventoryEnabled() {
+	return Boolean(env.DATABASE_URL) && env.HALLOWEEN_INVENTORY_ENABLED === 'true';
+}
 
 function jsonResponse(body: Record<string, string>, status = 200) {
 	return new Response(JSON.stringify(body), {
@@ -24,7 +39,9 @@ function buildCheckoutParams({
 	totalAmountCents,
 	offerLabel,
 	offerDescription,
-	metadata
+	metadata,
+	productMetadata = 'custom-holographic-photo-magnet',
+	expiresAt
 }: {
 	origin: string;
 	quantity: number;
@@ -32,6 +49,8 @@ function buildCheckoutParams({
 	offerLabel: string;
 	offerDescription: string;
 	metadata?: Record<string, string>;
+	productMetadata?: string;
+	expiresAt?: number;
 }) {
 	const params = new URLSearchParams();
 
@@ -51,10 +70,11 @@ function buildCheckoutParams({
 	params.set('line_items[0][price_data][unit_amount]', String(totalAmountCents));
 	params.set('line_items[0][price_data][product_data][name]', offerLabel);
 	params.set('line_items[0][price_data][product_data][description]', offerDescription);
-	params.set('metadata[product]', 'custom-holographic-photo-magnet');
+	params.set('metadata[product]', productMetadata);
 	params.set('metadata[quantity]', String(quantity));
 	params.set('metadata[offer]', offerLabel);
 	params.set('metadata[total_amount_cents]', String(totalAmountCents));
+	if (expiresAt) params.set('expires_at', String(expiresAt));
 
 	for (const [key, value] of Object.entries(metadata ?? {})) {
 		if (value) params.set(`metadata[${key}]`, value);
@@ -117,13 +137,13 @@ async function createStripeCheckoutSession({
 		throw new Response(`Stripe checkout error: ${errorBody}`, { status: stripeResponse.status });
 	}
 
-	const session = (await stripeResponse.json()) as { url?: string };
+	const session = (await stripeResponse.json()) as { id?: string; url?: string };
 
-	if (!session.url) {
+	if (!session.id || !session.url) {
 		throw new Response('Stripe did not return a checkout URL.', { status: 502 });
 	}
 
-	return session.url;
+	return { id: session.id, url: session.url };
 }
 
 export const POST: RequestHandler = async ({ request, fetch, url }) => {
@@ -150,21 +170,97 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 		}
 
 		try {
-			const checkoutUrl = await createStripeCheckoutSession({
+			const checkoutSession = await createStripeCheckoutSession({
 				fetch,
 				params: _buildRivalQuestCheckoutParams(url.origin, configResult.config)
 			});
 
 			if (wantsJson) {
-				return jsonResponse({ url: checkoutUrl });
+				return jsonResponse({ url: checkoutSession.url });
 			}
 
-			throw redirect(303, checkoutUrl);
+			throw redirect(303, checkoutSession.url);
 		} catch (error) {
 			if (error instanceof Response) {
 				return wantsJson ? jsonResponse({ error: await error.text() }, error.status) : error;
 			}
 
+			throw error;
+		}
+	}
+
+	if (product === 'halloween-seasonal-release') {
+		const designSlug = String(formData.get('design_slug') ?? '');
+		const packageId = String(formData.get('package_id') ?? '');
+		const variantId = String(formData.get('variant_id') ?? '');
+		const quantity = parseCheckoutQuantity(formData.get('quantity'));
+		const design = getHalloweenDesign(designSlug);
+		const productPackage = getHalloweenPackage(packageId);
+		const variant = getHalloweenVariant(packageId, variantId);
+
+		if (!design || !productPackage || !variant || !quantity) {
+			const message = 'That Halloween edition selection is unavailable.';
+			return wantsJson
+				? jsonResponse({ error: message }, 400)
+				: new Response(message, { status: 400 });
+		}
+
+		const sku = getHalloweenVariantSku(design.slug, variant.id);
+		const inventoryEnabled = halloweenInventoryEnabled();
+		let reservation: Awaited<ReturnType<typeof reserveHalloweenInventory>> | null = null;
+		if (inventoryEnabled) {
+			try {
+				reservation = await reserveHalloweenInventory({ sku, quantity });
+			} catch (error) {
+				const message =
+					error instanceof Error ? error.message : 'This edition is currently unavailable.';
+				return wantsJson
+					? jsonResponse({ error: message }, 409)
+					: new Response(message, { status: 409 });
+			}
+		}
+
+		try {
+			const metadata: Record<string, string> = {
+				order_type: 'halloween',
+				sku,
+				design_slug: design.slug,
+				variant_id: variant.id,
+				package_id: productPackage.id
+			};
+			if (reservation) metadata.inventory_reservation_id = reservation.id;
+
+			const checkoutSession = await createStripeCheckoutSession({
+				fetch,
+				params: buildCheckoutParams({
+					origin: url.origin,
+					quantity,
+					totalAmountCents: variant.priceCents * quantity,
+					offerLabel: `${design.name} — ${productPackage.editionName}`,
+					offerDescription: `${productPackage.name}. Holographe Halloween Edition.`,
+					productMetadata: 'halloween-edition',
+					expiresAt: reservation ? Math.ceil(reservation.expiresAt.getTime() / 1000) : undefined,
+					metadata
+				})
+			});
+			if (reservation) {
+				await attachReservationToCheckout({
+					reservationId: reservation.id,
+					checkoutSessionId: checkoutSession.id
+				});
+			}
+
+			if (wantsJson) return jsonResponse({ url: checkoutSession.url });
+			return redirect(303, checkoutSession.url);
+		} catch (error) {
+			if (error instanceof Response) {
+				if (reservation) await releaseReservation(reservation.id);
+				const message = await error.text();
+				return wantsJson
+					? jsonResponse({ error: message }, error.status)
+					: new Response(message, { status: error.status });
+			}
+			if (reservation) await releaseReservation(reservation.id);
 			throw error;
 		}
 	}
@@ -223,7 +319,7 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 
 	let checkoutUrl: string;
 	try {
-		checkoutUrl = await createStripeCheckoutSession({
+		const checkoutSession = await createStripeCheckoutSession({
 			fetch,
 			params: buildCheckoutParams({
 				origin: url.origin,
@@ -234,6 +330,7 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 				metadata
 			})
 		});
+		checkoutUrl = checkoutSession.url;
 	} catch (error) {
 		if (error instanceof Response) {
 			const message = await error.text();
