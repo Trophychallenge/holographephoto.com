@@ -1728,7 +1728,7 @@
 		.sample-row {
 			grid-template-columns: 1fr;
 		}
-		.studio-grid { grid-template-areas: 'preview' 'tools'; }
+		.studio-grid { grid-template-areas: 'tools' 'preview'; }
 
 		.studio-copy,
 		.order-bar {
