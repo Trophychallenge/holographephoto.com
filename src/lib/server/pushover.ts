@@ -91,7 +91,9 @@ export async function sendPushoverQuoteAlert(fetch: typeof globalThis.fetch, quo
 	const body = new URLSearchParams({
 		token: env.PUSHOVER_TOKEN,
 		user: env.PUSHOVER_USER_KEY,
-		title: 'New Holographe quote request',
+		title: quote.designNotes.includes('SYNTHETIC TEST DATA')
+			? 'TEST — Holographe quote alert'
+			: 'New Holographe quote request',
 		message: lines.join('\n'),
 		priority: '0'
 	});
