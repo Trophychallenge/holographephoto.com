@@ -107,7 +107,7 @@
 		<div class="section-intro">
 			<p class="eyebrow">Make it yours</p>
 			<h2 id="format-heading">Choose your edition.</h2>
-			<p>Choose one panel, a 2×2 mini mural, or the full nine-piece mural.</p>
+			<p>Choose one panel, a three-panel set, or the full nine-piece mural.</p>
 		</div>
 
 		<div class="package-grid" role="radiogroup" aria-label="Halloween package">
@@ -194,7 +194,7 @@
 	.halloween-page {
 		width: min(1160px, calc(100vw - 1.1rem));
 		margin: 0 auto;
-		padding: clamp(2rem, 6vw, 5.5rem) 0 4rem;
+		padding: clamp(1.5rem, 4vw, 3.5rem) 0 2.5rem;
 	}
 	.collection-hero {
 		--text: #fff7fb;
@@ -202,15 +202,15 @@
 		color: var(--text);
 		display: grid;
 		grid-template-columns: minmax(0, 1.1fr) minmax(15rem, 0.62fr);
-		gap: clamp(2rem, 7vw, 7rem);
+		gap: clamp(1.25rem, 4vw, 3rem);
 		align-items: center;
-		padding: clamp(1.6rem, 5vw, 4.2rem);
+		padding: clamp(1.2rem, 3vw, 2rem);
 		border: 1px solid rgba(236, 185, 108, 0.2);
 		border-radius: 2rem;
 		background:
-			radial-gradient(circle at 76% 16%, rgba(231, 149, 64, 0.18), transparent 20%),
+			radial-gradient(circle at 76% 16%, rgba(255, 107, 0, 0.42), transparent 24%),
 			radial-gradient(circle at 20% 84%, rgba(95, 57, 133, 0.2), transparent 28%),
-			linear-gradient(135deg, #140d16, #0c0d12 66%, #100d10);
+			linear-gradient(135deg, #170711, #080609 66%, #16070d);
 	}
 	.collection-hero h1,
 	.section-intro h2,

@@ -109,6 +109,8 @@
 			<p class="eyebrow">Holographe for business</p>
 			<h1>Make the first<br />impression <em>last.</em></h1>
 			<p class="lead">Your logo. Your story. A little magnetic attraction.</p>
+			<p class="business-pricing">Holographic business cards starting at <strong>$1.50 per card.</strong></p>
+			<p class="business-pricing-note">Final pricing depends on quantity, design, and finish. Request a custom quote.</p>
 			<p>Turn your business card into a holographic magnet that deserves to stay on display.</p>
 			<a class="button-primary" href="#request-quote"
 				>Request your custom quote <span aria-hidden="true">↗</span></a
@@ -122,7 +124,7 @@
 				<video
 					bind:this={businessFilm}
 					src="/media/business/howdy-social.mp4"
-					poster="/media/business/howdy-social.jpg"
+					poster="/media/business/howdy-social-poster.jpg"
 					controls
 					muted
 					playsinline
@@ -243,9 +245,9 @@
 	.brand-hero {
 		display: grid;
 		grid-template-columns: 1.2fr 0.8fr;
-		gap: clamp(2rem, 7vw, 6rem);
+		gap: clamp(1.5rem, 4vw, 3rem);
 		align-items: center;
-		padding: clamp(1.5rem, 4vw, 3.5rem);
+		padding: clamp(1.25rem, 3vw, 2rem);
 		border: 1px solid rgba(220, 197, 255, 0.23);
 		border-radius: 2rem;
 		background:
@@ -271,7 +273,7 @@
 		font-weight: 500;
 	}
 	h1 {
-		font-size: clamp(3rem, 6.3vw, 5.5rem);
+		font-size: clamp(2.25rem, 4vw, 3rem);
 		line-height: 1.02;
 		letter-spacing: -0.045em;
 		margin: 1.5rem 0;
@@ -302,6 +304,8 @@
 	.hero-copy > p {
 		max-width: 30rem;
 	}
+	.business-pricing { margin-top: 1rem; color: #fff7fb !important; font-size: 1.05rem; }
+	.business-pricing-note { margin-top: .35rem; color: #e5d1e8 !important; font-size: .95rem; }
 	.hero-copy > a {
 		margin-top: 1rem;
 		gap: 1.5rem;
@@ -361,9 +365,9 @@
 	.quote-section {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: clamp(2rem, 6vw, 5rem);
+		gap: clamp(1.5rem, 4vw, 3rem);
 		margin-top: 1.25rem;
-		padding: clamp(1.5rem, 5vw, 4rem);
+		padding: clamp(1.25rem, 3vw, 2rem);
 		border-radius: 1.75rem;
 		background:
 			radial-gradient(circle at 88% 16%, rgba(255, 174, 215, 0.34), transparent 28%),
@@ -392,27 +396,33 @@
 	}
 	.quote-form {
 		display: grid;
-		gap: 1.2rem;
-		padding: clamp(1.2rem, 3vw, 2rem);
-		background: #121115;
-		border: 1px solid var(--line);
+		gap: 1rem;
+		padding: clamp(1.1rem, 2.5vw, 1.6rem);
+		background: #fffaf6;
+		border: 1px solid #b89ab7;
 		border-radius: 1rem;
 	}
 	label {
 		display: grid;
 		gap: 0.5rem;
-		font-size: 0.88rem;
+		font-size: 0.92rem;
+		font-weight: 700;
+		color: #35183e !important;
 	}
 	input,
 	select,
 	textarea {
 		width: 100%;
-		background: #09090b;
-		border: 1px solid #49424f;
+		background: #ffffff;
+		border: 1px solid #795a78;
 		border-radius: 0.6rem;
 		padding: 0.8rem;
-		color: var(--text);
+		color: #301435;
 	}
+	input::placeholder, textarea::placeholder { color: #765e75; opacity: 1; }
+	input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #7c2bc7; outline-offset: 2px; border-color: #4f176e; }
+	input:-webkit-autofill { -webkit-text-fill-color: #301435; -webkit-box-shadow: 0 0 0 1000px #fff inset; }
+	.artwork-upload, .quote-ready { color: #35183e; }
 	textarea {
 		resize: vertical;
 	}

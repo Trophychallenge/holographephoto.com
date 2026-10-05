@@ -90,7 +90,7 @@
 		z-index: 1;
 		width: min(1120px, calc(100vw - 2rem));
 		margin: 0 auto;
-		padding: clamp(3rem, 8vw, 7rem) 0 clamp(2rem, 4vw, 4rem);
+		padding: clamp(2.25rem, 5vw, 4.25rem) 0 clamp(1.5rem, 3vw, 2.5rem);
 		text-align: center;
 	}
 
@@ -98,7 +98,7 @@
 		max-width: 13ch;
 		margin: 1rem auto;
 		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(3.4rem, 9vw, 7.4rem);
+		font-size: clamp(2rem, 4vw, 3rem);
 		font-weight: 500;
 		letter-spacing: -0.065em;
 		line-height: 0.88;
@@ -136,7 +136,7 @@
 		z-index: 1;
 		width: min(1120px, calc(100vw - 1.1rem));
 		margin: 0 auto;
-		padding: clamp(3rem, 7vw, 6rem) 0 clamp(3rem, 7vw, 6rem);
+		padding: clamp(2rem, 4vw, 3.5rem) 0;
 	}
 
 	.explore-intro {
@@ -147,7 +147,7 @@
 	.explore-intro h2 {
 		margin: 1.1rem 0 0.85rem;
 		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(2.5rem, 6vw, 5rem);
+		font-size: clamp(2rem, 4vw, 3rem);
 		font-weight: 500;
 		letter-spacing: -0.055em;
 		line-height: 0.95;
@@ -170,8 +170,8 @@
 	.explore-card {
 		display: grid;
 		gap: 0.75rem;
-		min-height: 15rem;
-		padding: clamp(1.25rem, 3vw, 2rem);
+		min-height: 12rem;
+		padding: clamp(1rem, 2vw, 1.35rem);
 		border: 1px solid rgba(255, 255, 255, 0.11);
 		border-radius: 1.5rem;
 		background:
@@ -204,7 +204,7 @@
 	.explore-card h3 {
 		margin: 0;
 		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(1.7rem, 3vw, 2.5rem);
+		font-size: clamp(1.45rem, 2.3vw, 2rem);
 		font-weight: 500;
 		letter-spacing: -0.045em;
 		line-height: 1;

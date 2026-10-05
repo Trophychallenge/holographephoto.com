@@ -38,7 +38,7 @@
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
 			<span class="brand-badge">
-				<img class="brand-logo" src="/holographe/brand-wordmark.png" alt="Holographe logo" />
+				<img class="brand-logo" src="/holographe/brand-wordmark-black-cropped.png" alt="Holographe logo" />
 			</span>
 		</a>
 		<div class="header-cta-shell">
@@ -76,7 +76,7 @@
 	<footer class="site-footer">
 		<div>
 			<span class="brand-badge brand-badge-soft footer-brand-badge">
-				<img class="footer-logo" src="/holographe/brand-wordmark.png" alt="Holographe logo" />
+				<img class="footer-logo" src="/holographe/brand-wordmark-black-cropped.png" alt="Holographe logo" />
 			</span>
 			<p class="footer-copy">Photo keepsakes, seasonal decor, and creative games.</p>
 		</div>

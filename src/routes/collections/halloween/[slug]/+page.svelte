@@ -44,8 +44,12 @@
 					<strong>{design.name}</strong>
 					<p>Format: {productPackage.editionName}</p>
 					<p>Selected variant: {variant?.label ?? variant?.id ?? 'Choose an option'}</p>
-					<p>Unit price: {unitPrice}</p>
-					<p>Quantity: {data.quantity} · Total: {totalPrice}</p>
+					{#if requiresPersonalization}
+						<p>Pricing: Custom quote required before checkout.</p>
+					{:else}
+						<p>Unit price: {unitPrice}</p>
+						<p>Quantity: {data.quantity} · Total: {totalPrice}</p>
+					{/if}
 				</section>
 				{#if productPackage.variants.length > 1}
 					<fieldset class="variant-picker">
