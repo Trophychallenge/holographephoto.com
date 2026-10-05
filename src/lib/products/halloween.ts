@@ -58,26 +58,26 @@ export const halloweenPackages: HalloweenPackage[] = [
 		label: 'Single Panel',
 		editionName: 'The Statement',
 		name: 'Single 8×10 Halloween panel',
-		priceLabel: '$14.99–$17.99',
+		priceLabel: '$14.99',
 		description: 'One statement panel.',
 		stripeStatus: 'range-needs-variant-prices',
 		variants: [
 			{ id: 'single.standard', label: 'Standard', priceCents: 1499 },
-			{ id: 'single.personalized', label: 'Personalized', priceCents: 1799 }
+			{ id: 'single.personalized', label: 'Personalized — request a quote', priceCents: 0 }
 		],
 		futureOptionKeys: ['panel-number']
 	},
 	{
 		id: 'mini-mural',
-		label: 'Mini Mural',
-		editionName: 'The Mini Mural',
-		name: '4-panel mini mural',
-		priceLabel: '$44.99–$49.99',
-		description: 'A cohesive 2×2 panel composition.',
+		label: 'Three-Panel Set',
+		editionName: 'The Three-Panel Set',
+		name: '3-panel Halloween set',
+		priceLabel: '$29.99',
+		description: 'Three coordinating panels for an instant seasonal display.',
 		stripeStatus: 'range-needs-variant-prices',
 		variants: [
-			{ id: 'mini4.standard', label: 'Standard', priceCents: 4499 },
-			{ id: 'mini4.personalized', label: 'Personalized', priceCents: 4999 }
+			{ id: 'mini4.standard', label: 'Standard', priceCents: 2999 },
+			{ id: 'mini4.personalized', label: 'Personalized — request a quote', priceCents: 0 }
 		],
 		futureOptionKeys: ['2x2-grouping']
 	},
@@ -86,11 +86,11 @@ export const halloweenPackages: HalloweenPackage[] = [
 		label: 'Full Mural',
 		editionName: 'The Full Installation',
 		name: 'Full 9-panel mural',
-		priceLabel: '$79.99',
+		priceLabel: '$59.99',
 		description: 'The complete nine-piece mural.',
 		badge: 'Complete Mural',
 		stripeStatus: 'exact-price-needs-stripe-price',
-		variants: [{ id: 'full.standard', label: 'Standard', priceCents: 7999 }],
+		variants: [{ id: 'full.standard', label: 'Standard', priceCents: 5999 }],
 		futureOptionKeys: []
 	},
 	{
@@ -98,12 +98,12 @@ export const halloweenPackages: HalloweenPackage[] = [
 		label: 'Custom',
 		editionName: 'The Bespoke Edition',
 		name: 'Personalized/custom 9-panel mural',
-		priceLabel: '$94.99–$119.99',
+		priceLabel: 'Request a quote',
 		description: 'A personalized mural request, prepared around your direction.',
 		stripeStatus: 'range-needs-variant-prices',
 		variants: [
-			{ id: 'custom.personalized', label: 'Personalized', priceCents: 9499 },
-			{ id: 'custom.full', label: 'Fully custom', priceCents: 11999 }
+			{ id: 'custom.personalized', label: 'Personalized — request a quote', priceCents: 0 },
+			{ id: 'custom.full', label: 'Fully custom — request a quote', priceCents: 0 }
 		],
 		futureOptionKeys: ['personalization-details', 'custom-upload']
 	}
@@ -126,7 +126,11 @@ export const halloweenDesigns: HalloweenDesign[] = [
 	available: true,
 	productOptionIds: allPackageIds,
 	badges: ['Holographe Exclusive'],
-	placeholderLabel: 'Artwork preview to be supplied'
+	placeholderLabel: 'Artwork preview not available yet',
+	thumbnail:
+		name === 'Creepy Carnival'
+			? { type: 'image', src: '/media/halloween/creepy-carnival.jpg', alt: 'Creepy Carnival Halloween mural artwork' }
+			: undefined
 }));
 
 export const halloweenProducts: CatalogProduct[] = [

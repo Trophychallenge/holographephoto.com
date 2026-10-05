@@ -1,15 +1,98 @@
 <script lang="ts">
-	let business = $state('');
+	import { enhance } from '$app/forms';
+	import { onMount } from 'svelte';
+	import { upload } from '@vercel/blob/client';
+	import type { ActionData } from './$types';
+	let { form }: { form: ActionData } = $props();
+	type Artwork = { pathname: string; filename: string; contentType: string; size: number };
+	let artwork = $state<Artwork | null>(null);
+	let pendingArtwork = $state<File | null>(null);
+	let artworkError = $state('');
+	let uploadState = $state<'idle' | 'uploading' | 'saved' | 'failed'>('idle');
+	let uploadProgress = $state(0);
+	let draftId = $state('');
+	let idempotencyKey = $state('');
+	let uploadVersion = 0;
+	let abortUpload: AbortController | null = null;
+	let submitting = $state(false);
+	let submitError = $state('');
 	let name = $state('');
-	let quantity = $state('100');
-	let notes = $state('');
-	let quoteReady = $state(false);
-	const emailHref = $derived(
-		`mailto:admin@holographephoto.com?${new URLSearchParams({
-			subject: `Business card magnet quote — ${business || 'New inquiry'}`,
-			body: `Hi Christina,\n\nI'd like a quote for holographic business card magnets.\n\nName: ${name}\nBusiness: ${business}\nQuantity: ${quantity}\nDetails, website/QR link, and event date: ${notes}\n\nI'll attach my logo or existing card design.\n`
-		})}`
-	);
+	let email = $state('');
+	let businessName = $state('');
+	let quantity = $state('50');
+	let websiteOrQr = $state('');
+	let neededBy = $state('');
+	let designNotes = $state('');
+	let businessFilm: HTMLVideoElement;
+
+	const acceptedTypes = new Set(['image/jpeg', 'image/png', 'application/pdf']);
+	const maxArtworkBytes = 4_500_000;
+
+	onMount(() => {
+		draftId = form?.values?.draftId || crypto.randomUUID();
+		idempotencyKey = form?.values?.idempotencyKey || crypto.randomUUID();
+		name = form?.values?.name || '';
+		email = form?.values?.email || '';
+		businessName = form?.values?.businessName || '';
+		quantity = form?.values?.quantity || '50';
+		websiteOrQr = form?.values?.websiteOrQr || '';
+		neededBy = form?.values?.neededBy || '';
+		designNotes = form?.values?.designNotes || '';
+	});
+
+	function artworkPath(file: File) {
+		const safeName = (file.name.replace(/[^a-zA-Z0-9._-]/g, '-').replace(/^-+/, '') || 'artwork');
+		return `quotes/artwork/${draftId}/${safeName}`;
+	}
+
+	async function uploadArtwork(file: File) {
+		const version = ++uploadVersion;
+		abortUpload?.abort();
+		pendingArtwork = file;
+		artworkError = '';
+		uploadProgress = 0;
+		if (!acceptedTypes.has(file.type) || !/\.(jpe?g|png|pdf)$/i.test(file.name) || file.size === 0 || file.size > maxArtworkBytes) {
+			uploadState = 'failed';
+			artworkError = 'Choose a JPG, PNG, or PDF no larger than 4.5 MB.';
+			return;
+		}
+		draftId ||= crypto.randomUUID();
+		uploadState = 'uploading';
+		const controller = new AbortController();
+		abortUpload = controller;
+		try {
+			const blob = await upload(artworkPath(file), file, {
+				access: 'private',
+				handleUploadUrl: '/api/quote-artwork',
+				clientPayload: JSON.stringify({ draftId }),
+				contentType: file.type,
+				abortSignal: controller.signal,
+				onUploadProgress: ({ percentage }) => {
+					if (version === uploadVersion) uploadProgress = Math.round(percentage);
+				}
+			});
+			if (version !== uploadVersion) return;
+			artwork = { pathname: blob.pathname, filename: file.name, contentType: blob.contentType, size: file.size };
+			uploadState = 'saved';
+		} catch (error) {
+			if (version !== uploadVersion || controller.signal.aborted) return;
+			uploadState = 'failed';
+			artworkError = error instanceof Error ? error.message : 'Artwork could not be saved.';
+		} finally {
+			if (version === uploadVersion) abortUpload = null;
+		}
+	}
+
+	function removeArtwork() {
+		uploadVersion += 1;
+		abortUpload?.abort();
+		abortUpload = null;
+		pendingArtwork = null;
+		artwork = null;
+		uploadState = 'idle';
+		uploadProgress = 0;
+		artworkError = '';
+	}
 </script>
 
 <svelte:head>
@@ -26,6 +109,8 @@
 			<p class="eyebrow">Holographe for business</p>
 			<h1>Make the first<br />impression <em>last.</em></h1>
 			<p class="lead">Your logo. Your story. A little magnetic attraction.</p>
+			<p class="business-pricing">Holographic business cards starting at <strong>$1.50 per card.</strong></p>
+			<p class="business-pricing-note">Final pricing depends on quantity, design, and finish. Request a custom quote.</p>
 			<p>Turn your business card into a holographic magnet that deserves to stay on display.</p>
 			<a class="button-primary" href="#request-quote"
 				>Request your custom quote <span aria-hidden="true">↗</span></a
@@ -35,15 +120,19 @@
 			</div>
 		</div>
 		<figure class="hero-media">
-			<video
-				src="/media/business/howdy-social.mp4"
-				poster="/media/business/howdy-social.jpg"
-				controls
-				muted
-				playsinline
-				preload="metadata"
-				aria-label="Real holographic business card magnets made for Howdy Social"
-			></video>
+			<div class="video-frame">
+				<video
+					bind:this={businessFilm}
+					src="/media/business/howdy-social-reveal.mp4"
+					poster="/media/business/howdy-social-reveal-poster.jpg"
+					controls
+					muted
+					playsinline
+					preload="metadata"
+					aria-label="Real holographic business card magnets made for Howdy Social"
+				></video>
+				<button class="film-play" type="button" onclick={() => businessFilm?.play()} aria-label="Play the Howdy Social product film">Play film <span aria-hidden="true">▶</span></button>
+			</div>
 			<figcaption><span>THE FINISHED PRODUCT</span> Made for Howdy Social</figcaption>
 		</figure>
 	</section>
@@ -97,48 +186,52 @@
 				>
 			</p>
 		</div>
-		<form
-			class="quote-form"
-			onsubmit={(event) => {
-				event.preventDefault();
-				quoteReady = true;
-			}}
-		>
-			<label
-				>Your name<input autocomplete="name" required maxlength="100" bind:value={name} /></label
-			>
-			<label
-				>Business name<input
-					autocomplete="organization"
-					required
-					maxlength="100"
-					bind:value={business}
-				/></label
-			>
-			<label
-				>How many magnets?<select bind:value={quantity}
-					><option>50</option><option>100</option><option>250</option><option>500</option><option
-						>700</option
+		<form class="quote-form" method="POST" use:enhance={() => {
+			submitting = true;
+			submitError = '';
+			return async ({ update }) => {
+				try {
+					await update();
+				} catch {
+					submitError = 'We could not reach the server. Your details are still here; reconnect and try again.';
+				} finally {
+					submitting = false;
+				}
+			};
+		}}>
+			<label>Your name<input name="name" autocomplete="name" required maxlength="100" bind:value={name} /></label>
+			<label>Email<input name="email" type="email" autocomplete="email" required maxlength="254" bind:value={email} /></label>
+			<label>Business name<input name="businessName" autocomplete="organization" required maxlength="100" bind:value={businessName} /></label>
+			<label>How many magnets?<select name="quantity" required
+					bind:value={quantity}><option>50</option><option>100</option><option>250</option><option>500</option><option>700</option
 					><option>1,000+</option><option>Help me decide</option></select
 				></label
 			>
-			<label
-				>Design details<textarea
+			<label>Website or QR destination (optional)<input name="websiteOrQr" type="url" maxlength="500" placeholder="https://example.com" bind:value={websiteOrQr} /></label>
+			<label>Needed by (optional)<input name="neededBy" type="date" bind:value={neededBy} /></label>
+			<label>Design notes<textarea name="designNotes"
 					rows="4"
 					maxlength="1500"
-					bind:value={notes}
-					placeholder="Your website or QR destination, design ideas, and the date you need them."
-				></textarea></label
+					placeholder="Share design ideas, your QR destination, and any details that matter."
+				bind:value={designNotes}></textarea></label
 			>
-			<button type="submit" class="button-primary">Prepare my quote request</button>
+			<input type="hidden" name="artworkPathname" value={artwork?.pathname ?? ''} />
+			<input type="hidden" name="draftId" value={draftId} />
+			<input type="hidden" name="idempotencyKey" value={idempotencyKey} />
+			<div class="artwork-upload">
+				<label>Artwork (optional)<input type="file" accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf" onchange={(event) => { const file = (event.currentTarget as HTMLInputElement).files?.[0]; if (file) uploadArtwork(file); }} /></label>
+				<p class="small">JPG, PNG, or PDF · up to 4.5 MB · stored privately for this request.</p>
+				{#if uploadState === 'uploading'}<p role="status">Uploading artwork… {uploadProgress}% <button type="button" onclick={removeArtwork}>Cancel</button></p>{/if}
+				{#if artwork}<p role="status"><strong>{artwork.filename}</strong> attached. <button type="button" onclick={removeArtwork}>Remove</button></p>{/if}
+				{#if uploadState === 'failed'}<p class="upload-error" role="alert">{artworkError} {#if pendingArtwork}<button type="button" onclick={() => uploadArtwork(pendingArtwork!)}>Retry upload</button>{/if}</p>{/if}
+			</div>
+			<button type="submit" class="button-primary" disabled={uploadState === 'uploading' || submitting}>{submitting ? 'Sending request…' : 'Send quote request'}</button>
 			<p class="small">
-				This prepares an email to Christina. Nothing is sent until you send it from your email app.
-				Attach your artwork there.
+				We’ll save your request before confirming it. For immediate help, call <a href="tel:+15122563720">512-256-3720</a> or email <a href="mailto:admin@holographephoto.com">admin@holographephoto.com</a>.
 			</p>
-			{#if quoteReady}<div class="quote-ready" role="status">
-					<p>Your request is ready.</p>
-					<a class="button-secondary" href={emailHref}>Open email to send your request</a>
-				</div>{/if}
+			{#if form?.error}<p class="upload-error" role="alert">{form.error}</p>{/if}
+			{#if submitError}<p class="upload-error" role="alert">{submitError}</p>{/if}
+			{#if form?.success}<div class="quote-ready" role="status"><p><strong>Request received.</strong> Your reference is <strong>{form.requestId}</strong>.</p><p class="small">We’ll use the details you shared to prepare your quote.</p></div>{/if}
 		</form>
 	</section>
 </div>
@@ -152,9 +245,9 @@
 	.brand-hero {
 		display: grid;
 		grid-template-columns: 1.2fr 0.8fr;
-		gap: clamp(2rem, 7vw, 6rem);
+		gap: clamp(1.5rem, 4vw, 3rem);
 		align-items: center;
-		padding: clamp(1.5rem, 4vw, 3.5rem);
+		padding: clamp(1.25rem, 3vw, 2rem);
 		border: 1px solid rgba(220, 197, 255, 0.23);
 		border-radius: 2rem;
 		background:
@@ -163,6 +256,16 @@
 			linear-gradient(135deg, #311342, #101a3a 72%);
 		box-shadow: 0 30px 80px rgba(5, 1, 20, 0.32);
 	}
+
+	.brand-hero h1,
+	.brand-hero .lead {
+		color: #fff7fb;
+	}
+
+	.brand-hero .hero-copy > p,
+	.brand-hero .hero-details {
+		color: #e5d1e8;
+	}
 	h1,
 	h2,
 	h3 {
@@ -170,7 +273,7 @@
 		font-weight: 500;
 	}
 	h1 {
-		font-size: clamp(3rem, 6.3vw, 5.5rem);
+		font-size: clamp(2.25rem, 4vw, 3rem);
 		line-height: 1.02;
 		letter-spacing: -0.045em;
 		margin: 1.5rem 0;
@@ -201,6 +304,8 @@
 	.hero-copy > p {
 		max-width: 30rem;
 	}
+	.business-pricing { margin-top: 1rem; color: #fff7fb !important; font-size: 1.05rem; }
+	.business-pricing-note { margin-top: .35rem; color: #e5d1e8 !important; font-size: .95rem; }
 	.hero-copy > a {
 		margin-top: 1rem;
 		gap: 1.5rem;
@@ -229,6 +334,9 @@
 		border-radius: 0.7rem;
 		background: #080808;
 	}
+	.video-frame { position: relative; }
+	.film-play { position:absolute; left:1rem; bottom:1rem; border:1px solid rgba(255,255,255,.6); border-radius:999px; padding:.65rem .85rem; background:rgba(18,8,30,.82); color:white; font:inherit; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.35); }
+	.film-play:hover, .film-play:focus-visible { background:#fff3e2; color:#2b1433; }
 	figcaption {
 		display: grid;
 		gap: 0.3rem;
@@ -257,9 +365,9 @@
 	.quote-section {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: clamp(2rem, 6vw, 5rem);
+		gap: clamp(1.5rem, 4vw, 3rem);
 		margin-top: 1.25rem;
-		padding: clamp(1.5rem, 5vw, 4rem);
+		padding: clamp(1.25rem, 3vw, 2rem);
 		border-radius: 1.75rem;
 		background:
 			radial-gradient(circle at 88% 16%, rgba(255, 174, 215, 0.34), transparent 28%),
@@ -288,27 +396,33 @@
 	}
 	.quote-form {
 		display: grid;
-		gap: 1.2rem;
-		padding: clamp(1.2rem, 3vw, 2rem);
-		background: #121115;
-		border: 1px solid var(--line);
+		gap: 1rem;
+		padding: clamp(1.1rem, 2.5vw, 1.6rem);
+		background: #fffaf6;
+		border: 1px solid #b89ab7;
 		border-radius: 1rem;
 	}
 	label {
 		display: grid;
 		gap: 0.5rem;
-		font-size: 0.88rem;
+		font-size: 0.92rem;
+		font-weight: 700;
+		color: #35183e !important;
 	}
 	input,
 	select,
 	textarea {
 		width: 100%;
-		background: #09090b;
-		border: 1px solid #49424f;
+		background: #ffffff;
+		border: 1px solid #795a78;
 		border-radius: 0.6rem;
 		padding: 0.8rem;
-		color: var(--text);
+		color: #301435;
 	}
+	input::placeholder, textarea::placeholder { color: #765e75; opacity: 1; }
+	input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #7c2bc7; outline-offset: 2px; border-color: #4f176e; }
+	input:-webkit-autofill { -webkit-text-fill-color: #301435; -webkit-box-shadow: 0 0 0 1000px #fff inset; }
+	.artwork-upload, .quote-ready { color: #35183e; }
 	textarea {
 		resize: vertical;
 	}

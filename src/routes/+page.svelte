@@ -6,14 +6,24 @@
 </script>
 
 <svelte:head>
-	<title>The Holographe Halloween Collection | Holographe</title>
+	<title>Holographe | Photo magnets that change in the light</title>
 	<meta
 		name="description"
-		content="Limited seasonal magnetic decor designed to come alive in the light."
+		content="Holographic photo magnets, business-card magnets, and seasonal pieces made to shift in the light."
 	/>
 </svelte:head>
 
 <div class="page-shell">
+	<section class="studio-intro" aria-labelledby="studio-title">
+		<p class="eyebrow">Holographic keepsakes, made personal</p>
+		<h1 id="studio-title">A little light<br />changes <em>everything.</em></h1>
+		<p>Holographe turns favorite photos, business cards, and seasonal artwork into magnetic pieces that come alive as you move.</p>
+		<div class="studio-links" aria-label="Shop Holographe">
+			<a href={resolve('/customize')}>Personalized Photo Magnets <span aria-hidden="true">→</span></a>
+			<a href={resolve('/business-cards')}>Business Cards <span aria-hidden="true">→</span></a>
+			<a href={resolve('/collections/halloween')}>Halloween Edition <span aria-hidden="true">→</span></a>
+		</div>
+	</section>
 	<HalloweenFeature />
 	<CarnivalFeature />
 	<BusinessFeature />
@@ -31,7 +41,7 @@
 		<div class="explore-grid">
 			<a class="explore-card explore-card-featured" href={resolve('/customize')}>
 				<span>Custom keepsakes</span>
-				<h3>Custom Photo Magnets</h3>
+				<h3>Personalized Photo Magnets</h3>
 				<p>Upload a favorite photo and shape a light-catching piece made to order.</p>
 				<strong>Start with your photo <span aria-hidden="true">→</span></strong>
 			</a>
@@ -60,17 +70,47 @@
 <style>
 	:global(body) {
 		background:
-			radial-gradient(circle at 8% 6%, rgba(231, 206, 173, 0.08), transparent 18%),
-			radial-gradient(circle at 82% 16%, rgba(225, 236, 255, 0.05), transparent 16%),
-			linear-gradient(180deg, #050505 0%, #090909 42%, #060606 100%);
+			radial-gradient(circle at 8% 6%, rgba(255, 63, 183, 0.11), transparent 19%),
+			radial-gradient(circle at 86% 12%, rgba(51, 225, 255, 0.1), transparent 16%),
+			radial-gradient(circle at 52% 42%, rgba(134, 55, 255, 0.08), transparent 24%),
+			linear-gradient(180deg, #050508 0%, #090711 45%, #050609 100%);
 	}
 
 	.page-shell {
+		--text: #fff7fb;
+		--muted: #d8c5dc;
+		color: var(--text);
 		min-height: 100vh;
 		position: relative;
 		display: grid;
 		gap: 0.25rem;
 	}
+
+	.studio-intro {
+		position: relative;
+		z-index: 1;
+		width: min(1120px, calc(100vw - 2rem));
+		margin: 0 auto;
+		padding: clamp(2.25rem, 5vw, 4.25rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+		text-align: center;
+	}
+
+	.studio-intro h1 {
+		max-width: 13ch;
+		margin: 1rem auto;
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(2rem, 4vw, 3rem);
+		font-weight: 500;
+		letter-spacing: -0.065em;
+		line-height: 0.88;
+	}
+
+	.studio-intro h1 em { color: #f3b2ff; font-weight: 400; text-shadow: 0 0 22px rgba(199, 86, 255, 0.26); }
+	.studio-intro > p:last-of-type { max-width: 38rem; margin: 1.5rem auto 0; color: var(--muted); font-size: clamp(1rem, 2vw, 1.15rem); line-height: 1.65; }
+	.studio-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; margin-top: 2rem; }
+	.studio-links a { border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: .8rem 1rem; background: rgba(255,255,255,.06); color: var(--text); font-weight: 700; }
+	.studio-links a:first-child { border-color: transparent; background: linear-gradient(100deg, #d962ff, #852fea 52%, #5257ec); color: #fff; box-shadow: 0 12px 28px rgba(154, 48, 239, .26); }
+	.studio-links a span { margin-left: .35rem; }
 
 	.page-shell::before {
 		content: '';
@@ -97,7 +137,7 @@
 		z-index: 1;
 		width: min(1120px, calc(100vw - 1.1rem));
 		margin: 0 auto;
-		padding: clamp(3rem, 7vw, 6rem) 0 clamp(3rem, 7vw, 6rem);
+		padding: clamp(2rem, 4vw, 3.5rem) 0;
 	}
 
 	.explore-intro {
@@ -108,7 +148,7 @@
 	.explore-intro h2 {
 		margin: 1.1rem 0 0.85rem;
 		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(2.5rem, 6vw, 5rem);
+		font-size: clamp(2rem, 4vw, 3rem);
 		font-weight: 500;
 		letter-spacing: -0.055em;
 		line-height: 0.95;
@@ -131,14 +171,14 @@
 	.explore-card {
 		display: grid;
 		gap: 0.75rem;
-		min-height: 15rem;
-		padding: clamp(1.25rem, 3vw, 2rem);
+		min-height: 12rem;
+		padding: clamp(1rem, 2vw, 1.35rem);
 		border: 1px solid rgba(255, 255, 255, 0.11);
 		border-radius: 1.5rem;
 		background:
-			radial-gradient(circle at 90% 0%, rgba(155, 231, 255, 0.17), transparent 34%),
-			radial-gradient(circle at 4% 96%, rgba(255, 184, 218, 0.13), transparent 34%),
-			linear-gradient(155deg, rgba(43, 20, 62, 0.94), rgba(14, 22, 49, 0.9));
+			radial-gradient(circle at 90% 0%, rgba(88, 232, 255, 0.15), transparent 34%),
+			radial-gradient(circle at 4% 96%, rgba(255, 70, 183, 0.12), transparent 34%),
+			linear-gradient(155deg, rgba(32, 14, 53, 0.94), rgba(7, 15, 35, 0.93));
 		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
 		transition:
 			transform 220ms ease,
@@ -165,7 +205,7 @@
 	.explore-card h3 {
 		margin: 0;
 		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(1.7rem, 3vw, 2.5rem);
+		font-size: clamp(1.45rem, 2.3vw, 2rem);
 		font-weight: 500;
 		letter-spacing: -0.045em;
 		line-height: 1;

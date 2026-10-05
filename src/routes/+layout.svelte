@@ -38,7 +38,7 @@
 	<header class="site-header">
 		<a class="brand-mark" href={resolve('/')}>
 			<span class="brand-badge">
-				<img class="brand-logo" src="/holographe/brand-wordmark.png" alt="Holographe logo" />
+				<img class="brand-logo" src="/holographe/brand-wordmark-black-cropped.png" alt="Holographe logo" />
 			</span>
 		</a>
 		<div class="header-cta-shell">
@@ -76,13 +76,13 @@
 	<footer class="site-footer">
 		<div>
 			<span class="brand-badge brand-badge-soft footer-brand-badge">
-				<img class="footer-logo" src="/holographe/brand-wordmark.png" alt="Holographe logo" />
+				<img class="footer-logo" src="/holographe/brand-wordmark-black-cropped.png" alt="Holographe logo" />
 			</span>
 			<p class="footer-copy">Photo keepsakes, seasonal decor, and creative games.</p>
 		</div>
 		<div class="footer-links">
 			<a href={resolve('/collections/halloween')}>Halloween Edition</a>
-			<a href={resolve('/customize')}>Custom Photo Magnets</a>
+			<a href={resolve('/customize')}>Personalized Photo Magnets</a>
 			<a href={resolve('/business-cards')}>Business Card Magnets</a>
 			<a href={resolve('/prices')}>Pricing</a>
 			<a href={resolve('/games/rival-quest')}>Games</a>

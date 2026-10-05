@@ -6,7 +6,7 @@
 	<title>Gallery | Holographe</title>
 	<meta
 		name="description"
-		content="A simple gallery space for the photos and keepsakes coming soon."
+		content="A selection of Holographe product examples, from photo magnets to seasonal pieces."
 	/>
 </svelte:head>
 
@@ -15,36 +15,29 @@
 		<section class="gallery-hero glass-card">
 			<div class="hero-copy">
 				<p class="eyebrow">Gallery</p>
-				<h1>Sweet moments, coming soon.</h1>
-				<p>Photos coming soon.</p>
+				<h1>Made to catch the light.</h1>
+				<p>These are Holographe product examples. Customer uploads stay private unless their owner chooses to share them.</p>
+				<a class="button-primary" href={resolve('/customize')}>Create from your photo</a>
 			</div>
-
-			<div class="showcase-card">
-				<p class="showcase-kicker">Soon</p>
-				<h2>More soon.</h2>
-				<div class="showcase-tags">
-					<span>Family</span>
-					<span>Glow</span>
-					<span>Giftable</span>
-				</div>
-				<a class="button-primary" href={`${resolve('/')}#preview-builder`}>Make The Magic</a>
-			</div>
+			<figure class="showcase-card"><img src="/holographe/jess-holo-hero.webp" alt="A Holographe keepsake" /><figcaption>Photo magnet example</figcaption></figure>
 		</section>
 
 		<section class="gallery-grid">
-			<article class="story-card glass-card"><h3>Photo gallery coming soon</h3></article>
-			<article class="story-card glass-card"><h3>Your uploads will shine here</h3></article>
+			<figure class="story-card glass-card"><img src="/holographe/packaging-front.png" alt="Holographe packaging example" /><figcaption><h3>Gift-ready presentation</h3><p>Product packaging from the Holographe studio.</p></figcaption></figure>
+			<figure class="story-card glass-card"><img src="/media/halloween/creepy-carnival.jpg" alt="Creepy Carnival Halloween collection artwork" /><figcaption><h3>Creepy Carnival</h3><p>Artwork from the Halloween collection.</p></figcaption></figure>
+			<figure class="story-card glass-card"><img src="/media/business/howdy-social.jpg" alt="Howdy Social business card with a holographic finish" /><figcaption><h3>Business-card magnets</h3><p>A real Howdy Social product example.</p></figcaption></figure>
+			<figure class="story-card glass-card"><img src="/holographe/lydholowed.png" alt="Wedding Holographe keepsake" /><figcaption><h3>Milestone keepsakes</h3><p>A holographic photo-magnet example.</p></figcaption></figure>
 		</section>
 
 		<section class="cta-band glass-card">
 			<div class="cta-copy">
-				<p class="eyebrow">Next</p>
-				<h2>See yours.</h2>
-				<p>See yours next.</p>
+				<p class="eyebrow">Your next piece</p>
+				<h2>Start with a favorite image.</h2>
+				<p>Upload, personalize, review, then continue to secure checkout.</p>
 			</div>
 			<div class="cta-actions">
-				<a class="button-primary" href={`${resolve('/')}#preview-builder`}>Bring It To Life</a>
-				<a class="button-secondary" href={resolve('/prices')}>See Bundles</a>
+				<a class="button-primary" href={resolve('/customize')}>Customize a photo magnet</a>
+				<a class="button-secondary" href={resolve('/prices')}>See photo-magnet sets</a>
 			</div>
 		</section>
 	</div>
@@ -64,7 +57,7 @@
 		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
 		letter-spacing: -0.04em;
-		color: #f8f8f5;
+		color: var(--text);
 	}
 
 	h1 {
@@ -116,6 +109,7 @@
 	}
 
 	.showcase-card {
+		margin: 0;
 		align-content: start;
 		padding: 1rem;
 		border-radius: 1.45rem;
@@ -126,29 +120,8 @@
 			rgba(8, 16, 30, 0.76);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 	}
-
-	.showcase-kicker {
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-		color: var(--accent);
-	}
-
-	.showcase-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.55rem;
-	}
-
-	.showcase-tags span {
-		padding: 0.52rem 0.75rem;
-		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		font-size: 0.76rem;
-		color: rgba(248, 248, 244, 0.82);
-	}
+	.showcase-card img { width:100%; min-height:20rem; height:100%; object-fit:cover; border-radius:1rem; }
+	.showcase-card figcaption { color:var(--muted); font-size:.82rem; }
 
 	.gallery-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -156,11 +129,15 @@
 
 	.story-card {
 		display: grid;
-		align-items: center;
-		min-height: 12rem;
+		grid-template-rows: minmax(12rem, 1fr) auto;
+		min-height: 20rem;
 		padding: 1.05rem;
-		text-align: center;
+		gap: .9rem;
+		margin:0;
 	}
+	.story-card img { width:100%; height:100%; min-height:12rem; object-fit:cover; border-radius:1rem; }
+	.story-card figcaption { display:grid; gap:.35rem; }
+	.story-card figcaption p { font-size:.85rem; }
 
 	@media (max-width: 960px) {
 		.gallery-hero,

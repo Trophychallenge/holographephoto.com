@@ -1,16 +1,17 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	const options = [
 		{
 			name: 'Clean',
-			copy: 'Photo only, polished fast, and intentionally minimal for a refined keepsake feel.'
+			copy: 'Photo only, with the image as the focal point.', image: '/holographe/jess-before-hero.webp'
 		},
 		{
 			name: 'Signature',
-			copy: 'Add a name, date, or handwritten detail to make the memory feel more intimate.'
+			copy: 'Add a saved overlay such as handwriting or artwork in the customizer.', image: '/holographe/jess-holo-hero.webp'
 		},
 		{
 			name: 'Layered',
-			copy: 'Pair the photo with artwork, footprints, or custom overlays for a richer story.'
+			copy: 'Pair a photo with an overlay and adjust its placement before checkout.', image: '/holographe/packaging-insert.png'
 		}
 	] as const;
 </script>
@@ -24,7 +25,7 @@
 	<div class="page-wrap formats-layout">
 		<section class="formats-hero glass-card">
 			<div class="hero-copy">
-				<p class="eyebrow">Styles</p>
+				<p class="eyebrow">Personalization</p>
 				<h1>Three easy ways to personalize.</h1>
 				<p class="hero-subcopy">Keep it simple, add a detail, or layer in more.</p>
 			</div>
@@ -32,13 +33,15 @@
 			<div class="hero-card">
 				<p class="hero-kicker">Choose</p>
 				<h2>Clean, signature, or layered.</h2>
-				<p>Choose what feels right.</p>
+				<p>Use the customizer’s saved-photo and overlay tools to make it yours.</p>
+				<a class="button-primary" href={resolve('/customize')}>Start personalizing</a>
 			</div>
 		</section>
 
 		<section class="option-grid">
 			{#each options as option (option.name)}
 				<article class="option-card glass-card">
+					<img src={option.image} alt={`${option.name} personalization example`} />
 					<p class="option-tag">{option.name}</p>
 					<h2>{option.name}</h2>
 					<p>{option.copy}</p>
@@ -60,7 +63,7 @@
 		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
 		letter-spacing: -0.04em;
-		color: #f8f8f5;
+		color: var(--text);
 	}
 
 	h1 {
@@ -93,6 +96,7 @@
 		display: grid;
 		gap: 1rem;
 	}
+	.option-card img { width:100%; aspect-ratio: 4/3; object-fit:cover; border-radius:1rem; }
 
 	.formats-layout {
 		gap: 1.15rem;
@@ -119,6 +123,10 @@
 			rgba(8, 16, 30, 0.76);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	.hero-card h2 {
+		color: #f8f8f5;
 	}
 
 	.hero-kicker,

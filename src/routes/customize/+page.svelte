@@ -64,8 +64,8 @@
 	];
 
 	const reelTags = ['Real shimmer', 'Closer preview', 'Deluxe finish'];
-	const heroVideoSrc = '/holographe/hero-reel.mov';
-	const heroVideoPoster = '/holographe/lydholowed.png';
+	const heroVideoSrc = '/holographe/hero-premium.mp4';
+	const heroVideoPoster = '/holographe/hero-premium-poster.jpg';
 
 	let activePreview = $state(previews[0]);
 	let activeModeId = $state<GiftMode['id']>('quiet');
@@ -787,8 +787,8 @@
 						aria-label="Reference video preview of the holographic keepsake"
 					>
 						<p>
-							Your browser does not support embedded video.
-							<a href={heroVideoSrc}>Open the preview reel directly.</a>
+							Your browser could not play the preview.
+							<a href={heroVideoSrc}>Open the product video directly.</a>
 						</p>
 					</video>
 					<div class="reel-glow"></div>
@@ -1023,7 +1023,14 @@
 
 	.studio-shell {
 		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
 	}
+	/* The build follows the shopper's sequence: upload, personalize, then review. */
+	.studio-hero { order: 3; }
+	.studio-shell > .section:nth-of-type(2) { order: 1; }
+	.studio-shell > .section:nth-of-type(3) { order: 4; }
+	.studio-shell > .section:nth-of-type(4) { order: 5; }
 
 	h1,
 	h2,
@@ -1222,9 +1229,12 @@
 	}
 
 	.studio-grid {
-		grid-template-columns: minmax(0, 1.08fr) minmax(290px, 0.82fr);
+		grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
+		grid-template-areas: 'tools preview';
 		align-items: start;
 	}
+	.preview-card { grid-area: preview; }
+	.side-stack { grid-area: tools; }
 
 	.reel-tags span {
 		padding: 0.48rem 0.75rem;
@@ -1718,6 +1728,7 @@
 		.sample-row {
 			grid-template-columns: 1fr;
 		}
+		.studio-grid { grid-template-areas: 'tools' 'preview'; }
 
 		.studio-copy,
 		.order-bar {

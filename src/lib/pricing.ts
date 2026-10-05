@@ -23,7 +23,6 @@ export type PackageTier = {
 	included: string[];
 	sizeOptions: string[];
 	upsells: string[];
-	perceivedValue: string;
 	studioFlow?: 'single-design' | 'custom-order';
 	checkoutQuantity?: number;
 	checkoutPrintSize?: string;
@@ -59,25 +58,23 @@ export const checkoutOffers: CheckoutOffer[] = [
 		totalAmountCents: 3499,
 		label: 'The Signature Set',
 		priceLabel: '$34.99',
-		subtitle: 'Best for gifting',
-		highlight: 'Most popular',
+		subtitle: 'Three-piece set',
+		highlight: 'Three pieces',
 		checkoutName: 'The Signature Set',
 		checkoutDescription: 'A small set that gives you a few copies to keep, gift, or display.',
 		primarySize: '8x10',
-		badge: 'Most gifted'
 	},
 	{
 		quantity: 5,
 		totalAmountCents: 5999,
 		label: 'The Heirloom Collection',
 		priceLabel: '$59.99',
-		subtitle: 'Best value',
+		subtitle: 'Five-piece set',
 		highlight: 'Family set',
 		checkoutName: 'The Heirloom Collection',
 		checkoutDescription:
 			'A fuller set for family gifting, multiple rooms, or a more complete keepsake collection.',
 		primarySize: '8x10',
-		badge: 'Best value'
 	},
 	{
 		quantity: 10,
@@ -156,15 +153,9 @@ export const packageTiers: PackageTier[] = [
 		quantityLabel: '1 holograph',
 		description:
 			'A simple first order if you want to try one and see it in person before buying more.',
-		included: [
-			'1 custom holograph',
-			'Rounded corners included',
-			'Live preview before checkout',
-			'Free shipping'
-		],
+		included: ['1 custom holograph', 'Choose an available size in the customizer', 'Use one saved photo for the set'],
 		sizeOptions: ['5x7', '8x10'],
-		upsells: ['Extra copies', 'Short custom overlay', 'Gift-ready wrap'],
-		perceivedValue: '$25–$35',
+		upsells: ['Ask about personalization or presentation options'],
 		studioFlow: 'single-design',
 		checkoutQuantity: 1,
 		checkoutPrintSize: '8x10'
@@ -177,19 +168,12 @@ export const packageTiers: PackageTier[] = [
 		primarySize: 'Small gift set',
 		quantityLabel: '3 holographs',
 		description: 'A better deal if you want one to keep and a couple more to gift or share.',
-		included: [
-			'3 custom holographs',
-			'Rounded corners included',
-			'Live preview before checkout',
-			'Free shipping'
-		],
+		included: ['3 custom holographs', 'Choose an available size in the customizer', 'Use one saved photo for the set'],
 		sizeOptions: ['5x7', '8x10'],
-		upsells: ['Extra copies', 'Rush shipping', 'Gift-ready wrap'],
-		perceivedValue: '$45–$60',
+		upsells: ['Ask about personalization or presentation options'],
 		studioFlow: 'single-design',
 		checkoutQuantity: 3,
 		checkoutPrintSize: '8x10',
-		badge: 'Most popular'
 	},
 	{
 		id: 'deluxe',
@@ -199,20 +183,13 @@ export const packageTiers: PackageTier[] = [
 		primarySize: 'Family set',
 		quantityLabel: '5 holographs',
 		description:
-			'The best value if you want enough for family, a fridge gallery, or a fuller gift set.',
-		included: [
-			'5 custom holographs',
-			'Rounded corners included',
-			'Live preview before checkout',
-			'Free shipping'
-		],
+			'A five-piece set for family gifting, a fridge gallery, or a fuller keepsake collection.',
+		included: ['5 custom holographs', 'Choose an available size in the customizer', 'Use one saved photo for the set'],
 		sizeOptions: ['5x7', '8x10'],
-		upsells: ['Extra copies', 'Rush shipping', 'Custom note'],
-		perceivedValue: '$75–$95',
+		upsells: ['Ask about personalization or presentation options'],
 		studioFlow: 'single-design',
 		checkoutQuantity: 5,
 		checkoutPrintSize: '8x10',
-		badge: 'Best value'
 	},
 	{
 		id: 'business',
@@ -225,13 +202,11 @@ export const packageTiers: PackageTier[] = [
 			'For events, creator kits, boutique gifting, or larger orders that need a cleaner per-piece price.',
 		included: [
 			'10 custom holographs',
-			'Best for one design in a larger run',
-			'Live preview before checkout',
-			'Free shipping'
+			'One saved photo for the set',
+			'Choose an available size in the customizer'
 		],
 		sizeOptions: ['5x7', '8x10', 'Mixed sizes'],
-		upsells: ['Rush production', 'Extra units', 'Branded insert card'],
-		perceivedValue: '$145–$180',
+		upsells: ['Ask about brand or event customization'],
 		studioFlow: 'single-design',
 		checkoutQuantity: 10,
 		checkoutPrintSize: 'Mixed sizes'
@@ -247,37 +222,34 @@ export const packageTiers: PackageTier[] = [
 		description:
 			'For memorial tables, boutique displays, wedding installations, and truly oversized emotional keepsakes.',
 		included: [
-			'Custom sizing consultation',
-			'Enhanced proofing',
-			'Overlay placement support',
-			'Boutique presentation packaging'
+			'Sizing and production details confirmed before purchase',
+			'Custom quote required'
 		],
 		sizeOptions: ['11x14', '16x20', 'Custom'],
-		upsells: ['Display easel', 'Duplicate commission', 'Hand-finished inscription'],
-		perceivedValue: '$375–$500+'
+		upsells: ['Discuss options in a custom quote']
 	}
 ];
 
 export const addOns: AddOn[] = [
 	{
-		name: 'Extra copies',
-		priceLabel: 'Ask at checkout',
-		description: 'Add matching pieces for family gifting or extra display copies.'
+		name: 'Additional copies',
+		priceLabel: 'Quote required',
+		description: 'Not sold as an online add-on. Ask before checkout for availability and pricing.'
 	},
 	{
-		name: 'Rush shipping',
-		priceLabel: '$18',
-		description: 'Move your order faster when timing matters.'
+		name: 'Timing requests',
+		priceLabel: 'Quote required',
+		description: 'Contact Holographe to confirm whether a timing request can be accommodated.'
 	},
 	{
-		name: 'Custom overlay',
-		priceLabel: '$14',
-		description: 'Add a short name, date, phrase, or personal detail.'
+		name: 'Custom personalization',
+		priceLabel: 'Included tools or quote required',
+		description: 'Use the customizer for a photo, overlay, and note. Ask for anything beyond those tools.'
 	},
 	{
-		name: 'Gift-ready wrap',
-		priceLabel: '$8',
-		description: 'Make it feel more giftable without changing the order process.'
+		name: 'Presentation options',
+		priceLabel: 'Quote required',
+		description: 'Not currently available as an online purchase. Ask for a custom quote.'
 	},
 	{
 		name: 'Larger custom orders',

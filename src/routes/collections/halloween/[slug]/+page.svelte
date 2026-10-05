@@ -8,6 +8,9 @@
 	const design = $derived(data.design);
 	const productPackage = $derived(data.productPackage);
 	const variant = $derived(data.variant);
+	const unitPrice = $derived(variant ? `$${(variant.priceCents / 100).toFixed(2)}` : '');
+	const totalPrice = $derived(variant ? `$${((variant.priceCents * data.quantity) / 100).toFixed(2)}` : '');
+	const requiresPersonalization = $derived(Boolean(variant && /personalized|custom/i.test(variant.id)));
 </script>
 
 <svelte:head>
@@ -40,8 +43,13 @@
 					<span>Your mural</span>
 					<strong>{design.name}</strong>
 					<p>Format: {productPackage.editionName}</p>
-					<p>Price: {productPackage.priceLabel}</p>
-					<p>Quantity: {data.quantity}</p>
+					<p>Selected variant: {variant?.label ?? variant?.id ?? 'Choose an option'}</p>
+					{#if requiresPersonalization}
+						<p>Pricing: Custom quote required before checkout.</p>
+					{:else}
+						<p>Unit price: {unitPrice}</p>
+						<p>Quantity: {data.quantity} · Total: {totalPrice}</p>
+					{/if}
 				</section>
 				{#if productPackage.variants.length > 1}
 					<fieldset class="variant-picker">
@@ -67,7 +75,7 @@
 						{/each}
 					</fieldset>
 				{/if}
-				{#if variant}
+				{#if variant && !requiresPersonalization}
 					<form method="POST" action="/checkout" class="reserve-form">
 						<input type="hidden" name="product" value="halloween-seasonal-release" />
 						<input type="hidden" name="design_slug" value={design.slug} />
@@ -76,6 +84,12 @@
 						<input type="hidden" name="quantity" value={data.quantity} />
 						<button type="submit" class="reserve-button">Reserve Your Edition</button>
 					</form>
+				{:else if variant}
+					<section class="personalization-handoff" aria-label="Personalized Halloween order">
+						<strong>Personalized Halloween orders need a fulfillment brief before checkout.</strong>
+						<p>Contact Holographe with your design details so the required artwork, proofing, and order association can be confirmed.</p>
+						<a class="reserve-button" href={`/contact?product=halloween&design=${encodeURIComponent(design.slug)}&variant=${encodeURIComponent(variant.id)}`}>Contact about this personalized edition</a>
+					</section>
 				{/if}
 			{/if}
 			<p class="availability-note">
@@ -165,6 +179,8 @@
 		color: #e8c08e;
 		font-size: 0.9rem;
 	}
+	.personalization-handoff { display:grid; gap:.75rem; margin-top:1.2rem; padding:1rem; border:1px solid rgba(234,195,143,.28); border-radius:1rem; background:rgba(235,183,111,.08); }
+	.personalization-handoff p { margin:0; color:var(--muted); }
 
 	.selected-summary {
 		display: grid;

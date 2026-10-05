@@ -1,16 +1,17 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	const highlights = [
 		{
 			title: 'Shimmer',
-			copy: 'A light-catching finish that feels more alive and premium than a flat photo print.'
+			copy: 'The real product catches light differently as you move it.', image: '/holographe/jessholo.png'
 		},
 		{
 			title: 'Color',
-			copy: 'Brighter tone, richer atmosphere, and a more giftable visual presence.'
+			copy: 'Color and contrast are visible in the source photo and the finished example.', image: '/holographe/lydholowed.png'
 		},
 		{
 			title: 'Personal detail',
-			copy: 'Room for names, dates, handwriting, artwork, and the details people actually remember.'
+			copy: 'The customizer supports a saved photo, an optional overlay, and an optional note.', image: '/holographe/packaging-front.png'
 		}
 	] as const;
 </script>
@@ -32,14 +33,15 @@
 			<div class="hero-card">
 				<p class="hero-kicker">Feel</p>
 				<h2>Glossy. Colorful. Personal.</h2>
-				<p>That’s the difference.</p>
+				<p>See examples, then make a version with your own photo.</p>
+				<a class="button-primary" href={resolve('/customize')}>Customize a photo magnet</a>
 			</div>
 		</section>
 
 		<section class="highlight-grid">
 			{#each highlights as item (item.title)}
 				<article class="highlight-card glass-card">
-					<div class="swatch"></div>
+					<img src={item.image} alt={`${item.title} product example`} />
 					<h2>{item.title}</h2>
 					<p>{item.copy}</p>
 				</article>
@@ -60,7 +62,7 @@
 		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
 		letter-spacing: -0.04em;
-		color: #f8f8f5;
+		color: var(--text);
 	}
 
 	h1 {
@@ -121,6 +123,10 @@
 		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 	}
 
+	.hero-card h2 {
+		color: #f8f8f5;
+	}
+
 	.hero-kicker {
 		font-size: 0.72rem;
 		font-weight: 700;
@@ -147,13 +153,7 @@
 		box-shadow: 0 24px 52px rgba(4, 10, 22, 0.22);
 	}
 
-	.swatch {
-		width: 100%;
-		height: 0.95rem;
-		border-radius: 999px;
-		background: linear-gradient(90deg, #7af0ff, #ffd36d, #ff86a3);
-		box-shadow: 0 10px 24px rgba(122, 240, 255, 0.18);
-	}
+	.highlight-card img { width:100%; aspect-ratio: 4/3; object-fit:cover; border-radius:1rem; }
 
 	@media (max-width: 960px) {
 		.product-hero,
