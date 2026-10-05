@@ -57,7 +57,7 @@
 		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
 		letter-spacing: -0.04em;
-		color: #f8f8f5;
+		color: var(--text);
 	}
 
 	h1 {

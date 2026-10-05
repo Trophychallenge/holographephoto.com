@@ -197,6 +197,9 @@
 		padding: clamp(2rem, 6vw, 5.5rem) 0 4rem;
 	}
 	.collection-hero {
+		--text: #fff7fb;
+		--muted: #d8c5dc;
+		color: var(--text);
 		display: grid;
 		grid-template-columns: minmax(0, 1.1fr) minmax(15rem, 0.62fr);
 		gap: clamp(2rem, 7vw, 7rem);

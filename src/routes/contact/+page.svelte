@@ -47,7 +47,7 @@
 		font-weight: 500;
 		letter-spacing: -0.05em;
 		line-height: 0.96;
-		color: #faf7f1;
+		color: var(--text);
 		text-wrap: balance;
 	}
 

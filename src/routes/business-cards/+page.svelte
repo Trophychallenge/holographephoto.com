@@ -254,6 +254,16 @@
 			linear-gradient(135deg, #311342, #101a3a 72%);
 		box-shadow: 0 30px 80px rgba(5, 1, 20, 0.32);
 	}
+
+	.brand-hero h1,
+	.brand-hero .lead {
+		color: #fff7fb;
+	}
+
+	.brand-hero .hero-copy > p,
+	.brand-hero .hero-details {
+		color: #e5d1e8;
+	}
 	h1,
 	h2,
 	h3 {

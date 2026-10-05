@@ -63,7 +63,7 @@
 		font-family: 'Georgia', 'Iowan Old Style', serif;
 		font-weight: 500;
 		letter-spacing: -0.04em;
-		color: #f8f8f5;
+		color: var(--text);
 	}
 
 	h1 {
@@ -123,6 +123,10 @@
 			rgba(8, 16, 30, 0.76);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	}
+
+	.hero-card h2 {
+		color: #f8f8f5;
 	}
 
 	.hero-kicker,
