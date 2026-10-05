@@ -3,10 +3,10 @@
 </script>
 
 <svelte:head>
-	<title>Payment Received | Holograph</title>
+	<title>Payment Received | Holographe</title>
 	<meta
 		name="description"
-		content="Your Holograph payment was received. Next, send your photo and customization details if needed."
+		content="Your Holographe payment was received. Next, send your photo and customization details if needed."
 	/>
 </svelte:head>
 

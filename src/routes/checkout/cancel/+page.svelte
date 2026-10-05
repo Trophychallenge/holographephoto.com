@@ -3,8 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Checkout Canceled | Holograph</title>
-	<meta name="description" content="Your Holograph checkout was canceled. No payment was taken." />
+	<title>Checkout Canceled | Holographe</title>
+	<meta name="description" content="Your Holographe checkout was canceled. No payment was taken." />
 </svelte:head>
 
 <section class="section">
@@ -12,9 +12,13 @@
 		<div class="glass-card status-card">
 			<p class="eyebrow">Checkout canceled</p>
 			<h1>No payment was taken.</h1>
-			<p>You can try again or ask for a quote.</p>
+			<p>
+				Your saved photo draft is available in the same browser tab. Return to it below, or choose
+				your Halloween edition again.
+			</p>
 			<div class="button-row">
-				<a class="button-primary" href={resolve('/prices')}>Back to checkout</a>
+				<a class="button-primary" href={resolve('/customize')}>Return to your photo order</a>
+				<a class="button-secondary" href={resolve('/collections/halloween')}>Return to Halloween</a>
 				<a class="button-secondary" href="/contact">Contact Christina</a>
 			</div>
 		</div>

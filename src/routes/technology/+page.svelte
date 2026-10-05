@@ -16,11 +16,8 @@
 </script>
 
 <svelte:head>
-	<title>Product | Holograph</title>
-	<meta
-		name="description"
-		content="See what gives Holograph its glow."
-	/>
+	<title>Product | Holographe</title>
+	<meta name="description" content="See what gives Holographe its glow." />
 </svelte:head>
 
 <section class="section product-page">

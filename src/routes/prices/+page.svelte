@@ -41,7 +41,7 @@
 		if (!quantity) return resolve('/contact');
 		const params = new URLSearchParams({ order: '1', package: String(quantity) });
 		if (size) params.set('size', size);
-		return `${resolve('/')}?${params.toString()}#preview-builder`;
+		return `${resolve('/customize')}?${params.toString()}`;
 	}
 
 	function handleWindowKeydown(event: KeyboardEvent) {
@@ -50,11 +50,8 @@
 </script>
 
 <svelte:head>
-	<title>Pricing | Holograph</title>
-	<meta
-		name="description"
-		content="Choose a Holograph package, open it like a premium selection screen, and start your order."
-	/>
+	<title>Pricing | Holographe</title>
+	<meta name="description" content="Choose a Holographe package and start your order." />
 </svelte:head>
 
 <svelte:window onkeydown={handleWindowKeydown} />
@@ -62,9 +59,9 @@
 <section class="section pricing-page">
 	<div class="pricing-stage">
 		<section class="pricing-hero glass-card">
-			<p class="eyebrow">Selection Screen</p>
+			<p class="eyebrow">Pricing</p>
 			<h1>Choose your set.</h1>
-			<p>Open a tier. Pick a size. Start your order.</p>
+			<p>Pick a set, then choose your size.</p>
 		</section>
 
 		<section class="selection-grid" aria-label="Package selection">
@@ -232,6 +229,8 @@
 
 	.pricing-page {
 		display: block;
+		position: relative;
+		padding: clamp(0.5rem, 2vw, 1.5rem) 0;
 	}
 
 	.pricing-stage {
@@ -251,6 +250,19 @@
 		text-align: center;
 		gap: 0.55rem;
 		padding: 1.1rem;
+	}
+
+	.pricing-hero {
+		padding: clamp(1.7rem, 5vw, 3.5rem);
+		border-color: rgba(255, 235, 206, 0.48);
+		background:
+			radial-gradient(circle at 13% 20%, rgba(255, 207, 229, 0.36), transparent 30%),
+			radial-gradient(circle at 87% 20%, rgba(158, 232, 255, 0.3), transparent 32%),
+			linear-gradient(135deg, #40194d, #17234b);
+	}
+
+	.pricing-hero h1 {
+		font-size: clamp(2.7rem, 6vw, 4.8rem);
 	}
 
 	.selection-grid {
@@ -273,7 +285,7 @@
 		max-width: 16.5rem;
 		width: 100%;
 		padding: 1rem 0.9rem 1.1rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.16);
 		cursor: pointer;
 		overflow: hidden;
 		transition:
@@ -290,6 +302,11 @@
 			0 26px 54px rgba(0, 0, 0, 0.32),
 			0 0 40px rgba(255, 228, 196, 0.08);
 		filter: saturate(1.08);
+	}
+
+	.selection-card:focus-visible {
+		outline: 3px solid #bff4ff;
+		outline-offset: 4px;
 	}
 
 	.selection-frame,
