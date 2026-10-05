@@ -1022,9 +1022,19 @@
 	}
 
 	.studio-shell {
+		/* This workspace is intentionally dark; do not inherit the site-wide plum ink token here. */
+		--text: #fffaff;
+		--muted: #e2d8e8;
+		--accent: #f1c5ff;
+		--line: rgba(239, 218, 255, 0.34);
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
+	}
+
+	.studio-shell :is(button, a, input, select, textarea):focus-visible {
+		outline: 3px solid #81efff;
+		outline-offset: 3px;
 	}
 	/* The build follows the shopper's sequence: upload, personalize, then review. */
 	.studio-hero { order: 3; }
