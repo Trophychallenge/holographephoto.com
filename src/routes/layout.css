@@ -3,17 +3,17 @@
 @plugin '@tailwindcss/typography';
 
 :root {
-	--bg: #10091d;
-	--bg-soft: #1b102b;
-	--panel: rgba(28, 15, 48, 0.78);
-	--panel-strong: rgba(18, 8, 34, 0.94);
-	--text: #fffaf3;
-	--muted: #dacfe1;
-	--accent: #ffcfde;
-	--accent-2: #fff0d6;
-	--accent-3: #a9eeff;
-	--line: rgba(240, 221, 255, 0.18);
-	--shadow: 0 30px 90px rgba(8, 2, 24, 0.42);
+	--bg: #fff7eb;
+	--bg-soft: #f8eadf;
+	--panel: rgba(255, 251, 244, 0.86);
+	--panel-strong: rgba(255, 249, 240, 0.96);
+	--text: #32153e;
+	--muted: #654f69;
+	--accent: #7828c7;
+	--accent-2: #ffe2bb;
+	--accent-3: #207d98;
+	--line: rgba(73, 27, 83, 0.16);
+	--shadow: 0 24px 70px rgba(83, 40, 77, 0.14);
 	--frame-rail: min(960px, calc(100vw - 1.6rem));
 	font-family: 'Avenir Next', 'Helvetica Neue', sans-serif;
 	color: var(--text);
@@ -21,7 +21,7 @@
 		radial-gradient(circle at 7% 3%, rgba(255, 197, 226, 0.19), transparent 23%),
 		radial-gradient(circle at 88% 10%, rgba(125, 231, 255, 0.16), transparent 21%),
 		radial-gradient(circle at 50% 98%, rgba(255, 220, 164, 0.13), transparent 27%),
-		linear-gradient(160deg, #150a26 0%, #0c1128 48%, #180b24 100%);
+		linear-gradient(160deg, #fff8ed 0%, #f9e8f0 48%, #e7f7fa 100%);
 }
 
 html {
@@ -78,7 +78,7 @@ textarea {
 
 .glass-card {
 	background:
-		linear-gradient(145deg, rgba(47, 22, 67, 0.9), rgba(16, 18, 45, 0.9)),
+		linear-gradient(145deg, rgba(255, 251, 244, 0.94), rgba(248, 238, 249, 0.92)),
 		radial-gradient(circle at 84% 4%, rgba(172, 237, 255, 0.14), transparent 36%),
 		radial-gradient(circle at 12% 90%, rgba(255, 184, 220, 0.13), transparent 34%);
 	border: 1px solid var(--line);
@@ -232,9 +232,7 @@ a:focus-visible {
 	padding: 0.58rem 0.72rem;
 	border: 1px solid var(--line);
 	border-radius: 999px;
-	background:
-		linear-gradient(110deg, rgba(43, 20, 67, 0.92), rgba(13, 23, 51, 0.92)),
-		rgba(16, 9, 31, 0.9);
+	background: linear-gradient(110deg, rgba(255, 250, 242, 0.94), rgba(249, 237, 249, 0.94));
 	backdrop-filter: blur(18px);
 	box-shadow: 0 16px 44px rgba(3, 10, 24, 0.18);
 }
