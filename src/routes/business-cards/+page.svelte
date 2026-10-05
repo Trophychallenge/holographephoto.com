@@ -15,6 +15,13 @@
 	let uploadVersion = 0;
 	let abortUpload: AbortController | null = null;
 	let submitting = $state(false);
+	let name = $state('');
+	let email = $state('');
+	let businessName = $state('');
+	let quantity = $state('50');
+	let websiteOrQr = $state('');
+	let neededBy = $state('');
+	let designNotes = $state('');
 
 	const acceptedTypes = new Set(['image/jpeg', 'image/png', 'application/pdf']);
 	const maxArtworkBytes = 4_500_000;
@@ -22,6 +29,13 @@
 	onMount(() => {
 		draftId = form?.values?.draftId || crypto.randomUUID();
 		idempotencyKey = form?.values?.idempotencyKey || crypto.randomUUID();
+		name = form?.values?.name || '';
+		email = form?.values?.email || '';
+		businessName = form?.values?.businessName || '';
+		quantity = form?.values?.quantity || '50';
+		websiteOrQr = form?.values?.websiteOrQr || '';
+		neededBy = form?.values?.neededBy || '';
+		designNotes = form?.values?.designNotes || '';
 	});
 
 	function artworkPath(file: File) {
@@ -168,21 +182,21 @@
 			submitting = true;
 			return async ({ update }) => { await update(); submitting = false; };
 		}}>
-			<label>Your name<input name="name" autocomplete="name" required maxlength="100" value={form?.values?.name ?? ''} /></label>
-			<label>Email<input name="email" type="email" autocomplete="email" required maxlength="254" value={form?.values?.email ?? ''} /></label>
-			<label>Business name<input name="businessName" autocomplete="organization" required maxlength="100" value={form?.values?.businessName ?? ''} /></label>
+			<label>Your name<input name="name" autocomplete="name" required maxlength="100" bind:value={name} /></label>
+			<label>Email<input name="email" type="email" autocomplete="email" required maxlength="254" bind:value={email} /></label>
+			<label>Business name<input name="businessName" autocomplete="organization" required maxlength="100" bind:value={businessName} /></label>
 			<label>How many magnets?<select name="quantity" required
-					><option selected={(form?.values?.quantity ?? '50') === '50'}>50</option><option selected={form?.values?.quantity === '100'}>100</option><option selected={form?.values?.quantity === '250'}>250</option><option selected={form?.values?.quantity === '500'}>500</option><option selected={form?.values?.quantity === '700'}>700</option
-					><option selected={form?.values?.quantity === '1,000+'}>1,000+</option><option selected={form?.values?.quantity === 'Help me decide'}>Help me decide</option></select
+					bind:value={quantity}><option>50</option><option>100</option><option>250</option><option>500</option><option>700</option
+					><option>1,000+</option><option>Help me decide</option></select
 				></label
 			>
-			<label>Website or QR destination (optional)<input name="websiteOrQr" type="url" maxlength="500" placeholder="https://example.com" value={form?.values?.websiteOrQr ?? ''} /></label>
-			<label>Needed by (optional)<input name="neededBy" type="date" value={form?.values?.neededBy ?? ''} /></label>
+			<label>Website or QR destination (optional)<input name="websiteOrQr" type="url" maxlength="500" placeholder="https://example.com" bind:value={websiteOrQr} /></label>
+			<label>Needed by (optional)<input name="neededBy" type="date" bind:value={neededBy} /></label>
 			<label>Design notes<textarea name="designNotes"
 					rows="4"
 					maxlength="1500"
 					placeholder="Share design ideas, your QR destination, and any details that matter."
-				>{form?.values?.designNotes ?? ''}</textarea></label
+				bind:value={designNotes}></textarea></label
 			>
 			<input type="hidden" name="artworkPathname" value={artwork?.pathname ?? ''} />
 			<input type="hidden" name="draftId" value={draftId} />
