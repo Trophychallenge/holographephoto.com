@@ -4,14 +4,6 @@ import type { QuoteRequest } from '$lib/server/quotes';
 
 const PUSHOVER_API_URL = 'https://api.pushover.net/1/messages.json';
 
-function pushoverCredentials() {
-	// Read the runtime environment directly in serverless action invocations. The dynamic
-	// SvelteKit proxy remains the fallback for local adapters and test environments.
-	const token = process.env.PUSHOVER_TOKEN || env.PUSHOVER_TOKEN;
-	const user = process.env.PUSHOVER_USER_KEY || env.PUSHOVER_USER_KEY;
-	return { token, user };
-}
-
 function formatCurrency(amountTotal: number | null, currency: string | null) {
 	if (typeof amountTotal !== 'number' || !currency) return 'Amount unavailable';
 
@@ -56,14 +48,13 @@ export async function sendPushoverOrderAlert(
 	fetch: typeof globalThis.fetch,
 	session: StripeCheckoutSession
 ) {
-	const { token, user } = pushoverCredentials();
-	if (!token || !user) {
+	if (!env.PUSHOVER_TOKEN || !env.PUSHOVER_USER_KEY) {
 		return { sent: false, reason: 'missing-config' as const };
 	}
 
 	const body = new URLSearchParams({
-		token,
-		user,
+		token: env.PUSHOVER_TOKEN,
+		user: env.PUSHOVER_USER_KEY,
 		title: 'New Holograph order',
 		message: buildOrderMessage(session),
 		priority: '0'
@@ -86,8 +77,7 @@ export async function sendPushoverOrderAlert(
 }
 
 export async function sendPushoverQuoteAlert(fetch: typeof globalThis.fetch, quote: QuoteRequest) {
-	const { token, user } = pushoverCredentials();
-	if (!token || !user) {
+	if (!env.PUSHOVER_TOKEN || !env.PUSHOVER_USER_KEY) {
 		return { sent: false, reason: 'missing-config' as const };
 	}
 
@@ -99,8 +89,8 @@ export async function sendPushoverQuoteAlert(fetch: typeof globalThis.fetch, quo
 		`Reference: ${quote.id}`
 	]);
 	const body = new URLSearchParams({
-		token,
-		user,
+		token: env.PUSHOVER_TOKEN,
+		user: env.PUSHOVER_USER_KEY,
 		title: quote.designNotes.includes('SYNTHETIC TEST DATA')
 			? 'TEST — Holographe quote alert'
 			: 'New Holographe quote request',

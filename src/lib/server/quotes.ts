@@ -89,7 +89,9 @@ export async function findQuoteByIdempotencyKey(key: string): Promise<QuoteReque
 }
 
 export async function storeQuoteRequest(request: QuoteRequest) {
-	const options = { ...quoteBlobOptions(), access: 'private' as const, addRandomSuffix: false, contentType: 'application/json' };
+	// A quote is first stored before notification, then stored again with its final
+	// notification status. Named private Blobs require an explicit overwrite.
+	const options = { ...quoteBlobOptions(), access: 'private' as const, addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' };
 	await put(quoteRequestPathname(request), JSON.stringify(request), options);
 	await put(idempotencyPathname(request.idempotencyKey), JSON.stringify(request), options);
 }

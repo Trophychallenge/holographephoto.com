@@ -13,6 +13,7 @@ vi.mock('@vercel/blob', () => blobMock);
 import {
 	listRecentQuoteRequests,
 	quoteArtworkMaxBytes,
+	storeQuoteRequest,
 	validateQuoteArtwork
 } from './quotes';
 
@@ -68,5 +69,17 @@ describe('private quote storage', () => {
 		const requests = await listRecentQuoteRequests(1);
 		expect(requests.map((request) => request.id)).toEqual(['new']);
 		expect(blobMock.list).toHaveBeenCalledTimes(2);
+	});
+
+	it('allows a quote record to be overwritten when notification status changes', async () => {
+		await storeQuoteRequest({
+			id: 'test-quote', createdAt: '2026-10-05T00:00:00.000Z', name: 'Test', email: 'test@example.invalid',
+			businessName: 'Test business', quantity: '50', websiteOrQr: '', neededBy: '', designNotes: '',
+			artwork: null, emailNotification: 'sent', idempotencyKey: '12345678-1234-1234-1234-123456789012'
+		});
+		expect(blobMock.put).toHaveBeenCalledTimes(2);
+		expect(blobMock.put).toHaveBeenCalledWith(
+			expect.any(String), expect.any(String), expect.objectContaining({ allowOverwrite: true })
+		);
 	});
 });
