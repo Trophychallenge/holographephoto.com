@@ -76,6 +76,8 @@
 	}
 
 	.page-shell {
+		--text: #fff7fb;
+		--muted: #d8c5dc;
 		min-height: 100vh;
 		position: relative;
 		display: grid;
@@ -101,7 +103,7 @@
 		line-height: 0.88;
 	}
 
-	.studio-intro h1 em { color: #e9bfe5; font-weight: 400; }
+	.studio-intro h1 em { color: #f5c9ee; font-weight: 400; }
 	.studio-intro > p:last-of-type { max-width: 38rem; margin: 1.5rem auto 0; color: var(--muted); font-size: clamp(1rem, 2vw, 1.15rem); line-height: 1.65; }
 	.studio-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; margin-top: 2rem; }
 	.studio-links a { border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: .8rem 1rem; background: rgba(255,255,255,.06); color: var(--text); font-weight: 700; }
