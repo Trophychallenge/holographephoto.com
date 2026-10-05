@@ -6,14 +6,24 @@
 </script>
 
 <svelte:head>
-	<title>The Holographe Halloween Collection | Holographe</title>
+	<title>Holographe | Photo magnets that change in the light</title>
 	<meta
 		name="description"
-		content="Limited seasonal magnetic decor designed to come alive in the light."
+		content="Holographic photo magnets, business-card magnets, and seasonal pieces made to shift in the light."
 	/>
 </svelte:head>
 
 <div class="page-shell">
+	<section class="studio-intro" aria-labelledby="studio-title">
+		<p class="eyebrow">Holographic keepsakes, made personal</p>
+		<h1 id="studio-title">A little light<br />changes <em>everything.</em></h1>
+		<p>Holographe turns favorite photos, business cards, and seasonal artwork into magnetic pieces that come alive as you move.</p>
+		<div class="studio-links" aria-label="Shop Holographe">
+			<a href={resolve('/customize')}>Photo Magnets <span aria-hidden="true">→</span></a>
+			<a href={resolve('/business-cards')}>Business Cards <span aria-hidden="true">→</span></a>
+			<a href={resolve('/collections/halloween')}>Halloween Edition <span aria-hidden="true">→</span></a>
+		</div>
+	</section>
 	<HalloweenFeature />
 	<CarnivalFeature />
 	<BusinessFeature />
@@ -71,6 +81,32 @@
 		display: grid;
 		gap: 0.25rem;
 	}
+
+	.studio-intro {
+		position: relative;
+		z-index: 1;
+		width: min(1120px, calc(100vw - 2rem));
+		margin: 0 auto;
+		padding: clamp(3rem, 8vw, 7rem) 0 clamp(2rem, 4vw, 4rem);
+		text-align: center;
+	}
+
+	.studio-intro h1 {
+		max-width: 13ch;
+		margin: 1rem auto;
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(3.4rem, 9vw, 7.4rem);
+		font-weight: 500;
+		letter-spacing: -0.065em;
+		line-height: 0.88;
+	}
+
+	.studio-intro h1 em { color: #e9bfe5; font-weight: 400; }
+	.studio-intro > p:last-of-type { max-width: 38rem; margin: 1.5rem auto 0; color: var(--muted); font-size: clamp(1rem, 2vw, 1.15rem); line-height: 1.65; }
+	.studio-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; margin-top: 2rem; }
+	.studio-links a { border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: .8rem 1rem; background: rgba(255,255,255,.06); color: var(--text); font-weight: 700; }
+	.studio-links a:first-child { border-color: transparent; background: linear-gradient(100deg, #ffd5dd, #e8c4ff 48%, #c7f1ff); color: #2b1433; }
+	.studio-links a span { margin-left: .35rem; }
 
 	.page-shell::before {
 		content: '';
