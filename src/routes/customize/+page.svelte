@@ -64,8 +64,8 @@
 	];
 
 	const reelTags = ['Real shimmer', 'Closer preview', 'Deluxe finish'];
-	const heroVideoSrc = '/holographe/hero-reel.mov';
-	const heroVideoPoster = '/holographe/lydholowed.png';
+	const heroVideoSrc = '/holographe/hero-premium.mp4';
+	const heroVideoPoster = '/holographe/hero-premium-poster.jpg';
 
 	let activePreview = $state(previews[0]);
 	let activeModeId = $state<GiftMode['id']>('quiet');
@@ -787,8 +787,8 @@
 						aria-label="Reference video preview of the holographic keepsake"
 					>
 						<p>
-							Your browser does not support embedded video.
-							<a href={heroVideoSrc}>Open the preview reel directly.</a>
+							Your browser could not play the preview.
+							<a href={heroVideoSrc}>Open the product video directly.</a>
 						</p>
 					</video>
 					<div class="reel-glow"></div>

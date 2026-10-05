@@ -1,15 +1,36 @@
 <script lang="ts">
-	let business = $state('');
-	let name = $state('');
-	let quantity = $state('100');
-	let notes = $state('');
-	let quoteReady = $state(false);
-	const emailHref = $derived(
-		`mailto:admin@holographephoto.com?${new URLSearchParams({
-			subject: `Business card magnet quote — ${business || 'New inquiry'}`,
-			body: `Hi Christina,\n\nI'd like a quote for holographic business card magnets.\n\nName: ${name}\nBusiness: ${business}\nQuantity: ${quantity}\nDetails, website/QR link, and event date: ${notes}\n\nI'll attach my logo or existing card design.\n`
-		})}`
-	);
+	import type { ActionData } from './$types';
+	let { form }: { form: ActionData } = $props();
+	let artwork = $state<{ pathname: string; filename: string; contentType: string; size: number } | null>(null);
+	let pendingArtwork = $state<File | null>(null);
+	let artworkError = $state('');
+	let uploadState = $state<'idle' | 'uploading' | 'saved' | 'failed'>('idle');
+	let draftId = $state('');
+
+	async function uploadArtwork(file: File) {
+		pendingArtwork = file;
+		artworkError = '';
+		if (!/\.(jpe?g|png|pdf)$/i.test(file.name) || file.size > 10 * 1024 * 1024) {
+			uploadState = 'failed';
+			artworkError = 'Choose a JPG, PNG, or PDF no larger than 10 MB.';
+			return;
+		}
+		draftId ||= crypto.randomUUID();
+		uploadState = 'uploading';
+		try {
+			const body = new FormData();
+			body.set('artwork', file);
+			body.set('draftId', draftId);
+			const response = await fetch('/api/quote-artwork', { method: 'POST', body });
+			const result = (await response.json()) as { artwork?: typeof artwork; error?: string };
+			if (!response.ok || !result.artwork) throw new Error(result.error || 'Artwork could not be saved.');
+			artwork = result.artwork;
+			uploadState = 'saved';
+		} catch (error) {
+			uploadState = 'failed';
+			artworkError = error instanceof Error ? error.message : 'Artwork could not be saved.';
+		}
+	}
 </script>
 
 <svelte:head>
@@ -97,48 +118,41 @@
 				>
 			</p>
 		</div>
-		<form
-			class="quote-form"
-			onsubmit={(event) => {
-				event.preventDefault();
-				quoteReady = true;
-			}}
-		>
-			<label
-				>Your name<input autocomplete="name" required maxlength="100" bind:value={name} /></label
-			>
-			<label
-				>Business name<input
-					autocomplete="organization"
-					required
-					maxlength="100"
-					bind:value={business}
-				/></label
-			>
-			<label
-				>How many magnets?<select bind:value={quantity}
+		<form class="quote-form" method="POST">
+			<label>Your name<input name="name" autocomplete="name" required maxlength="100" /></label>
+			<label>Email<input name="email" type="email" autocomplete="email" required maxlength="254" /></label>
+			<label>Business name<input name="businessName" autocomplete="organization" required maxlength="100" /></label>
+			<label>How many magnets?<select name="quantity" required
 					><option>50</option><option>100</option><option>250</option><option>500</option><option
 						>700</option
 					><option>1,000+</option><option>Help me decide</option></select
 				></label
 			>
-			<label
-				>Design details<textarea
+			<label>Website or QR destination (optional)<input name="websiteOrQr" type="url" maxlength="500" placeholder="https://example.com" /></label>
+			<label>Needed by (optional)<input name="neededBy" type="date" /></label>
+			<label>Design notes<textarea name="designNotes"
 					rows="4"
 					maxlength="1500"
-					bind:value={notes}
-					placeholder="Your website or QR destination, design ideas, and the date you need them."
+					placeholder="Share design ideas, your QR destination, and any details that matter."
 				></textarea></label
 			>
-			<button type="submit" class="button-primary">Prepare my quote request</button>
+			<input type="hidden" name="artworkPathname" value={artwork?.pathname ?? ''} />
+			<input type="hidden" name="artworkFilename" value={artwork?.filename ?? ''} />
+			<input type="hidden" name="artworkContentType" value={artwork?.contentType ?? ''} />
+			<input type="hidden" name="artworkSize" value={artwork?.size ?? ''} />
+			<div class="artwork-upload">
+				<label>Artwork (optional)<input type="file" accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf" onchange={(event) => { const file = (event.currentTarget as HTMLInputElement).files?.[0]; if (file) uploadArtwork(file); }} /></label>
+				<p class="small">JPG, PNG, or PDF · up to 10 MB · stored privately for this request.</p>
+				{#if uploadState === 'uploading'}<p role="status">Uploading artwork…</p>{/if}
+				{#if artwork}<p role="status"><strong>{artwork.filename}</strong> saved privately. <button type="button" onclick={() => { artwork = null; pendingArtwork = null; uploadState = 'idle'; }}>Remove</button></p>{/if}
+				{#if uploadState === 'failed'}<p class="upload-error" role="alert">{artworkError} {#if pendingArtwork}<button type="button" onclick={() => uploadArtwork(pendingArtwork!)}>Retry upload</button>{/if}</p>{/if}
+			</div>
+			<button type="submit" class="button-primary" disabled={uploadState === 'uploading'}>Send quote request</button>
 			<p class="small">
-				This prepares an email to Christina. Nothing is sent until you send it from your email app.
-				Attach your artwork there.
+				We’ll save your request before confirming it. For immediate help, call <a href="tel:+15122563720">512-256-3720</a> or email <a href="mailto:admin@holographephoto.com">admin@holographephoto.com</a>.
 			</p>
-			{#if quoteReady}<div class="quote-ready" role="status">
-					<p>Your request is ready.</p>
-					<a class="button-secondary" href={emailHref}>Open email to send your request</a>
-				</div>{/if}
+			{#if form?.error}<p class="upload-error" role="alert">{form.error}</p>{/if}
+			{#if form?.success}<div class="quote-ready" role="status"><p><strong>Request received.</strong> We saved your quote request.</p><p class="small">Email notification is not configured on this site yet, so delivery has not been claimed. Christina can view this request in the secure admin area.</p></div>{/if}
 		</form>
 	</section>
 </div>

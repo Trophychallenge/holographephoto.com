@@ -48,7 +48,9 @@ function isAuthorized(header: string | null, expectedUsername: string, expectedP
 export const handle: Handle = async ({ event, resolve }) => {
 	if (
 		!event.url.pathname.startsWith('/admin/orders') &&
-		!event.url.pathname.startsWith('/admin/inventory')
+		!event.url.pathname.startsWith('/admin/inventory') &&
+		!event.url.pathname.startsWith('/admin/quotes') &&
+		!event.url.pathname.startsWith('/admin/quote-artwork')
 	) {
 		return resolve(event);
 	}

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import type { PageData } from './$types';
+	let { data }: { data: PageData } = $props();
 </script>
 
 <svelte:head>
@@ -13,9 +15,16 @@
 <section class="section">
 	<div class="page-wrap">
 		<div class="glass-card status-card">
-			<p class="eyebrow">Payment received</p>
-			<h1>Your order is in.</h1>
-			<p>If we still need your photo or notes, send them now.</p>
+			<p class="eyebrow">Checkout status</p>
+			{#if data.state === 'paid'}
+				<h1>Payment received.</h1><p>Your secure checkout payment was verified. Your saved design details are already attached to the order.</p>
+			{:else if data.state === 'pending'}
+				<h1>Payment is still pending.</h1><p>Stripe has not confirmed payment yet. Do not submit another order unless Stripe shows that the first one failed.</p>
+			{:else if data.state === 'missing'}
+				<h1>We can’t verify this checkout.</h1><p>Return here from Stripe with the checkout link, or contact support with your receipt.</p>
+			{:else}
+				<h1>Checkout verification is temporarily unavailable.</h1><p>We cannot confirm payment right now. Check your Stripe receipt before trying again.</p>
+			{/if}
 			<div class="button-row">
 				<a class="button-primary" href="/contact">Contact Christina</a>
 				<a class="button-secondary" href={resolve('/gallery')}>See examples</a>

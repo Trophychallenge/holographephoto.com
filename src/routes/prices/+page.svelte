@@ -183,7 +183,7 @@
 				<div class="modal-stats">
 					<span>{activeTier.quantityLabel}</span>
 					<span>{selectedSizes[activeTier.id]}</span>
-					<span>{activeTier.perceivedValue}</span>
+					<span>{activeTier.quantityLabel}</span>
 				</div>
 
 				<a

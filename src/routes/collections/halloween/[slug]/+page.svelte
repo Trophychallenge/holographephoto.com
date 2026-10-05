@@ -8,6 +8,8 @@
 	const design = $derived(data.design);
 	const productPackage = $derived(data.productPackage);
 	const variant = $derived(data.variant);
+	const unitPrice = $derived(variant ? `$${(variant.priceCents / 100).toFixed(2)}` : '');
+	const totalPrice = $derived(variant ? `$${((variant.priceCents * data.quantity) / 100).toFixed(2)}` : '');
 </script>
 
 <svelte:head>
@@ -40,8 +42,9 @@
 					<span>Your mural</span>
 					<strong>{design.name}</strong>
 					<p>Format: {productPackage.editionName}</p>
-					<p>Price: {productPackage.priceLabel}</p>
-					<p>Quantity: {data.quantity}</p>
+					<p>Selected variant: {variant?.label ?? variant?.id ?? 'Choose an option'}</p>
+					<p>Unit price: {unitPrice}</p>
+					<p>Quantity: {data.quantity} · Total: {totalPrice}</p>
 				</section>
 				{#if productPackage.variants.length > 1}
 					<fieldset class="variant-picker">

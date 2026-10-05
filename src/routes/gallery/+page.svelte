@@ -27,7 +27,7 @@
 					<span>Glow</span>
 					<span>Giftable</span>
 				</div>
-				<a class="button-primary" href={`${resolve('/')}#preview-builder`}>Make The Magic</a>
+				<a class="button-primary" href={resolve('/customize')}>Make The Magic</a>
 			</div>
 		</section>
 
@@ -43,7 +43,7 @@
 				<p>See yours next.</p>
 			</div>
 			<div class="cta-actions">
-				<a class="button-primary" href={`${resolve('/')}#preview-builder`}>Bring It To Life</a>
+				<a class="button-primary" href={resolve('/customize')}>Bring It To Life</a>
 				<a class="button-secondary" href={resolve('/prices')}>See Bundles</a>
 			</div>
 		</section>
