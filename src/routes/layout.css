@@ -654,18 +654,21 @@ main {
 }
 @media (max-width: 640px) {
 	.site-header {
+		grid-template-columns: 4.65rem minmax(0, 1fr) auto;
+		gap: 0.3rem;
 		padding: 0.5rem;
 		margin-top: 0.6rem;
 	}
 	.brand-logo {
-		width: 4.5rem;
+		width: 4.1rem;
 	}
 	.brand-badge {
 		padding: 0.24rem;
 	}
 	.header-cta {
-		font-size: 0.95rem;
-		padding: 0.65rem 0.8rem;
+		font-size: 0.86rem;
+		padding: 0.65rem 0.58rem;
+		white-space: nowrap;
 	}
 	.site-footer {
 		grid-template-columns: 1fr;
