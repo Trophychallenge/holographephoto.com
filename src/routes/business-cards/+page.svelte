@@ -15,6 +15,7 @@
 	let uploadVersion = 0;
 	let abortUpload: AbortController | null = null;
 	let submitting = $state(false);
+	let submitError = $state('');
 	let name = $state('');
 	let email = $state('');
 	let businessName = $state('');
@@ -180,7 +181,16 @@
 		</div>
 		<form class="quote-form" method="POST" use:enhance={() => {
 			submitting = true;
-			return async ({ update }) => { await update(); submitting = false; };
+			submitError = '';
+			return async ({ update }) => {
+				try {
+					await update();
+				} catch {
+					submitError = 'We could not reach the server. Your details are still here; reconnect and try again.';
+				} finally {
+					submitting = false;
+				}
+			};
 		}}>
 			<label>Your name<input name="name" autocomplete="name" required maxlength="100" bind:value={name} /></label>
 			<label>Email<input name="email" type="email" autocomplete="email" required maxlength="254" bind:value={email} /></label>
@@ -213,6 +223,7 @@
 				We’ll save your request before confirming it. For immediate help, call <a href="tel:+15122563720">512-256-3720</a> or email <a href="mailto:admin@holographephoto.com">admin@holographephoto.com</a>.
 			</p>
 			{#if form?.error}<p class="upload-error" role="alert">{form.error}</p>{/if}
+			{#if submitError}<p class="upload-error" role="alert">{submitError}</p>{/if}
 			{#if form?.success}<div class="quote-ready" role="status"><p><strong>Request received.</strong> Your reference is <strong>{form.requestId}</strong>.</p><p class="small">We’ll use the details you shared to prepare your quote.</p></div>{/if}
 		</form>
 	</section>

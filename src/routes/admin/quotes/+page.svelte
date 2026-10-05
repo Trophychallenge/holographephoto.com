@@ -12,6 +12,7 @@
 	{#if data.quotes.length === 0}<p>No quote requests yet.</p>{/if}
 	{#each data.quotes as quote (quote.id)}
 		<article class="quote"><h2>{quote.businessName}</h2><p>{quote.name} · <a href={`mailto:${quote.email}`}>{quote.email}</a></p><p>Reference: {quote.id}</p><p>Quantity: {quote.quantity}{quote.neededBy ? ` · Needed by ${quote.neededBy}` : ''}</p>
+			<p>Quote alert: {quote.emailNotification === 'sent' ? 'sent' : quote.emailNotification === 'failed' ? 'failed' : 'not configured'}</p>
 			{#if quote.websiteOrQr}<p>Website / QR: {quote.websiteOrQr}</p>{/if}
 			{#if quote.designNotes}<p>{quote.designNotes}</p>{/if}
 			{#if quote.artwork}<a href={`/admin/quote-artwork?pathname=${encodeURIComponent(quote.artwork.pathname)}`}>Download {quote.artwork.filename}</a>{/if}
