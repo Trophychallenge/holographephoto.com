@@ -78,6 +78,7 @@
 	.page-shell {
 		--text: #fff7fb;
 		--muted: #d8c5dc;
+		color: var(--text);
 		min-height: 100vh;
 		position: relative;
 		display: grid;
