@@ -17,6 +17,7 @@ Set this environment variable before using payments locally or on Vercel:
 STRIPE_SECRET_KEY=sk_test_replace_me
 STRIPE_WEBHOOK_SECRET=whsec_replace_me
 BLOB_READ_WRITE_TOKEN=vercel_blob_rw_token_replace_me
+QUOTE_BLOB_READ_WRITE_TOKEN=dedicated_private_quote_blob_token_replace_me
 RIVAL_QUEST_BLOB_PATHNAME=digital-products/rival-quest/Rival_Quest_Digital_Party_Game.zip
 RIVAL_QUEST_BLOB_STORE_ID=optional_private_blob_store_id_for_oidc
 RIVAL_QUEST_BLOB_READ_WRITE_TOKEN=optional_private_blob_store_token_for_preview_only
@@ -25,6 +26,7 @@ PUSHOVER_USER_KEY=pushover_user_key_replace_me
 ```
 
 `BLOB_READ_WRITE_TOKEN` is required for storing uploaded customer design files in Vercel Blob so they can be tied to checkout metadata.
+`QUOTE_BLOB_READ_WRITE_TOKEN` must belong to a separate private Vercel Blob store for business-card quote records and artwork. It is intentionally not interchangeable with the public photo/order Blob token. The quote form uses direct browser-to-Blob uploads, authorized server-side for JPG, PNG, and PDF files up to 4.5 MB.
 `STRIPE_WEBHOOK_SECRET` is required for the `/api/stripe-webhook` endpoint so successful Checkout payments are recorded server-side.
 
 ## Halloween Edition inventory

@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/private';
 import type { StripeCheckoutSession } from '$lib/server/stripe';
+import type { QuoteRequest } from '$lib/server/quotes';
 
 const PUSHOVER_API_URL = 'https://api.pushover.net/1/messages.json';
 
@@ -72,5 +73,33 @@ export async function sendPushoverOrderAlert(
 		throw new Error(`Pushover API error: ${text}`);
 	}
 
+	return { sent: true as const };
+}
+
+export async function sendPushoverQuoteAlert(fetch: typeof globalThis.fetch, quote: QuoteRequest) {
+	if (!env.PUSHOVER_TOKEN || !env.PUSHOVER_USER_KEY) {
+		return { sent: false, reason: 'missing-config' as const };
+	}
+
+	const lines = compactLines([
+		`${quote.name} requested a business-card quote.`,
+		`${quote.businessName} • ${quote.quantity} magnets`,
+		quote.email,
+		quote.artwork ? `Artwork: ${quote.artwork.filename}` : 'No artwork attached',
+		`Reference: ${quote.id}`
+	]);
+	const body = new URLSearchParams({
+		token: env.PUSHOVER_TOKEN,
+		user: env.PUSHOVER_USER_KEY,
+		title: 'New Holographe quote request',
+		message: lines.join('\n'),
+		priority: '0'
+	});
+	const response = await fetch(PUSHOVER_API_URL, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		body
+	});
+	if (!response.ok) throw new Error(`Pushover API error: ${await response.text()}`);
 	return { sent: true as const };
 }

@@ -1,35 +1,81 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import { onMount } from 'svelte';
+	import { upload } from '@vercel/blob/client';
 	import type { ActionData } from './$types';
 	let { form }: { form: ActionData } = $props();
-	let artwork = $state<{ pathname: string; filename: string; contentType: string; size: number } | null>(null);
+	type Artwork = { pathname: string; filename: string; contentType: string; size: number };
+	let artwork = $state<Artwork | null>(null);
 	let pendingArtwork = $state<File | null>(null);
 	let artworkError = $state('');
 	let uploadState = $state<'idle' | 'uploading' | 'saved' | 'failed'>('idle');
+	let uploadProgress = $state(0);
 	let draftId = $state('');
+	let idempotencyKey = $state('');
+	let uploadVersion = 0;
+	let abortUpload: AbortController | null = null;
+	let submitting = $state(false);
+
+	const acceptedTypes = new Set(['image/jpeg', 'image/png', 'application/pdf']);
+	const maxArtworkBytes = 4_500_000;
+
+	onMount(() => {
+		draftId = form?.values?.draftId || crypto.randomUUID();
+		idempotencyKey = form?.values?.idempotencyKey || crypto.randomUUID();
+	});
+
+	function artworkPath(file: File) {
+		const safeName = (file.name.replace(/[^a-zA-Z0-9._-]/g, '-').replace(/^-+/, '') || 'artwork');
+		return `quotes/artwork/${draftId}/${safeName}`;
+	}
 
 	async function uploadArtwork(file: File) {
+		const version = ++uploadVersion;
+		abortUpload?.abort();
 		pendingArtwork = file;
 		artworkError = '';
-		if (!/\.(jpe?g|png|pdf)$/i.test(file.name) || file.size > 10 * 1024 * 1024) {
+		uploadProgress = 0;
+		if (!acceptedTypes.has(file.type) || !/\.(jpe?g|png|pdf)$/i.test(file.name) || file.size === 0 || file.size > maxArtworkBytes) {
 			uploadState = 'failed';
-			artworkError = 'Choose a JPG, PNG, or PDF no larger than 10 MB.';
+			artworkError = 'Choose a JPG, PNG, or PDF no larger than 4.5 MB.';
 			return;
 		}
 		draftId ||= crypto.randomUUID();
 		uploadState = 'uploading';
+		const controller = new AbortController();
+		abortUpload = controller;
 		try {
-			const body = new FormData();
-			body.set('artwork', file);
-			body.set('draftId', draftId);
-			const response = await fetch('/api/quote-artwork', { method: 'POST', body });
-			const result = (await response.json()) as { artwork?: typeof artwork; error?: string };
-			if (!response.ok || !result.artwork) throw new Error(result.error || 'Artwork could not be saved.');
-			artwork = result.artwork;
+			const blob = await upload(artworkPath(file), file, {
+				access: 'private',
+				handleUploadUrl: '/api/quote-artwork',
+				clientPayload: JSON.stringify({ draftId }),
+				contentType: file.type,
+				abortSignal: controller.signal,
+				onUploadProgress: ({ percentage }) => {
+					if (version === uploadVersion) uploadProgress = Math.round(percentage);
+				}
+			});
+			if (version !== uploadVersion) return;
+			artwork = { pathname: blob.pathname, filename: file.name, contentType: blob.contentType, size: file.size };
 			uploadState = 'saved';
 		} catch (error) {
+			if (version !== uploadVersion || controller.signal.aborted) return;
 			uploadState = 'failed';
 			artworkError = error instanceof Error ? error.message : 'Artwork could not be saved.';
+		} finally {
+			if (version === uploadVersion) abortUpload = null;
 		}
+	}
+
+	function removeArtwork() {
+		uploadVersion += 1;
+		abortUpload?.abort();
+		abortUpload = null;
+		pendingArtwork = null;
+		artwork = null;
+		uploadState = 'idle';
+		uploadProgress = 0;
+		artworkError = '';
 	}
 </script>
 
@@ -118,41 +164,42 @@
 				>
 			</p>
 		</div>
-		<form class="quote-form" method="POST">
-			<label>Your name<input name="name" autocomplete="name" required maxlength="100" /></label>
-			<label>Email<input name="email" type="email" autocomplete="email" required maxlength="254" /></label>
-			<label>Business name<input name="businessName" autocomplete="organization" required maxlength="100" /></label>
+		<form class="quote-form" method="POST" use:enhance={() => {
+			submitting = true;
+			return async ({ update }) => { await update(); submitting = false; };
+		}}>
+			<label>Your name<input name="name" autocomplete="name" required maxlength="100" value={form?.values?.name ?? ''} /></label>
+			<label>Email<input name="email" type="email" autocomplete="email" required maxlength="254" value={form?.values?.email ?? ''} /></label>
+			<label>Business name<input name="businessName" autocomplete="organization" required maxlength="100" value={form?.values?.businessName ?? ''} /></label>
 			<label>How many magnets?<select name="quantity" required
-					><option>50</option><option>100</option><option>250</option><option>500</option><option
-						>700</option
-					><option>1,000+</option><option>Help me decide</option></select
+					><option selected={(form?.values?.quantity ?? '50') === '50'}>50</option><option selected={form?.values?.quantity === '100'}>100</option><option selected={form?.values?.quantity === '250'}>250</option><option selected={form?.values?.quantity === '500'}>500</option><option selected={form?.values?.quantity === '700'}>700</option
+					><option selected={form?.values?.quantity === '1,000+'}>1,000+</option><option selected={form?.values?.quantity === 'Help me decide'}>Help me decide</option></select
 				></label
 			>
-			<label>Website or QR destination (optional)<input name="websiteOrQr" type="url" maxlength="500" placeholder="https://example.com" /></label>
-			<label>Needed by (optional)<input name="neededBy" type="date" /></label>
+			<label>Website or QR destination (optional)<input name="websiteOrQr" type="url" maxlength="500" placeholder="https://example.com" value={form?.values?.websiteOrQr ?? ''} /></label>
+			<label>Needed by (optional)<input name="neededBy" type="date" value={form?.values?.neededBy ?? ''} /></label>
 			<label>Design notes<textarea name="designNotes"
 					rows="4"
 					maxlength="1500"
 					placeholder="Share design ideas, your QR destination, and any details that matter."
-				></textarea></label
+				>{form?.values?.designNotes ?? ''}</textarea></label
 			>
 			<input type="hidden" name="artworkPathname" value={artwork?.pathname ?? ''} />
-			<input type="hidden" name="artworkFilename" value={artwork?.filename ?? ''} />
-			<input type="hidden" name="artworkContentType" value={artwork?.contentType ?? ''} />
-			<input type="hidden" name="artworkSize" value={artwork?.size ?? ''} />
+			<input type="hidden" name="draftId" value={draftId} />
+			<input type="hidden" name="idempotencyKey" value={idempotencyKey} />
 			<div class="artwork-upload">
 				<label>Artwork (optional)<input type="file" accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf" onchange={(event) => { const file = (event.currentTarget as HTMLInputElement).files?.[0]; if (file) uploadArtwork(file); }} /></label>
-				<p class="small">JPG, PNG, or PDF · up to 10 MB · stored privately for this request.</p>
-				{#if uploadState === 'uploading'}<p role="status">Uploading artwork…</p>{/if}
-				{#if artwork}<p role="status"><strong>{artwork.filename}</strong> saved privately. <button type="button" onclick={() => { artwork = null; pendingArtwork = null; uploadState = 'idle'; }}>Remove</button></p>{/if}
+				<p class="small">JPG, PNG, or PDF · up to 4.5 MB · stored privately for this request.</p>
+				{#if uploadState === 'uploading'}<p role="status">Uploading artwork… {uploadProgress}% <button type="button" onclick={removeArtwork}>Cancel</button></p>{/if}
+				{#if artwork}<p role="status"><strong>{artwork.filename}</strong> attached. <button type="button" onclick={removeArtwork}>Remove</button></p>{/if}
 				{#if uploadState === 'failed'}<p class="upload-error" role="alert">{artworkError} {#if pendingArtwork}<button type="button" onclick={() => uploadArtwork(pendingArtwork!)}>Retry upload</button>{/if}</p>{/if}
 			</div>
-			<button type="submit" class="button-primary" disabled={uploadState === 'uploading'}>Send quote request</button>
+			<button type="submit" class="button-primary" disabled={uploadState === 'uploading' || submitting}>{submitting ? 'Sending request…' : 'Send quote request'}</button>
 			<p class="small">
 				We’ll save your request before confirming it. For immediate help, call <a href="tel:+15122563720">512-256-3720</a> or email <a href="mailto:admin@holographephoto.com">admin@holographephoto.com</a>.
 			</p>
 			{#if form?.error}<p class="upload-error" role="alert">{form.error}</p>{/if}
-			{#if form?.success}<div class="quote-ready" role="status"><p><strong>Request received.</strong> We saved your quote request.</p><p class="small">Email notification is not configured on this site yet, so delivery has not been claimed. Christina can view this request in the secure admin area.</p></div>{/if}
+			{#if form?.success}<div class="quote-ready" role="status"><p><strong>Request received.</strong> Your reference is <strong>{form.requestId}</strong>.</p><p class="small">We’ll use the details you shared to prepare your quote.</p></div>{/if}
 		</form>
 	</section>
 </div>
