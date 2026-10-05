@@ -1,5 +1,13 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { onMount } from 'svelte';
+	import { page } from '$app/state';
+	import {
+		photoDraftKey,
+		photoOrderSelection,
+		printSizes,
+		submitPhotoOrder
+	} from '$lib/browser/photo-order';
 	import { removeLightBackgroundFromFile } from '$lib/browser/overlay-tools';
 	import { checkoutOffers } from '$lib/pricing';
 
@@ -66,6 +74,15 @@
 	let uploadedOverlaySrc = $state('');
 	let uploadedOverlayName = $state('');
 	let uploadedBaseBlobUrl = $state('');
+	let uploadedBaseBlobPathname = $state('');
+	let uploadedOverlayBlobPathname = $state('');
+	let baseUploadVersion = 0;
+	let overlayUploadVersion = 0;
+	let draftReady = $state(false);
+	let printSize = $state('5x7');
+	let personalRequest = $state('');
+	let checkoutError = $state('');
+	let checkoutLoading = $state(false);
 	let uploadedOverlayBlobUrl = $state('');
 	let baseUploadState = $state<'idle' | 'uploading' | 'saved' | 'local' | 'error'>('idle');
 	let overlayUploadState = $state<'idle' | 'uploading' | 'saved' | 'local' | 'error'>('idle');
@@ -102,6 +119,109 @@
 			(Boolean(uploadedOverlayName) && !uploadedOverlayBlobUrl)
 	);
 
+	const checkoutDisabled = $derived(
+		!uploadedBaseBlobUrl ||
+			!uploadedBaseBlobPathname ||
+			baseUploadState === 'uploading' ||
+			overlayUploadState === 'uploading' ||
+			overlayProcessing ||
+			hasUnsavedDesign ||
+			checkoutLoading
+	);
+
+	onMount(() => {
+		try {
+			const draft = JSON.parse(sessionStorage.getItem(photoDraftKey) || 'null');
+			if (draft && typeof draft === 'object') {
+				if (
+					typeof draft.baseUrl === 'string' &&
+					typeof draft.basePath === 'string' &&
+					draft.baseUrl &&
+					draft.basePath
+				) {
+					uploadedBaseBlobUrl = uploadedBaseSrc = draft.baseUrl;
+					uploadedBaseBlobPathname = draft.basePath;
+					uploadedBaseName = typeof draft.baseName === 'string' ? draft.baseName : 'Your photo';
+					baseUploadState = 'saved';
+					baseUploadMessage = 'Your saved photo is ready.';
+				}
+				if (
+					typeof draft.overlayUrl === 'string' &&
+					typeof draft.overlayPath === 'string' &&
+					draft.overlayUrl &&
+					draft.overlayPath
+				) {
+					uploadedOverlayBlobUrl = uploadedOverlaySrc = draft.overlayUrl;
+					uploadedOverlayBlobPathname = draft.overlayPath;
+					uploadedOverlayName =
+						typeof draft.overlayName === 'string' ? draft.overlayName : 'Your overlay';
+					overlayUploadState = 'saved';
+				}
+				if (checkoutOffers.some((offer) => String(offer.quantity) === draft.quantity))
+					selectedBundle = draft.quantity;
+				if (printSizes.includes(draft.size)) printSize = draft.size;
+				if (typeof draft.notes === 'string') personalRequest = draft.notes.slice(0, 450);
+				if (modes.some((mode) => mode.id === draft.mode)) activeModeId = draft.mode;
+				if (Number.isFinite(draft.x)) overlayX = Math.max(10, Math.min(90, draft.x));
+				if (Number.isFinite(draft.y)) overlayY = Math.max(10, Math.min(90, draft.y));
+				if (Number.isFinite(draft.scale)) overlayScale = Math.max(10, Math.min(100, draft.scale));
+				if (Number.isFinite(draft.rotation))
+					overlayRotation = Math.max(-180, Math.min(180, draft.rotation));
+				if (typeof draft.reveal === 'boolean') revealOverlay = draft.reveal;
+			}
+		} catch {
+			/* Checkout also works when browser storage is unavailable. */
+		}
+		draftReady = true;
+	});
+
+	$effect(() => {
+		if (!draftReady) return;
+		const selection = photoOrderSelection(page.url.searchParams);
+		if (selection.quantity) selectedBundle = selection.quantity;
+		if (selection.size) printSize = selection.size;
+	});
+
+	$effect(() => {
+		if (!draftReady) return;
+		const draft = {
+			baseUrl: uploadedBaseBlobUrl,
+			basePath: uploadedBaseBlobPathname,
+			baseName: uploadedBaseName,
+			overlayUrl: uploadedOverlayBlobUrl,
+			overlayPath: uploadedOverlayBlobPathname,
+			overlayName: uploadedOverlayName,
+			quantity: selectedBundle,
+			size: printSize,
+			notes: personalRequest,
+			mode: activeModeId,
+			x: overlayX,
+			y: overlayY,
+			scale: overlayScale,
+			rotation: overlayRotation,
+			reveal: revealOverlay
+		};
+		try {
+			sessionStorage.setItem(photoDraftKey, JSON.stringify(draft));
+		} catch {
+			/* Optional draft persistence. */
+		}
+	});
+
+	async function startCheckout(event: SubmitEvent) {
+		event.preventDefault();
+		if (checkoutDisabled) return;
+		const form = event.currentTarget as HTMLFormElement;
+		checkoutLoading = true;
+		checkoutError = '';
+		try {
+			window.location.assign(await submitPhotoOrder(form));
+		} catch (error) {
+			checkoutError = error instanceof Error ? error.message : 'Please try checkout again.';
+			checkoutLoading = false;
+		}
+	}
+
 	function setPreview(preview: Preview) {
 		activePreview = preview;
 		activeModeId = preview.mode;
@@ -117,17 +237,19 @@
 			body: payload
 		});
 
-		const result = (await response.json()) as { error?: string; url?: string };
+		const result = (await response.json()) as { error?: string; url?: string; pathname?: string };
 
-		if (!response.ok || !result.url) {
+		if (!response.ok || !result.url || !result.pathname) {
 			throw new Error(result.error || 'Upload failed.');
 		}
 
-		return result.url;
+		return { url: result.url, pathname: result.pathname };
 	}
 
 	async function applyUploadedFile(file: File, type: 'base' | 'overlay') {
 		if (!file) return;
+		const version = type === 'base' ? ++baseUploadVersion : ++overlayUploadVersion;
+		checkoutError = '';
 
 		const nextUrl = URL.createObjectURL(file);
 		if (type === 'base') {
@@ -135,6 +257,7 @@
 			uploadedBaseSrc = nextUrl;
 			uploadedBaseName = file.name;
 			uploadedBaseBlobUrl = '';
+			uploadedBaseBlobPathname = '';
 			baseUploadState = 'uploading';
 			baseUploadMessage = 'Saving your photo...';
 		} else {
@@ -142,23 +265,28 @@
 			uploadedOverlaySrc = nextUrl;
 			uploadedOverlayName = file.name;
 			uploadedOverlayBlobUrl = '';
+			uploadedOverlayBlobPathname = '';
 			overlayUploadState = 'uploading';
 			overlayUploadMessage = 'Saving your overlay...';
 			applySignaturePlacement();
 		}
 
 		try {
-			const blobUrl = await persistDesignAsset(file, type);
+			const asset = await persistDesignAsset(file, type);
+			if (version !== (type === 'base' ? baseUploadVersion : overlayUploadVersion)) return;
 			if (type === 'base') {
-				uploadedBaseBlobUrl = blobUrl;
+				uploadedBaseBlobUrl = asset.url;
+				uploadedBaseBlobPathname = asset.pathname;
 				baseUploadState = 'saved';
 				baseUploadMessage = 'Photo saved with this design.';
 			} else {
-				uploadedOverlayBlobUrl = blobUrl;
+				uploadedOverlayBlobUrl = asset.url;
+				uploadedOverlayBlobPathname = asset.pathname;
 				overlayUploadState = 'saved';
 				overlayUploadMessage = 'Overlay saved with this design.';
 			}
 		} catch (error) {
+			if (version !== (type === 'base' ? baseUploadVersion : overlayUploadVersion)) return;
 			const message =
 				error instanceof Error ? error.message : 'Cloud save is unavailable right now.';
 			if (type === 'base') {
@@ -204,11 +332,14 @@
 	}
 
 	function clearUploadedImage(type: 'base' | 'overlay') {
+		if (type === 'base') baseUploadVersion++;
+		else overlayUploadVersion++;
 		if (type === 'base' && uploadedBaseSrc) {
 			URL.revokeObjectURL(uploadedBaseSrc);
 			uploadedBaseSrc = '';
 			uploadedBaseName = '';
 			uploadedBaseBlobUrl = '';
+			uploadedBaseBlobPathname = '';
 			baseUploadState = 'idle';
 			baseUploadMessage = '';
 		}
@@ -218,6 +349,7 @@
 			uploadedOverlaySrc = '';
 			uploadedOverlayName = '';
 			uploadedOverlayBlobUrl = '';
+			uploadedOverlayBlobPathname = '';
 			overlayUploadState = 'idle';
 			overlayUploadMessage = '';
 		}
@@ -293,93 +425,98 @@
 	<section class="section studio-hero">
 		<div class="page-wrap studio-head">
 			<div class="studio-copy">
-				<p class="eyebrow">Interactive customizer</p>
-				<h1>Build your keepsake.</h1>
-				<p>Upload. Adjust. Order.</p>
+				<p class="eyebrow">Made from your memories</p>
+				<h1>Your photo.<br />A little more magic.</h1>
+				<p>Upload your photo, make it yours, and check out securely with Stripe.</p>
+				<ol class="order-steps">
+					<li>Upload your photo</li>
+					<li>Choose your set</li>
+					<li>Secure checkout</li>
+				</ol>
+				<a class="button-secondary" href="#photo-upload"
+					>Upload your photo <span aria-hidden="true">↓</span></a
+				>
 			</div>
 
 			<div class="order-bar glass-card">
 				<div>
-					<p class="order-kicker">Buy right after designing</p>
-					<h2>Buy it here.</h2>
+					<p class="order-kicker">Your made-to-order set</p>
+					<h2>Make it yours.</h2>
 				</div>
-				<form class="order-checkout" method="POST" action="/checkout">
+				<form class="order-checkout" method="POST" action="/checkout" onsubmit={startCheckout}>
 					<input type="hidden" name="source" value="customize-hero" />
 					<input type="hidden" name="base_name" value={uploadedBaseName} />
-					<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
+					<input
+						type="hidden"
+						name="overlay_name"
+						value={revealOverlay ? uploadedOverlayName : ''}
+					/>
 					<input type="hidden" name="base_blob_url" value={uploadedBaseBlobUrl} />
-					<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
+					<input
+						type="hidden"
+						name="overlay_blob_url"
+						value={revealOverlay ? uploadedOverlayBlobUrl : ''}
+					/>
 					<input type="hidden" name="gift_mode" value={activeModeId} />
+					<input type="hidden" name="base_blob_pathname" value={uploadedBaseBlobPathname} />
+					<input
+						type="hidden"
+						name="overlay_blob_pathname"
+						value={revealOverlay ? uploadedOverlayBlobPathname : ''}
+					/>
+					<input type="hidden" name="print_size" value={printSize} />
+					<input type="hidden" name="personal_request" value={personalRequest} />
+					<input
+						type="hidden"
+						name="overlay_position"
+						value={`${overlayX},${overlayY},${overlayScale},${overlayRotation}`}
+					/>
 					<label>
-						<span>Bundle</span>
+						<span>Choose your set</span>
 						<select name="quantity" bind:value={selectedBundle}>
 							{#each checkoutOffers as offer (offer.quantity)}
-								<option value={offer.quantity}>{offer.label} · {offer.priceLabel}</option>
+								<option value={String(offer.quantity)}>{offer.label} · {offer.priceLabel}</option>
 							{/each}
 						</select>
 					</label>
+					<label
+						><span>Print size</span><select bind:value={printSize}
+							>{#each printSizes as size}<option value={size}>{size}</option>{/each}</select
+						></label
+					>
+					<label class="order-notes"
+						><span>Anything we should know? (optional)</span><textarea
+							bind:value={personalRequest}
+							maxlength="450"
+							rows="2"
+							placeholder="A gift, a special detail, or a note for Christina"
+						></textarea></label
+					>
 					<div class="order-actions">
-						<button
-							class="button-primary"
-							type="submit"
-							disabled={baseUploadState === 'uploading' ||
-								overlayUploadState === 'uploading' ||
-								overlayProcessing ||
-								hasUnsavedDesign}
-						>
-							{baseUploadState === 'uploading' ||
-							overlayUploadState === 'uploading' ||
-							overlayProcessing
-								? 'Saving design...'
-								: 'Buy this design'}
+						<button class="button-primary" type="submit" disabled={checkoutDisabled}>
+							{checkoutLoading
+								? 'Opening secure checkout…'
+								: baseUploadState === 'uploading' ||
+									  overlayUploadState === 'uploading' ||
+									  overlayProcessing
+									? 'Saving design…'
+									: 'Continue to secure checkout'}
 						</button>
 						<a class="button-secondary" href="/contact">Contact</a>
 					</div>
 				</form>
+				<p class="checkout-reassurance">
+					{uploadedBaseBlobPathname
+						? 'Photo saved. Your draft stays in this browser tab.'
+						: 'Upload your own photo below to start your order.'}
+				</p>
+				{#if checkoutError}<p class="upload-note upload-error" role="alert">{checkoutError}</p>{/if}
 				{#if hasUnsavedDesign}
 					<p class="upload-note checkout-note">
-						Finish cloud save before ordering so your uploaded design is attached to the payment.
+						Your photo must finish saving before checkout. If saving failed, upload it again to
+						retry.
 					</p>
 				{/if}
-			</div>
-		</div>
-	</section>
-
-	<section class="section">
-		<div class="page-wrap reel-grid">
-			<div class="glass-card reel-card">
-				<p class="card-kicker">Motion preview</p>
-				<h2>See the finish in motion while you build.</h2>
-				<p>
-					Use the reel as a live reference for shimmer, depth, and the finished keepsake feel while
-					you upload and place your image.
-				</p>
-				<div class="reel-tags">
-					{#each reelTags as item}
-						<span>{item}</span>
-					{/each}
-				</div>
-			</div>
-
-			<div class="glass-card reel-video-card">
-				<div class="reel-shell">
-					<!-- svelte-ignore a11y_media_has_caption because the current preview reel has no spoken audio -->
-					<video
-						class="reel-video"
-						src={heroVideoSrc}
-						poster={heroVideoPoster}
-						playsinline
-						controls
-						preload="metadata"
-						aria-label="Reference video preview of the holographic keepsake"
-					>
-						<p>
-							Your browser does not support embedded video.
-							<a href={heroVideoSrc}>Open the preview reel directly.</a>
-						</p>
-					</video>
-					<div class="reel-glow"></div>
-				</div>
 			</div>
 		</div>
 	</section>
@@ -453,7 +590,7 @@
 			<div class="side-stack">
 				<div class="glass-card action-card">
 					<p class="card-kicker">Upload photo</p>
-					<h2>Main image</h2>
+					<h2 id="photo-upload">Your photo</h2>
 					<div class="action-row">
 						<button type="button" class="action-button" onclick={() => baseUploadInput?.click()}>
 							Upload
@@ -549,6 +686,44 @@
 				<div class="glass-card action-card">
 					<p class="card-kicker">Placement</p>
 					<h2>Adjust the overlay</h2>
+					<div class="overlay-controls">
+						<label
+							>Left / right<input
+								type="range"
+								min="10"
+								max="90"
+								bind:value={overlayX}
+								disabled={!uploadedOverlaySrc}
+							/></label
+						>
+						<label
+							>Up / down<input
+								type="range"
+								min="10"
+								max="90"
+								bind:value={overlayY}
+								disabled={!uploadedOverlaySrc}
+							/></label
+						>
+						<label
+							>Size<input
+								type="range"
+								min="10"
+								max="100"
+								bind:value={overlayScale}
+								disabled={!uploadedOverlaySrc}
+							/></label
+						>
+						<label
+							>Rotation<input
+								type="range"
+								min="-180"
+								max="180"
+								bind:value={overlayRotation}
+								disabled={!uploadedOverlaySrc}
+							/></label
+						>
+					</div>
 					<div class="control-row">
 						<button type="button" class="mini-button" onclick={applySignaturePlacement}>
 							Signature
@@ -565,6 +740,45 @@
 						</button>
 						<button type="button" class="mini-button" onclick={openExpanded}>Enlarge</button>
 					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="page-wrap reel-grid">
+			<div class="glass-card reel-card">
+				<p class="card-kicker">Motion preview</p>
+				<h2>See the finish in motion while you build.</h2>
+				<p>
+					Use the reel as a live reference for shimmer, depth, and the finished keepsake feel while
+					you upload and place your image.
+				</p>
+				<div class="reel-tags">
+					{#each reelTags as item}
+						<span>{item}</span>
+					{/each}
+				</div>
+			</div>
+
+			<div class="glass-card reel-video-card">
+				<div class="reel-shell">
+					<!-- svelte-ignore a11y_media_has_caption because the current preview reel has no spoken audio -->
+					<video
+						class="reel-video"
+						src={heroVideoSrc}
+						poster={heroVideoPoster}
+						playsinline
+						controls
+						preload="metadata"
+						aria-label="Reference video preview of the holographic keepsake"
+					>
+						<p>
+							Your browser does not support embedded video.
+							<a href={heroVideoSrc}>Open the preview reel directly.</a>
+						</p>
+					</video>
+					<div class="reel-glow"></div>
 				</div>
 			</div>
 		</div>
@@ -674,28 +888,52 @@
 					<p class="card-kicker">Selected keepsake</p>
 					<h2>{uploadedBaseName || activePreview.label}</h2>
 					<p>A closer look at the image, overlay, and final finish.</p>
+					{#if checkoutError}<p class="upload-note upload-error" role="alert">
+							{checkoutError}
+						</p>{/if}
 					<div class="order-actions">
-						<form class="lightbox-checkout" method="POST" action="/checkout">
+						<form
+							class="lightbox-checkout"
+							method="POST"
+							action="/checkout"
+							onsubmit={startCheckout}
+						>
 							<input type="hidden" name="source" value="customize-lightbox" />
 							<input type="hidden" name="base_name" value={uploadedBaseName} />
-							<input type="hidden" name="overlay_name" value={uploadedOverlayName} />
+							<input
+								type="hidden"
+								name="overlay_name"
+								value={revealOverlay ? uploadedOverlayName : ''}
+							/>
 							<input type="hidden" name="base_blob_url" value={uploadedBaseBlobUrl} />
-							<input type="hidden" name="overlay_blob_url" value={uploadedOverlayBlobUrl} />
+							<input
+								type="hidden"
+								name="overlay_blob_url"
+								value={revealOverlay ? uploadedOverlayBlobUrl : ''}
+							/>
 							<input type="hidden" name="gift_mode" value={activeModeId} />
+							<input type="hidden" name="base_blob_pathname" value={uploadedBaseBlobPathname} />
+							<input
+								type="hidden"
+								name="overlay_blob_pathname"
+								value={revealOverlay ? uploadedOverlayBlobPathname : ''}
+							/>
+							<input type="hidden" name="print_size" value={printSize} />
+							<input type="hidden" name="personal_request" value={personalRequest} />
+							<input
+								type="hidden"
+								name="overlay_position"
+								value={`${overlayX},${overlayY},${overlayScale},${overlayRotation}`}
+							/>
 							<input type="hidden" name="quantity" value={selectedBundle} />
-							<button
-								class="button-primary"
-								type="submit"
-								disabled={baseUploadState === 'uploading' ||
-									overlayUploadState === 'uploading' ||
-									overlayProcessing ||
-									hasUnsavedDesign}
-							>
-								{baseUploadState === 'uploading' ||
-								overlayUploadState === 'uploading' ||
-								overlayProcessing
-									? 'Saving design...'
-									: 'Buy this design'}
+							<button class="button-primary" type="submit" disabled={checkoutDisabled}>
+								{checkoutLoading
+									? 'Opening secure checkout…'
+									: baseUploadState === 'uploading' ||
+										  overlayUploadState === 'uploading' ||
+										  overlayProcessing
+										? 'Saving design…'
+										: 'Continue to secure checkout'}
 							</button>
 						</form>
 						{#if hasUnsavedDesign}
@@ -713,6 +951,50 @@
 </div>
 
 <style>
+	#photo-upload {
+		scroll-margin-top: 2rem;
+	}
+	.studio-copy > a {
+		margin-top: 0.5rem;
+	}
+	.overlay-controls {
+		display: grid;
+		gap: 0.7rem;
+	}
+	.overlay-controls label {
+		display: grid;
+		gap: 0.3rem;
+		font-size: 0.8rem;
+	}
+	.overlay-controls input {
+		width: 100%;
+	}
+	.order-steps {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.7rem 1.8rem;
+		padding-left: 1.2rem;
+		margin-top: 1.5rem;
+		color: var(--muted);
+		font-size: 0.85rem;
+	}
+	.checkout-reassurance {
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	.order-notes {
+		grid-column: 1 / -1;
+	}
+	.order-notes textarea {
+		width: 100%;
+		color: var(--text);
+		background: #111;
+		border: 1px solid var(--line);
+		border-radius: 0.8rem;
+		padding: 0.8rem;
+		resize: vertical;
+	}
+
 	:global(body) {
 		background:
 			radial-gradient(circle at 10% 0%, rgba(199, 216, 255, 0.16), transparent 24%),

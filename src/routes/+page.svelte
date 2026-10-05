@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import HalloweenFeature from '$lib/components/home/HalloweenFeature.svelte';
+	import BusinessFeature from '$lib/components/home/BusinessFeature.svelte';
+	import CarnivalFeature from '$lib/components/home/CarnivalFeature.svelte';
 </script>
 
 <svelte:head>
@@ -13,6 +15,8 @@
 
 <div class="page-shell">
 	<HalloweenFeature />
+	<CarnivalFeature />
+	<BusinessFeature />
 
 	<section class="explore-section" aria-labelledby="explore-heading">
 		<div class="explore-intro">

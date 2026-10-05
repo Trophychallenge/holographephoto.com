@@ -1,5 +1,10 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { onMount } from 'svelte';
+	let allowMotion = $state(false);
+	onMount(() => {
+		allowMotion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	});
 
 	const halloweenVideo = '/media/halloween/HalloweenDishwashermagnets.mp4';
 </script>
@@ -7,7 +12,7 @@
 <section class="halloween-feature" aria-labelledby="halloween-feature-title">
 	<div class="halloween-feature-copy">
 		<p class="eyebrow">Holographe Exclusive</p>
-		<h2 id="halloween-feature-title">Halloween Edition</h2>
+		<h1 id="halloween-feature-title">Halloween Edition</h1>
 		<p>Limited seasonal magnetic decor, composed to transform the everyday.</p>
 		<a class="button-primary" href={resolve('/collections/halloween')}>Enter the Collection</a>
 	</div>
@@ -15,7 +20,8 @@
 		<video
 			class="halloween-video"
 			src={halloweenVideo}
-			autoplay
+			autoplay={allowMotion}
+			controls
 			muted
 			loop
 			playsinline
@@ -60,7 +66,7 @@
 		z-index: 1;
 	}
 
-	.halloween-feature-copy h2 {
+	.halloween-feature-copy h1 {
 		max-width: 36rem;
 		margin: 1.05rem 0 0.85rem;
 		font-family: Georgia, 'Times New Roman', serif;

@@ -31,7 +31,7 @@
 						loop={autoplay}
 						playsinline
 						preload={variant === 'detail' ? 'metadata' : 'none'}
-						controls={variant === 'detail'}
+						controls
 						aria-label={mediaItem.alt}
 						onerror={() => (failed = true)}
 					></video>

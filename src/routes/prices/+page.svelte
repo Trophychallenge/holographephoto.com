@@ -41,7 +41,7 @@
 		if (!quantity) return resolve('/contact');
 		const params = new URLSearchParams({ order: '1', package: String(quantity) });
 		if (size) params.set('size', size);
-		return `${resolve('/')}?${params.toString()}#preview-builder`;
+		return `${resolve('/customize')}?${params.toString()}`;
 	}
 
 	function handleWindowKeydown(event: KeyboardEvent) {

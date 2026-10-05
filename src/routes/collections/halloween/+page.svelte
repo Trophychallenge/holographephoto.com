@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import ProductMedia from '$lib/components/products/ProductMedia.svelte';
+	import CarnivalFeature from '$lib/components/home/CarnivalFeature.svelte';
 	import {
 		halloweenCollectionReferenceMedia,
 		halloweenDesigns,
@@ -54,6 +55,7 @@
 		</div>
 	</section>
 
+	<CarnivalFeature />
 	<section class="reference-section" aria-labelledby="reference-heading">
 		<div class="reference-copy">
 			<p class="eyebrow">The collection</p>
