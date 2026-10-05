@@ -70,9 +70,10 @@
 <style>
 	:global(body) {
 		background:
-			radial-gradient(circle at 8% 6%, rgba(231, 206, 173, 0.08), transparent 18%),
-			radial-gradient(circle at 82% 16%, rgba(225, 236, 255, 0.05), transparent 16%),
-			linear-gradient(180deg, #050505 0%, #090909 42%, #060606 100%);
+			radial-gradient(circle at 8% 6%, rgba(255, 63, 183, 0.11), transparent 19%),
+			radial-gradient(circle at 86% 12%, rgba(51, 225, 255, 0.1), transparent 16%),
+			radial-gradient(circle at 52% 42%, rgba(134, 55, 255, 0.08), transparent 24%),
+			linear-gradient(180deg, #050508 0%, #090711 45%, #050609 100%);
 	}
 
 	.page-shell {
@@ -104,11 +105,11 @@
 		line-height: 0.88;
 	}
 
-	.studio-intro h1 em { color: #f5c9ee; font-weight: 400; }
+	.studio-intro h1 em { color: #f3b2ff; font-weight: 400; text-shadow: 0 0 22px rgba(199, 86, 255, 0.26); }
 	.studio-intro > p:last-of-type { max-width: 38rem; margin: 1.5rem auto 0; color: var(--muted); font-size: clamp(1rem, 2vw, 1.15rem); line-height: 1.65; }
 	.studio-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; margin-top: 2rem; }
 	.studio-links a { border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: .8rem 1rem; background: rgba(255,255,255,.06); color: var(--text); font-weight: 700; }
-	.studio-links a:first-child { border-color: transparent; background: linear-gradient(100deg, #ffd5dd, #e8c4ff 48%, #c7f1ff); color: #2b1433; }
+	.studio-links a:first-child { border-color: transparent; background: linear-gradient(100deg, #d962ff, #852fea 52%, #5257ec); color: #fff; box-shadow: 0 12px 28px rgba(154, 48, 239, .26); }
 	.studio-links a span { margin-left: .35rem; }
 
 	.page-shell::before {
@@ -175,9 +176,9 @@
 		border: 1px solid rgba(255, 255, 255, 0.11);
 		border-radius: 1.5rem;
 		background:
-			radial-gradient(circle at 90% 0%, rgba(155, 231, 255, 0.17), transparent 34%),
-			radial-gradient(circle at 4% 96%, rgba(255, 184, 218, 0.13), transparent 34%),
-			linear-gradient(155deg, rgba(43, 20, 62, 0.94), rgba(14, 22, 49, 0.9));
+			radial-gradient(circle at 90% 0%, rgba(88, 232, 255, 0.15), transparent 34%),
+			radial-gradient(circle at 4% 96%, rgba(255, 70, 183, 0.12), transparent 34%),
+			linear-gradient(155deg, rgba(32, 14, 53, 0.94), rgba(7, 15, 35, 0.93));
 		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
 		transition:
 			transform 220ms ease,

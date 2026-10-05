@@ -13,8 +13,8 @@
 	</div>
 	<figure>
 		<video
-			src="/media/business/howdy-social.mp4"
-			poster="/media/business/howdy-social-closeup-poster.jpg"
+			src="/media/business/howdy-social-reveal.mp4"
+			poster="/media/business/howdy-social-reveal-poster.jpg"
 			controls
 			muted
 			playsinline
