@@ -1027,6 +1027,7 @@
 		--muted: #e2d8e8;
 		--accent: #f1c5ff;
 		--line: rgba(239, 218, 255, 0.34);
+		color: var(--text);
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
