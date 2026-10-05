@@ -248,7 +248,7 @@
 		color: rgba(247, 243, 238, 0.84);
 	}
 	.collection-video {
-		width: min(100%, 23rem);
+		width: min(100%, 20rem);
 		justify-self: center;
 		border-radius: 1.25rem;
 		overflow: hidden;

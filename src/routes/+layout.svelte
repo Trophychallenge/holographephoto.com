@@ -82,7 +82,7 @@
 		</div>
 		<div class="footer-links">
 			<a href={resolve('/collections/halloween')}>Halloween Edition</a>
-			<a href={resolve('/customize')}>Custom Photo Magnets</a>
+			<a href={resolve('/customize')}>Personalized Photo Magnets</a>
 			<a href={resolve('/business-cards')}>Business Card Magnets</a>
 			<a href={resolve('/prices')}>Pricing</a>
 			<a href={resolve('/games/rival-quest')}>Games</a>

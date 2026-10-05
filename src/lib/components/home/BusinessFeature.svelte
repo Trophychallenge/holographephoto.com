@@ -14,7 +14,7 @@
 	<figure>
 		<video
 			src="/media/business/howdy-social.mp4"
-			poster="/media/business/howdy-social.jpg"
+			poster="/media/business/howdy-social-closeup-poster.jpg"
 			controls
 			muted
 			playsinline

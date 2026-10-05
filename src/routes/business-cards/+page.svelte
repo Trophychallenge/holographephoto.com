@@ -124,7 +124,7 @@
 				<video
 					bind:this={businessFilm}
 					src="/media/business/howdy-social.mp4"
-					poster="/media/business/howdy-social-poster.jpg"
+					poster="/media/business/howdy-social-closeup-poster.jpg"
 					controls
 					muted
 					playsinline

@@ -19,7 +19,7 @@
 		<h1 id="studio-title">A little light<br />changes <em>everything.</em></h1>
 		<p>Holographe turns favorite photos, business cards, and seasonal artwork into magnetic pieces that come alive as you move.</p>
 		<div class="studio-links" aria-label="Shop Holographe">
-			<a href={resolve('/customize')}>Photo Magnets <span aria-hidden="true">→</span></a>
+			<a href={resolve('/customize')}>Personalized Photo Magnets <span aria-hidden="true">→</span></a>
 			<a href={resolve('/business-cards')}>Business Cards <span aria-hidden="true">→</span></a>
 			<a href={resolve('/collections/halloween')}>Halloween Edition <span aria-hidden="true">→</span></a>
 		</div>
@@ -41,7 +41,7 @@
 		<div class="explore-grid">
 			<a class="explore-card explore-card-featured" href={resolve('/customize')}>
 				<span>Custom keepsakes</span>
-				<h3>Custom Photo Magnets</h3>
+				<h3>Personalized Photo Magnets</h3>
 				<p>Upload a favorite photo and shape a light-catching piece made to order.</p>
 				<strong>Start with your photo <span aria-hidden="true">→</span></strong>
 			</a>

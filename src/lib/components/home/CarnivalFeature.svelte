@@ -52,7 +52,8 @@
 		border-radius: 0.8rem;
 	}
 	figcaption {
-		font-size: 0.75rem;
+		font-size: 0.92rem;
+		font-weight: 600;
 		margin-top: 0.8rem;
 		color: var(--muted);
 	}
