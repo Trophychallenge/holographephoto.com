@@ -23,6 +23,7 @@
 	let websiteOrQr = $state('');
 	let neededBy = $state('');
 	let designNotes = $state('');
+	let businessFilm: HTMLVideoElement;
 
 	const acceptedTypes = new Set(['image/jpeg', 'image/png', 'application/pdf']);
 	const maxArtworkBytes = 4_500_000;
@@ -117,15 +118,19 @@
 			</div>
 		</div>
 		<figure class="hero-media">
-			<video
-				src="/media/business/howdy-social.mp4"
-				poster="/media/business/howdy-social.jpg"
-				controls
-				muted
-				playsinline
-				preload="metadata"
-				aria-label="Real holographic business card magnets made for Howdy Social"
-			></video>
+			<div class="video-frame">
+				<video
+					bind:this={businessFilm}
+					src="/media/business/howdy-social.mp4"
+					poster="/media/business/howdy-social.jpg"
+					controls
+					muted
+					playsinline
+					preload="metadata"
+					aria-label="Real holographic business card magnets made for Howdy Social"
+				></video>
+				<button class="film-play" type="button" onclick={() => businessFilm?.play()} aria-label="Play the Howdy Social product film">Play film <span aria-hidden="true">▶</span></button>
+			</div>
 			<figcaption><span>THE FINISHED PRODUCT</span> Made for Howdy Social</figcaption>
 		</figure>
 	</section>
@@ -315,6 +320,9 @@
 		border-radius: 0.7rem;
 		background: #080808;
 	}
+	.video-frame { position: relative; }
+	.film-play { position:absolute; left:1rem; bottom:1rem; border:1px solid rgba(255,255,255,.6); border-radius:999px; padding:.65rem .85rem; background:rgba(18,8,30,.82); color:white; font:inherit; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,.35); }
+	.film-play:hover, .film-play:focus-visible { background:#fff3e2; color:#2b1433; }
 	figcaption {
 		display: grid;
 		gap: 0.3rem;
