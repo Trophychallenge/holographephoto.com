@@ -108,6 +108,12 @@
 	let selectedBundle = $state(String(checkoutOffers[0].quantity));
 
 	const currentMode = $derived(modes.find((mode) => mode.id === activeModeId) ?? modes[0]);
+	const selectedOffer = $derived(
+		checkoutOffers.find((offer) => String(offer.quantity) === selectedBundle) ?? checkoutOffers[0]
+	);
+	const selectedOfferSummary = $derived(
+		`${selectedOffer.label} · Qty ${selectedOffer.quantity} · ${selectedOffer.priceLabel}`
+	);
 	const currentBaseSrc = $derived(uploadedBaseSrc || activePreview.src);
 	const currentBaseAlt = $derived(uploadedBaseName || activePreview.alt);
 	const currentOverlaySrc = $derived(uploadedOverlaySrc);
@@ -475,10 +481,17 @@
 						<span>Choose your set</span>
 						<select name="quantity" bind:value={selectedBundle}>
 							{#each checkoutOffers as offer (offer.quantity)}
-								<option value={String(offer.quantity)}>{offer.label} · {offer.priceLabel}</option>
+								<option value={String(offer.quantity)}>
+									{offer.label} · Qty {offer.quantity} · {offer.priceLabel}
+								</option>
 							{/each}
 						</select>
 					</label>
+					<div class="order-summary" aria-live="polite">
+						<span>Selected order</span>
+						<strong>{selectedOfferSummary}</strong>
+						<p>Size {printSize}</p>
+					</div>
 					<label
 						><span>Print size</span><select bind:value={printSize}
 							>{#each printSizes as size}<option value={size}>{size}</option>{/each}</select
@@ -888,6 +901,11 @@
 					<p class="card-kicker">Selected keepsake</p>
 					<h2>{uploadedBaseName || activePreview.label}</h2>
 					<p>A closer look at the image, overlay, and final finish.</p>
+					<div class="lightbox-order-summary" aria-live="polite">
+						<span>Selected order</span>
+						<strong>{selectedOfferSummary}</strong>
+						<p>Size {printSize}</p>
+					</div>
 					{#if checkoutError}<p class="upload-note upload-error" role="alert">
 							{checkoutError}
 						</p>{/if}
@@ -1123,11 +1141,60 @@
 	}
 
 	.order-checkout select {
-		padding: 0.8rem 0.95rem;
-		border-radius: 999px;
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.05);
-		color: var(--text);
+		min-width: 0;
+		padding: 0.9rem 2.6rem 0.9rem 1rem;
+		border-radius: 0.85rem;
+		border: 1px solid rgba(224, 207, 255, 0.42);
+		background:
+			linear-gradient(135deg, rgba(76, 39, 90, 0.92), rgba(26, 35, 69, 0.94)),
+			#201b33;
+		color: #fffaf3;
+		color-scheme: dark;
+		font-weight: 700;
+		line-height: 1.25;
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 10px 26px rgba(9, 3, 25, 0.22);
+	}
+
+	.order-checkout select option {
+		background: #211b34;
+		color: #fffaf3;
+	}
+
+	.order-summary,
+	.lightbox-order-summary {
+		display: grid;
+		gap: 0.18rem;
+		width: 100%;
+		padding: 0.9rem 1rem;
+		border: 1px solid rgba(230, 210, 255, 0.3);
+		border-radius: 0.85rem;
+		background:
+			linear-gradient(125deg, rgba(255, 220, 242, 0.12), rgba(133, 223, 255, 0.1)),
+			rgba(22, 15, 42, 0.66);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	}
+
+	.order-summary > span,
+	.lightbox-order-summary > span {
+		font-size: 0.65rem;
+		font-weight: 800;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: #c7f3ff;
+	}
+
+	.order-summary strong,
+	.lightbox-order-summary strong {
+		color: #fffaf3;
+		font-size: 0.98rem;
+		line-height: 1.35;
+	}
+
+	.order-summary p,
+	.lightbox-order-summary p {
+		margin: 0;
+		color: #e9dff5;
+		font-size: 0.82rem;
 	}
 
 	.upload-note {

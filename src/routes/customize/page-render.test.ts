@@ -2,6 +2,7 @@ import { render } from 'svelte/server';
 import { describe, expect, it, vi } from 'vitest';
 import PhotoOrderPage from './+page.svelte';
 import { photoOrderSelection } from '$lib/browser/photo-order';
+import { checkoutOffers } from '$lib/pricing';
 
 vi.mock('$app/state', () => ({ page: { url: new URL('https://holographephoto.com/customize') } }));
 
@@ -24,5 +25,15 @@ describe('photo order entry', () => {
 			quantity: undefined,
 			size: undefined
 		});
+	});
+	it('keeps every selectable bundle quantity and price visible in the order summary', () => {
+		const { body } = render(PhotoOrderPage);
+		for (const offer of checkoutOffers) {
+			expect(body).toContain(`Qty ${offer.quantity}`);
+			expect(body).toContain(offer.priceLabel);
+			expect(photoOrderSelection(new URLSearchParams(`package=${offer.quantity}`)).quantity).toBe(
+				String(offer.quantity)
+			);
+		}
 	});
 });

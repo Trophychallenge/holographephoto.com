@@ -147,14 +147,21 @@
 	.business-page {
 		width: min(1160px, calc(100% - 2rem));
 		margin: 0 auto;
-		padding: 3rem 0 4rem;
+		padding: 2rem 0 4rem;
 	}
 	.brand-hero {
 		display: grid;
 		grid-template-columns: 1.2fr 0.8fr;
 		gap: clamp(2rem, 7vw, 6rem);
 		align-items: center;
-		padding: 1rem 0 4rem;
+		padding: clamp(1.5rem, 4vw, 3.5rem);
+		border: 1px solid rgba(220, 197, 255, 0.23);
+		border-radius: 2rem;
+		background:
+			radial-gradient(circle at 87% 14%, rgba(130, 235, 255, 0.18), transparent 27%),
+			radial-gradient(circle at 13% 83%, rgba(255, 172, 214, 0.2), transparent 30%),
+			linear-gradient(135deg, #311342, #101a3a 72%);
+		box-shadow: 0 30px 80px rgba(5, 1, 20, 0.32);
 	}
 	h1,
 	h2,
@@ -208,8 +215,8 @@
 	}
 	.hero-media {
 		margin: 0;
-		background: #111014;
-		border: 1px solid #322b3b;
+		background: linear-gradient(135deg, #fff0d5, #e5c5f5 45%, #b8eaff);
+		border: 1px solid rgba(255, 255, 255, 0.46);
 		border-radius: 1.3rem;
 		padding: 0.7rem;
 	}
@@ -235,8 +242,11 @@
 		color: #c8b4dd;
 	}
 	.why-section {
-		border-block: 1px solid var(--line);
-		padding: 3.5rem 0;
+		margin-top: 1.25rem;
+		padding: clamp(2rem, 5vw, 4rem);
+		border: 1px solid rgba(218, 199, 255, 0.16);
+		border-radius: 1.75rem;
+		background: linear-gradient(140deg, rgba(45, 18, 64, 0.86), rgba(15, 29, 56, 0.88));
 	}
 	.benefits {
 		display: grid;
@@ -248,8 +258,25 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: clamp(2rem, 6vw, 5rem);
-		padding-top: 4rem;
+		margin-top: 1.25rem;
+		padding: clamp(1.5rem, 5vw, 4rem);
+		border-radius: 1.75rem;
+		background:
+			radial-gradient(circle at 88% 16%, rgba(255, 174, 215, 0.34), transparent 28%),
+			linear-gradient(135deg, #fff5e7, #f6e5f5 52%, #d9f6ff);
+		color: #2a1835;
 		scroll-margin-top: 2rem;
+	}
+	.quote-section h2,
+	.quote-section p,
+	.quote-section li,
+	.quote-section label {
+		color: #392442;
+	}
+	.quote-section .eyebrow {
+		color: #59225d;
+		border-color: rgba(103, 43, 106, 0.22);
+		background: rgba(255, 255, 255, 0.46);
 	}
 	.quote-copy p {
 		max-width: 29rem;

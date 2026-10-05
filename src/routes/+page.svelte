@@ -97,7 +97,7 @@
 		z-index: 1;
 		width: min(1120px, calc(100vw - 1.1rem));
 		margin: 0 auto;
-		padding: clamp(4rem, 9vw, 8rem) 0 clamp(4rem, 9vw, 7rem);
+		padding: clamp(3rem, 7vw, 6rem) 0 clamp(3rem, 7vw, 6rem);
 	}
 
 	.explore-intro {
@@ -136,8 +136,9 @@
 		border: 1px solid rgba(255, 255, 255, 0.11);
 		border-radius: 1.5rem;
 		background:
-			radial-gradient(circle at 90% 0%, rgba(217, 228, 248, 0.08), transparent 34%),
-			linear-gradient(155deg, rgba(24, 24, 25, 0.9), rgba(9, 9, 10, 0.82));
+			radial-gradient(circle at 90% 0%, rgba(155, 231, 255, 0.17), transparent 34%),
+			radial-gradient(circle at 4% 96%, rgba(255, 184, 218, 0.13), transparent 34%),
+			linear-gradient(155deg, rgba(43, 20, 62, 0.94), rgba(14, 22, 49, 0.9));
 		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
 		transition:
 			transform 220ms ease,
@@ -195,8 +196,9 @@
 	.explore-card-featured {
 		border-color: rgba(234, 195, 143, 0.3);
 		background:
-			radial-gradient(circle at 88% 8%, rgba(231, 149, 64, 0.14), transparent 32%),
-			linear-gradient(155deg, rgba(28, 20, 23, 0.94), rgba(10, 10, 11, 0.84));
+			radial-gradient(circle at 88% 8%, rgba(255, 215, 166, 0.24), transparent 32%),
+			radial-gradient(circle at 14% 90%, rgba(255, 174, 215, 0.2), transparent 34%),
+			linear-gradient(155deg, rgba(80, 25, 70, 0.96), rgba(24, 28, 62, 0.9));
 	}
 
 	@media (max-width: 680px) {
