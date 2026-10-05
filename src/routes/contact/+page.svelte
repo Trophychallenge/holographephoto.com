@@ -14,10 +14,11 @@
 			</div>
 
 			<div class="contact-actions">
-				<a class="contact-action contact-action-primary" href="tel:5122563720">
-					<span class="contact-label">Call or text</span>
+				<a class="contact-action contact-action-primary" href="tel:+15122563720">
+					<span class="contact-label">Call</span>
 					<strong>512-256-3720</strong>
 				</a>
+				<a class="contact-action" href="sms:+15122563720"><span class="contact-label">Text</span><strong>512-256-3720</strong></a>
 				<a class="contact-action" href="mailto:admin@holographephoto.com">
 					<span class="contact-label">Email</span>
 					<strong>admin@holographephoto.com</strong>

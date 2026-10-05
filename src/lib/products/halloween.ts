@@ -126,7 +126,11 @@ export const halloweenDesigns: HalloweenDesign[] = [
 	available: true,
 	productOptionIds: allPackageIds,
 	badges: ['Holographe Exclusive'],
-	placeholderLabel: 'Artwork preview to be supplied'
+	placeholderLabel: 'Artwork preview not available yet',
+	thumbnail:
+		name === 'Creepy Carnival'
+			? { type: 'image', src: '/media/halloween/creepy-carnival.jpg', alt: 'Creepy Carnival Halloween mural artwork' }
+			: undefined
 }));
 
 export const halloweenProducts: CatalogProduct[] = [

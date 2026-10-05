@@ -100,7 +100,8 @@
 		</section>
 
 		<section class="mini-band glass-card">
-			<p class="eyebrow">Extras</p>
+			<p class="eyebrow">Extras & custom requests</p>
+			<p class="extras-note">No extras are added or charged online. Items below require a confirmed quote unless the customizer already includes the tool.</p>
 			<div class="extras-inline">
 				{#each addOns as item}
 					<span>{item.name} · {item.priceLabel}</span>
@@ -183,7 +184,7 @@
 				<div class="modal-stats">
 					<span>{activeTier.quantityLabel}</span>
 					<span>{selectedSizes[activeTier.id]}</span>
-					<span>{activeTier.quantityLabel}</span>
+					<span>{activeTier.priceLabel}</span>
 				</div>
 
 				<a
@@ -251,6 +252,7 @@
 		gap: 0.55rem;
 		padding: 1.1rem;
 	}
+	.extras-note { max-width:42rem; text-align:center; font-size:.85rem; }
 
 	.pricing-hero {
 		padding: clamp(1.7rem, 5vw, 3.5rem);

@@ -88,10 +88,11 @@
 					aria-checked={selectedDesign.slug === design.slug}
 					onclick={() => (selectedDesignSlug = design.slug)}
 				>
-					<div class="design-placeholder" aria-hidden="true">
-						<strong>{design.name}</strong>
-						<small>{design.placeholderLabel}</small>
-					</div>
+					{#if design.thumbnail?.type === 'image'}
+						<img class="design-artwork" src={design.thumbnail.src} alt={design.thumbnail.alt} />
+					{:else}
+						<div class="design-placeholder" aria-hidden="true"><strong>{design.name}</strong><small>{design.placeholderLabel}</small></div>
+					{/if}
 					<div class="design-card-copy">
 						<strong>{design.name}</strong>
 						<span>{selectedDesign.slug === design.slug ? 'Selected' : 'Select design'}</span>
@@ -281,6 +282,7 @@
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1rem;
 	}
+	.design-artwork { display:block; width:100%; aspect-ratio:1; object-fit:cover; border-radius:.8rem; }
 	.design-card,
 	.package-card {
 		width: 100%;
