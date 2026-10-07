@@ -1,5 +1,6 @@
 import { listRecentPaidOrders } from '$lib/server/orders';
 import { fetchCheckoutSession } from '$lib/server/stripe';
+import { getChristinaSyncJob } from '$lib/server/christina-order-sync';
 import type { PageServerLoad } from './$types';
 
 export const prerender = false;
@@ -38,8 +39,9 @@ export const load: PageServerLoad = async ({ fetch }) => {
 	}
 
 	try {
+		const orders = await listRecentPaidOrders(50);
 		return {
-			orders: await listRecentPaidOrders(50),
+			orders: await Promise.all(orders.map(async (order) => ({ ...order, christinaSync: await getChristinaSyncJob(order.sessionId) }))),
 			loadError: '',
 			recovery,
 			recoveryError

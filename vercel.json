@@ -1,0 +1,5 @@
+{
+	"crons": [
+		{ "path": "/api/internal/christina-order-sync/retry", "schedule": "0 5 * * *" }
+	]
+}

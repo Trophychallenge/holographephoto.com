@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { storePaidOrder } from '$lib/server/orders';
 import { sendPushoverOrderAlert } from '$lib/server/pushover';
+import { getPaidOrder } from '$lib/server/orders';
+import { syncPaidOrderToChristina } from '$lib/server/christina-order-sync';
 import { fetchCheckoutSession, type StripeCheckoutSession, type StripeEvent } from '$lib/server/stripe';
 import type { RequestHandler } from './$types';
 
@@ -24,6 +26,14 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 		data: { object: session }
 	};
 	const stored = await storePaidOrder({ session, event });
+	// The ChristinaOS import is idempotent and never sends a Pushover alert.
+	// This also permits the exact recovered session to be imported once after its local record exists.
+	try {
+		const record = await getPaidOrder(session.id);
+		if (record) await syncPaidOrderToChristina(record);
+	} catch (error) {
+		console.error('Recovered paid-order ChristinaOS sync failed:', error);
+	}
 
 	// Exactly one recovery alert is sent, and only when the private record was just created.
 	if (stored.stored) {

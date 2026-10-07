@@ -149,11 +149,12 @@
 							<span>{order.paymentStatus || 'unknown payment'}</span>
 							<span>{order.status || 'unknown status'}</span>
 							<span>{order.metadata.offer || `${order.metadata.quantity || '1'} item`}</span>
+							<span class:sync-failed={order.christinaSync?.status === 'failed'}>ChristinaOS: {order.christinaSync?.status || 'not queued'}</span>
 						</div>
 
-						<div class="info-grid">
+						<section class="order-section info-grid" aria-label="Customer and shipping details">
 							<div>
-								<p class="label">Contact</p>
+								<p class="label">Customer details</p>
 								<p>{order.customerDetails?.email || 'No email captured'}</p>
 								<p>{order.customerDetails?.phone || 'No phone captured'}</p>
 							</div>
@@ -162,10 +163,10 @@
 								<p>{order.shippingDetails?.name || 'No shipping name'}</p>
 								<p>{shippingAddress(order.shippingDetails?.address) || 'No shipping address captured'}</p>
 							</div>
-						</div>
+						</section>
 
-						<div class="assets-block">
-							<p class="label">Production files</p>
+						<section class="order-section assets-block" aria-label="Production downloads">
+							<p class="label">Production downloads</p>
 							<div class="asset-links">
 								{#if order.metadata.base_blob_pathname}
 									<a href={`/admin/orders/file?session_id=${encodeURIComponent(order.sessionId)}&kind=base`}>Download original photo</a>
@@ -175,7 +176,7 @@
 								{/if}
 								<a href={`/admin/orders/file?session_id=${encodeURIComponent(order.sessionId)}&kind=record`}>Download private order JSON</a>
 							</div>
-						</div>
+						</section>
 
 						{#if order.metadata.personal_request || order.metadata.gift_message}
 							<div class="notes-block">
@@ -400,12 +401,19 @@
 		font-size: 0.76rem;
 	}
 
+	.chip-row .sync-failed { border-color: #b35b10; background: #fff1d6; color: #713400; }
+
 	.info-grid,
 	.assets-block,
 	.notes-block,
 	.line-items {
 		display: grid;
 		gap: 0.45rem;
+	}
+
+	.order-section {
+		padding-top: 0.85rem;
+		border-top: 1px solid #d6b9df;
 	}
 
 	.line-items {

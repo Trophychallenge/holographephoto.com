@@ -7,6 +7,7 @@ const DEFAULT_WEBHOOK_TOLERANCE_SECONDS = 300;
 type StripeCheckoutSession = {
 	id: string;
 	object: 'checkout.session';
+	created?: number;
 	amount_total: number | null;
 	currency: string | null;
 	customer_details?: {

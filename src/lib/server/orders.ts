@@ -19,6 +19,7 @@ function orderBlobOptions() {
 
 type StoredPaidOrderRecord = {
 	storedAt: string;
+	created?: number;
 	eventId: string;
 	eventType: string;
 	sessionId: string;
@@ -64,6 +65,7 @@ export async function storePaidOrder({
 
 	const record: StoredPaidOrderRecord = {
 		storedAt: new Date().toISOString(),
+		created: session.created,
 		eventId: event.id,
 		eventType: event.type,
 		sessionId: session.id,

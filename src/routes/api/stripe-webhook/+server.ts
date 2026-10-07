@@ -9,6 +9,8 @@ import {
 import { storePaidOrder } from '$lib/server/orders';
 import { sendPushoverOrderAlert } from '$lib/server/pushover';
 import { fulfillReservation, releaseReservationForExpiredCheckout } from '$lib/server/inventory';
+import { getPaidOrder } from '$lib/server/orders';
+import { syncPaidOrderToChristina } from '$lib/server/christina-order-sync';
 
 const HANDLED_EVENT_TYPES = new Set([
 	'checkout.session.completed',
@@ -60,6 +62,13 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 		) {
 			if (hasInventoryReservation) await fulfillReservation(sessionId);
 			const stored = await storePaidOrder({ session, event });
+			// A failed ChristinaOS sync is recorded privately and never turns a paid Stripe webhook into a failure.
+			try {
+				const record = await getPaidOrder(session.id);
+				if (record) await syncPaidOrderToChristina(record);
+			} catch (error) {
+				console.error('ChristinaOS order sync failed after local order storage:', error);
+			}
 
 			// Only notify once for a newly stored paid order so webhook retries don't spam the phone.
 			if (stored.stored) {
