@@ -1,9 +1,20 @@
-import { BlobNotFoundError, head, list, put } from '@vercel/blob';
+import { BlobNotFoundError, get, head, list, put } from '@vercel/blob';
 import { env } from '$env/dynamic/private';
 import type { StripeCheckoutSession, StripeEvent } from '$lib/server/stripe';
 
+const PAID_ORDER_PREFIX = 'paid-orders/stripe/';
+
 function getOrderPathname(sessionId: string) {
-	return `orders/stripe/${sessionId}.json`;
+	return `${PAID_ORDER_PREFIX}${sessionId}.json`;
+}
+
+function orderBlobOptions() {
+	// Never fall back to the public upload or private quote stores.
+	if (!env.ORDER_BLOB_STORE_ID) {
+		throw new Error('Missing ORDER_BLOB_STORE_ID for private paid-order storage.');
+	}
+
+	return { storeId: env.ORDER_BLOB_STORE_ID };
 }
 
 type StoredPaidOrderRecord = {
@@ -22,7 +33,6 @@ type StoredPaidOrderRecord = {
 };
 
 type StoredPaidOrderSummary = StoredPaidOrderRecord & {
-	recordUrl: string;
 	recordPathname: string;
 	recordUploadedAt: string;
 };
@@ -40,14 +50,11 @@ export async function storePaidOrder({
 	session: StripeCheckoutSession;
 	event: StripeEvent<StripeCheckoutSession>;
 }) {
-	if (!env.BLOB_READ_WRITE_TOKEN) {
-		throw new Error('Missing BLOB_READ_WRITE_TOKEN.');
-	}
-
+	const options = orderBlobOptions();
 	const pathname = getOrderPathname(session.id);
 
 	try {
-		await head(pathname);
+		await head(pathname, options);
 		return { stored: false, pathname };
 	} catch (error) {
 		if (!(error instanceof BlobNotFoundError)) {
@@ -55,7 +62,7 @@ export async function storePaidOrder({
 		}
 	}
 
-	const record = {
+	const record: StoredPaidOrderRecord = {
 		storedAt: new Date().toISOString(),
 		eventId: event.id,
 		eventType: event.type,
@@ -71,7 +78,8 @@ export async function storePaidOrder({
 	};
 
 	await put(pathname, JSON.stringify(record, null, 2), {
-		access: 'public',
+		...options,
+		access: 'private',
 		addRandomSuffix: false,
 		allowOverwrite: false,
 		contentType: 'application/json'
@@ -80,16 +88,23 @@ export async function storePaidOrder({
 	return { stored: true, pathname };
 }
 
-export async function listRecentPaidOrders(
-	fetch: typeof globalThis.fetch,
-	limit = 50
-): Promise<StoredPaidOrderSummary[]> {
-	if (!env.BLOB_READ_WRITE_TOKEN) {
-		throw new Error('Missing BLOB_READ_WRITE_TOKEN.');
-	}
+export async function getPaidOrder(sessionId: string): Promise<StoredPaidOrderRecord | null> {
+	const blob = await get(getOrderPathname(sessionId), {
+		...orderBlobOptions(),
+		access: 'private',
+		useCache: false
+	});
+
+	if (!blob?.stream) return null;
+	return (await new Response(blob.stream).json()) as StoredPaidOrderRecord;
+}
+
+export async function listRecentPaidOrders(limit = 50): Promise<StoredPaidOrderSummary[]> {
+	const options = orderBlobOptions();
 
 	const { blobs } = await list({
-		prefix: 'orders/stripe/',
+		...options,
+		prefix: PAID_ORDER_PREFIX,
 		limit: Math.max(limit, 100)
 	});
 
@@ -100,26 +115,17 @@ export async function listRecentPaidOrders(
 	const records = await Promise.all(
 		recentBlobs.map(async (blob) => {
 			try {
-				const response = await fetch(blob.url, {
-					headers: {
-						accept: 'application/json'
-					}
-				});
-
-				if (!response.ok) {
-					throw new Error(`Failed to fetch order record ${blob.pathname}.`);
-				}
-
-				const record = (await response.json()) as StoredPaidOrderRecord;
+				const sessionId = blob.pathname.slice(PAID_ORDER_PREFIX.length, -'.json'.length);
+				const record = await getPaidOrder(sessionId);
+				if (!record) throw new Error(`Order record ${blob.pathname} was not found.`);
 
 				return {
 					...record,
-					recordUrl: blob.url,
 					recordPathname: blob.pathname,
 					recordUploadedAt: blob.uploadedAt.toISOString()
 				};
 			} catch (error) {
-				console.error('Unable to load order record', blob.pathname, error);
+				console.error('Unable to load private order record', blob.pathname, error);
 				return null;
 			}
 		})
@@ -131,4 +137,5 @@ export async function listRecentPaidOrders(
 	);
 }
 
+export { getOrderPathname };
 export type { StoredPaidOrderRecord, StoredPaidOrderSummary };

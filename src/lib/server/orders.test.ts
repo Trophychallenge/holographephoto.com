@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { storePaidOrder } from './orders';
+import { listRecentPaidOrders, storePaidOrder } from './orders';
 import type { StripeCheckoutSession, StripeEvent } from './stripe';
 
 const blobMock = vi.hoisted(() => {
@@ -8,6 +8,8 @@ const blobMock = vi.hoisted(() => {
 	return {
 		MockBlobNotFoundError,
 		head: vi.fn(),
+		get: vi.fn(),
+		list: vi.fn(),
 		put: vi.fn()
 	};
 });
@@ -18,8 +20,9 @@ vi.mock('$env/dynamic/private', () => ({
 
 vi.mock('@vercel/blob', () => ({
 	BlobNotFoundError: blobMock.MockBlobNotFoundError,
+	get: blobMock.get,
 	head: blobMock.head,
-	list: vi.fn(),
+	list: blobMock.list,
 	put: blobMock.put
 }));
 
@@ -42,31 +45,83 @@ const event = {
 
 describe('paid order fulfillment storage', () => {
 	beforeEach(() => {
-		process.env.BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_test';
+		process.env.ORDER_BLOB_STORE_ID = 'store_private_orders_test';
+		blobMock.get.mockReset();
 		blobMock.head.mockReset();
+		blobMock.list.mockReset();
 		blobMock.put.mockReset();
 	});
 
 	it('stores a paid order once and treats duplicate webhook/session fulfillment as already handled', async () => {
 		blobMock.head.mockRejectedValueOnce(new blobMock.MockBlobNotFoundError());
 		blobMock.put.mockResolvedValueOnce({
-			url: 'https://blob.example/orders/stripe/cs_test_duplicate.json',
-			pathname: 'orders/stripe/cs_test_duplicate.json',
+			pathname: 'paid-orders/stripe/cs_test_duplicate.json',
 			uploadedAt: new Date()
 		});
 
 		const first = await storePaidOrder({ session, event });
 
 		blobMock.head.mockResolvedValueOnce({
-			url: 'https://blob.example/orders/stripe/cs_test_duplicate.json',
-			pathname: 'orders/stripe/cs_test_duplicate.json',
+			pathname: 'paid-orders/stripe/cs_test_duplicate.json',
 			uploadedAt: new Date()
 		});
 
 		const second = await storePaidOrder({ session, event });
 
-		expect(first).toEqual({ stored: true, pathname: 'orders/stripe/cs_test_duplicate.json' });
-		expect(second).toEqual({ stored: false, pathname: 'orders/stripe/cs_test_duplicate.json' });
+		expect(first).toEqual({ stored: true, pathname: 'paid-orders/stripe/cs_test_duplicate.json' });
+		expect(second).toEqual({ stored: false, pathname: 'paid-orders/stripe/cs_test_duplicate.json' });
 		expect(blobMock.put).toHaveBeenCalledTimes(1);
+		expect(blobMock.put).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.any(String),
+			expect.objectContaining({
+				access: 'private',
+				storeId: 'store_private_orders_test',
+				allowOverwrite: false
+			})
+		);
+	});
+
+	it('loads records through private Blob reads rather than public record URLs', async () => {
+		blobMock.list.mockResolvedValueOnce({
+			blobs: [
+				{
+					pathname: 'paid-orders/stripe/cs_test_duplicate.json',
+					uploadedAt: new Date('2026-10-06T04:00:00Z')
+				}
+			]
+		});
+		blobMock.get.mockResolvedValueOnce({
+			stream: new ReadableStream({
+				start(controller) {
+					controller.enqueue(
+						new TextEncoder().encode(
+							JSON.stringify({
+								storedAt: '2026-10-06T04:00:00Z',
+								eventId: event.id,
+								eventType: event.type,
+								sessionId: session.id,
+								paymentStatus: 'paid',
+								status: 'complete',
+								amountTotal: 999,
+								currency: 'usd',
+								customerDetails: null,
+								shippingDetails: null,
+								metadata: {},
+								lineItems: []
+							})
+						)
+					);
+					controller.close();
+				}
+			})
+		});
+
+		const orders = await listRecentPaidOrders();
+		expect(orders).toHaveLength(1);
+		expect(blobMock.get).toHaveBeenCalledWith(
+			'paid-orders/stripe/cs_test_duplicate.json',
+			expect.objectContaining({ access: 'private', storeId: 'store_private_orders_test' })
+		);
 	});
 });

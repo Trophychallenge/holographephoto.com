@@ -46,7 +46,8 @@ function buildOrderMessage(session: StripeCheckoutSession) {
 
 export async function sendPushoverOrderAlert(
 	fetch: typeof globalThis.fetch,
-	session: StripeCheckoutSession
+	session: StripeCheckoutSession,
+	options: { recovered?: boolean } = {}
 ) {
 	if (!env.PUSHOVER_TOKEN || !env.PUSHOVER_USER_KEY) {
 		return { sent: false, reason: 'missing-config' as const };
@@ -55,7 +56,7 @@ export async function sendPushoverOrderAlert(
 	const body = new URLSearchParams({
 		token: env.PUSHOVER_TOKEN,
 		user: env.PUSHOVER_USER_KEY,
-		title: 'New Holograph order',
+		title: options.recovered ? 'Recovered paid order' : 'New Holograph order',
 		message: buildOrderMessage(session),
 		priority: '0'
 	});

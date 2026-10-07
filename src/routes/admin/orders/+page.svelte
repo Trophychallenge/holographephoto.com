@@ -116,13 +116,13 @@
 						<div class="assets-block">
 							<p class="label">Production files</p>
 							<div class="asset-links">
-								{#if order.metadata.base_blob_url}
-									<a href={order.metadata.base_blob_url} target="_blank" rel="noreferrer">Original photo</a>
+								{#if order.metadata.base_blob_pathname}
+									<a href={`/admin/orders/file?session_id=${encodeURIComponent(order.sessionId)}&kind=base`}>Download original photo</a>
 								{/if}
-								{#if order.metadata.overlay_blob_url}
-									<a href={order.metadata.overlay_blob_url} target="_blank" rel="noreferrer">Overlay file</a>
+								{#if order.metadata.overlay_blob_pathname}
+									<a href={`/admin/orders/file?session_id=${encodeURIComponent(order.sessionId)}&kind=overlay`}>Download overlay file</a>
 								{/if}
-								<a href={order.recordUrl} target="_blank" rel="noreferrer">Order JSON</a>
+								<a href={`/admin/orders/file?session_id=${encodeURIComponent(order.sessionId)}&kind=record`}>Download private order JSON</a>
 							</div>
 						</div>
 

@@ -3,10 +3,10 @@ import type { PageServerLoad } from './$types';
 
 export const prerender = false;
 
-export const load: PageServerLoad = async ({ fetch }) => {
+export const load: PageServerLoad = async () => {
 	try {
 		return {
-			orders: await listRecentPaidOrders(fetch, 50),
+			orders: await listRecentPaidOrders(50),
 			loadError: ''
 		};
 	} catch (error) {
