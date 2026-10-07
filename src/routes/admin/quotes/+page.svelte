@@ -21,5 +21,36 @@
 </div></section>
 
 <style>
-	.quotes { display:grid; gap:1rem; } h1,h2,p { margin:0; } h1,h2 { font-family:Georgia,serif; } .quote { padding:1rem; border:1px solid var(--line); border-radius:1rem; background:var(--panel); display:grid; gap:.5rem; } a { color:var(--accent-3); overflow-wrap:anywhere; } .status { padding:.75rem 1rem; border-left:3px solid var(--accent-3); background:var(--panel); }
+	.quotes { display:grid; gap:1rem; }
+	h1,h2,p { margin:0; }
+	h1,h2 { font-family:Georgia,serif; color:#2a1035; }
+	p { color:#4b3651; line-height:1.55; }
+	.quote {
+		padding:1rem;
+		border:1px solid #d0b2db;
+		border-radius:1rem;
+		background:#fffafd;
+		display:grid;
+		gap:.5rem;
+	}
+	a {
+		color:#5d158d;
+		font-weight:700;
+		text-decoration:underline;
+		text-underline-offset:.16em;
+		overflow-wrap:anywhere;
+	}
+	a:hover { color:#3e075f; background:#f5e7ff; }
+	a:focus-visible { outline:3px solid #087d97; outline-offset:3px; border-radius:.2rem; }
+	.status {
+		padding:.75rem 1rem;
+		border:1px solid #9a68b0;
+		border-left:4px solid #7828c7;
+		border-radius:.7rem;
+		background:#fffafd;
+		color:#3c2145;
+		font-weight:600;
+		overflow-wrap:anywhere;
+	}
+	[role='alert'] { color:#8b142e; background:#fff0f3; border:1px solid #db7890; border-radius:.7rem; padding:.75rem 1rem; font-weight:650; overflow-wrap:anywhere; }
 </style>

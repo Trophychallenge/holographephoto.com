@@ -219,7 +219,7 @@
 	h2 {
 		font-family: 'Georgia', 'Iowan Old Style', serif;
 		letter-spacing: -0.05em;
-		color: #faf7f1;
+		color: #2a1035;
 	}
 
 	h1 {
@@ -236,12 +236,26 @@
 	}
 
 	p {
-		color: var(--muted);
+		color: #4b3651;
 		line-height: 1.55;
 	}
 
 	a {
-		color: #f4e9d8;
+		color: #5d158d;
+		font-weight: 700;
+		text-decoration: underline;
+		text-underline-offset: 0.16em;
+	}
+
+	a:hover {
+		color: #3e075f;
+		background: #f5e7ff;
+	}
+
+	a:focus-visible {
+		outline: 3px solid #087d97;
+		outline-offset: 3px;
+		border-radius: 0.25rem;
 	}
 
 	.orders-wrap {
@@ -270,10 +284,11 @@
 		display: grid;
 		gap: 0.35rem;
 		padding: 0.85rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid #b882ce;
 		border-radius: 0.85rem;
-		background: rgba(255, 255, 255, 0.035);
-		color: #faf7f1;
+		background: #fffafd;
+		color: #32153e;
+		font-weight: 600;
 	}
 
 	button {
@@ -282,16 +297,17 @@
 		padding: 0.65rem 1rem;
 		border: 0;
 		border-radius: 999px;
-		background: #be5df8;
-		color: #18051d;
+		background: #7828c7;
+		color: #fffaff;
 		font: inherit;
 		font-weight: 750;
 		cursor: pointer;
 	}
 
+	button:hover:not(:disabled) { background: #5d158d; }
 	button:disabled { cursor: wait; opacity: 0.65; }
-	button:focus-visible { outline: 3px solid #4ee9ff; outline-offset: 3px; }
-	.recovery-status { color: #faf7f1; }
+	button:focus-visible { outline: 3px solid #087d97; outline-offset: 3px; }
+	.recovery-status { color: #32153e; font-weight: 650; }
 
 	.orders-copy {
 		display: grid;
@@ -309,8 +325,8 @@
 	.line-item,
 	.order-total {
 		border-radius: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		background: rgba(255, 255, 255, 0.035);
+		border: 1px solid #d6b9df;
+		background: #fffafd;
 	}
 
 	.hero-stat {
@@ -325,13 +341,13 @@
 		font-size: 0.68rem;
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
-		color: rgba(237, 226, 213, 0.58);
+		color: #593660;
 	}
 
 	.hero-stat strong {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #faf7f1;
+		color: #2a1035;
 	}
 
 	.orders-grid {
@@ -359,12 +375,12 @@
 	.order-total span {
 		font-size: 1rem;
 		font-weight: 600;
-		color: #faf7f1;
+		color: #2a1035;
 	}
 
 	.order-total small,
 	.subcopy {
-		color: rgba(244, 236, 226, 0.62);
+		color: #5d4664;
 	}
 
 	.chip-row,
@@ -378,8 +394,9 @@
 	.asset-links a {
 		padding: 0.42rem 0.7rem;
 		border-radius: 999px;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid #bd8dce;
+		background: #f9edff;
+		color: #4a0f70;
 		font-size: 0.76rem;
 	}
 
@@ -402,11 +419,11 @@
 	}
 
 	.line-item span {
-		color: #faf7f1;
+		color: #2a1035;
 	}
 
 	.line-item small {
-		color: rgba(244, 236, 226, 0.62);
+		color: #5d4664;
 	}
 
 	@media (min-width: 720px) {
