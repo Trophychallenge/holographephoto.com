@@ -2,6 +2,8 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+	let recoveryStatus = $state('');
+	let recoveryPending = $state(false);
 
 	const dateFormatter = new Intl.DateTimeFormat('en-US', {
 		dateStyle: 'medium',
@@ -35,6 +37,32 @@
 			.filter(Boolean)
 			.join(' · ');
 	}
+
+	async function recoverOctoberOrder() {
+		if (!data.recovery || recoveryPending) return;
+		if (!window.confirm('Create the private paid-order record and send one “Recovered paid order” alert? This cannot charge, refund, or replay Stripe.')) return;
+
+		recoveryPending = true;
+		recoveryStatus = '';
+		try {
+			const response = await fetch('/admin/orders/backfill', {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ sessionId: data.recovery.sessionId })
+			});
+			const result = (await response.json()) as { stored?: boolean; notification?: string; error?: string };
+			if (!response.ok) throw new Error(result.error || 'Recovery did not complete.');
+			recoveryStatus = result.stored
+				? result.notification === 'sent'
+					? 'Recovered private order record and sent the single recovery alert. Refreshing the order list…'
+					: 'Recovered private order record. The recovery alert needs attention. Refreshing the order list…'
+				: 'This paid session was already recovered; no duplicate alert was sent.';
+			setTimeout(() => window.location.reload(), 900);
+		} catch (error) {
+			recoveryStatus = error instanceof Error ? error.message : 'Recovery did not complete.';
+			recoveryPending = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -60,6 +88,29 @@
 					<strong>Vercel Blob</strong>
 				</div>
 			</div>
+		</section>
+
+		<section class="glass-card recovery-card" aria-labelledby="recovery-heading">
+			<div>
+				<p class="eyebrow">One-time recovery</p>
+				<h2 id="recovery-heading">October 5 paid order</h2>
+				<p>Review Stripe’s canonical paid-session summary before creating its private record.</p>
+			</div>
+			{#if data.recovery}
+				<div class="recovery-summary">
+					<span>{data.recovery.offer}</span>
+					<span>{data.recovery.quantity} item{data.recovery.quantity === '1' ? '' : 's'} · {formatMoney(data.recovery.amountTotal, data.recovery.currency)}</span>
+					<span>{data.recovery.paymentStatus || 'unknown payment'} · {data.recovery.status || 'unknown status'}</span>
+					<span>{data.recovery.hasOriginalPhoto ? 'Original photo available' : 'Original photo reference missing'}</span>
+					<span>{data.recovery.hasOverlay ? 'Overlay attached' : 'No overlay captured'}</span>
+				</div>
+				<button type="button" onclick={recoverOctoberOrder} disabled={recoveryPending}>
+					{recoveryPending ? 'Recovering…' : 'Recover paid order'}
+				</button>
+			{:else}
+				<p>{data.recoveryError || 'Recovery preview is unavailable.'}</p>
+			{/if}
+			{#if recoveryStatus}<p class="recovery-status" aria-live="polite">{recoveryStatus}</p>{/if}
 		</section>
 
 		{#if data.loadError}
@@ -200,7 +251,8 @@
 
 	.orders-hero,
 	.order-card,
-	.empty-card {
+	.empty-card,
+	.recovery-card {
 		padding: 1.1rem;
 	}
 
@@ -208,6 +260,38 @@
 		display: grid;
 		gap: 1rem;
 	}
+
+	.recovery-card {
+		display: grid;
+		gap: 0.8rem;
+	}
+
+	.recovery-summary {
+		display: grid;
+		gap: 0.35rem;
+		padding: 0.85rem;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 0.85rem;
+		background: rgba(255, 255, 255, 0.035);
+		color: #faf7f1;
+	}
+
+	button {
+		justify-self: start;
+		min-height: 2.75rem;
+		padding: 0.65rem 1rem;
+		border: 0;
+		border-radius: 999px;
+		background: #be5df8;
+		color: #18051d;
+		font: inherit;
+		font-weight: 750;
+		cursor: pointer;
+	}
+
+	button:disabled { cursor: wait; opacity: 0.65; }
+	button:focus-visible { outline: 3px solid #4ee9ff; outline-offset: 3px; }
+	.recovery-status { color: #faf7f1; }
 
 	.orders-copy {
 		display: grid;
