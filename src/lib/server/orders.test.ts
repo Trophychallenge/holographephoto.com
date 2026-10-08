@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { listRecentPaidOrders, storePaidOrder } from './orders';
-import { buildChristinaOrderPayload } from './christina-order-sync';
+import { buildChristinaOrderPayload, syncPaidOrderToChristina } from './christina-order-sync';
 import type { StripeCheckoutSession, StripeEvent } from './stripe';
 
 const blobMock = vi.hoisted(() => {
@@ -135,5 +135,25 @@ describe('paid order fulfillment storage', () => {
 		});
 		expect(payload).toMatchObject({ checkoutSessionId: session.id, amountTotal: 1999, product: 'Keepsake Set', quantity: 1, productionReferences: { baseBlobPathname: 'orders/base/private.jpg', overlayBlobPathname: null } });
 		expect(JSON.stringify(payload)).not.toContain('http');
+	});
+
+	it('persists a failed ChristinaOS delivery for retry without involving Pushover', async () => {
+		process.env.CHRISTINA_OS_ORDER_SYNC_URL = 'https://christina.example/api/orders';
+		process.env.CHRISTINA_OS_ORDER_SYNC_SECRET = 'test-sync-secret';
+		blobMock.get.mockResolvedValueOnce(null);
+		blobMock.put.mockResolvedValue({});
+		const fetchMock = vi.fn().mockRejectedValue(new Error('network unavailable'));
+		vi.stubGlobal('fetch', fetchMock);
+		const result = await syncPaidOrderToChristina({
+			storedAt: '2026-10-05T12:00:00.000Z', eventId: event.id, eventType: event.type,
+			sessionId: session.id, paymentStatus: 'paid', status: 'complete', amountTotal: 1999, currency: 'usd',
+			customerDetails: null, shippingDetails: null, metadata: {}, lineItems: []
+		});
+		expect(result.status).toBe('failed');
+		expect(result.attempts).toBe(1);
+		expect(result.nextAttemptAt).not.toBeNull();
+		expect(fetchMock).toHaveBeenCalledOnce();
+		expect(blobMock.put).toHaveBeenCalledWith(expect.stringContaining('paid-orders/christina-sync/'), expect.any(String), expect.objectContaining({ access: 'private', allowOverwrite: true }));
+		vi.unstubAllGlobals();
 	});
 });
