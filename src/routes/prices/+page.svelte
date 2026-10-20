@@ -225,7 +225,7 @@
 
 	p {
 		line-height: 1.6;
-		color: rgba(238, 231, 221, 0.76);
+		color: #f1ece4;
 	}
 
 	.pricing-page {
@@ -388,11 +388,11 @@
 
 	.selection-tier,
 	.panel-label {
-		font-size: 0.64rem;
+		font-size: 0.76rem;
 		font-weight: 700;
-		letter-spacing: 0.22em;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
-		color: rgba(215, 225, 241, 0.64);
+		color: #dce6f5;
 	}
 
 	.selection-price,
@@ -405,7 +405,7 @@
 
 	.selection-meta {
 		font-size: 0.82rem;
-		color: rgba(238, 231, 221, 0.66);
+		color: #e9e2d8;
 	}
 
 	.selection-bars {
@@ -504,7 +504,7 @@
 		background: rgba(255, 255, 255, 0.04);
 		border: 1px solid rgba(255, 255, 255, 0.07);
 		font-size: 0.7rem;
-		color: rgba(243, 236, 227, 0.7);
+		color: #e9e2d8;
 	}
 
 	.selection-modal-shell {
@@ -549,7 +549,7 @@
 		border-radius: 999px;
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		background: rgba(255, 255, 255, 0.04);
-		color: rgba(248, 244, 238, 0.72);
+		color: #f4eee6;
 		font-size: 0.76rem;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
