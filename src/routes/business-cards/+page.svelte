@@ -238,7 +238,7 @@
 
 <style>
 	.business-page {
-		width: min(1160px, calc(100% - 2rem));
+		width: min(1120px, calc(100% - 2rem));
 		margin: 0 auto;
 		padding: 2rem 0 4rem;
 	}

@@ -10,12 +10,7 @@
 		type HalloweenPackage
 	} from '$lib/products/halloween';
 
-	let selectedDesignSlug = $state(halloweenDesigns[0].slug);
-	let selectedPackageId = $state<HalloweenPackage['id']>('full-mural');
-	let quantity = $state(1);
 	let collectionTab = $state<'murals' | 'decals'>('murals');
-	let personalized = $state(false);
-	let decalPersonalized = $state(false);
 	type CartItem =
 		| {
 				kind: 'mural';
@@ -40,6 +35,9 @@
 			cartItems = JSON.parse(
 				localStorage.getItem('holographe-halloween-cart') ?? '[]'
 			) as CartItem[];
+			if (new URL(window.location.href).searchParams.get('added') === '1') {
+				cartMessage = 'Added to your bag.';
+			}
 		} catch {
 			cartItems = [];
 		}
@@ -48,33 +46,6 @@
 		if (typeof window !== 'undefined')
 			localStorage.setItem('holographe-halloween-cart', JSON.stringify(cartItems));
 	});
-	function addMuralToCart() {
-		cartItems = [
-			...cartItems,
-			{
-				kind: 'mural',
-				designSlug: selectedDesign.slug,
-				packageId: selectedPackage.id,
-				variantId: selectedVariant.id,
-				quantity
-			}
-		];
-		cartMessage = `${selectedDesign.name} added to your bag.`;
-	}
-	function addDecalToCart() {
-		cartItems = [
-			...cartItems,
-			{
-				kind: 'decal',
-				designSlug: selectedDesign.slug,
-				decalSize,
-				personalized: decalPersonalized,
-				quantity: 1
-			}
-		];
-		decalUseAcknowledged = false;
-		cartMessage = `${selectedDesign.name} decal added to your bag.`;
-	}
 	function removeCartItem(index: number) {
 		cartItems = cartItems.filter((_, i) => i !== index);
 		if (!cartItems.some((item) => item.kind === 'decal')) decalUseAcknowledged = false;
@@ -107,24 +78,6 @@
 		{ id: '6-inch', label: '6-inch', price: '$14.99', cents: 1499 },
 		{ id: '8-inch', label: '8-inch', price: '$19.99', cents: 1999 }
 	];
-
-	const selectedDesign = $derived(
-		halloweenDesigns.find((design) => design.slug === selectedDesignSlug) ?? halloweenDesigns[0]
-	);
-	const availablePackages = $derived(
-		halloweenPackages.filter((productPackage) =>
-			selectedDesign.productOptionIds.includes(productPackage.id)
-		)
-	);
-	const selectedPackage = $derived(
-		availablePackages.find((productPackage) => productPackage.id === selectedPackageId) ??
-			availablePackages[0]
-	);
-	const selectedVariant = $derived(
-		selectedPackage.variants.find((variant) =>
-			variant.id.endsWith(personalized ? 'personalized' : 'standard')
-		) ?? selectedPackage.variants[0]
-	);
 </script>
 
 <svelte:head>
@@ -147,7 +100,7 @@
 			<h1>Halloween Edition</h1>
 			<p>Halloween magnets with a little extra personality.</p>
 			<p class="hero-editorial">
-				Pick the artwork you love, choose the size, and you’re ready to shop.
+				Pick the artwork you love. I’ll walk you through the right size on the next page.
 			</p>
 			<p class="hero-note">Made by me in Texas. A little spooky, a lot of shine.</p>
 		</div>
@@ -178,21 +131,13 @@
 				<p class="eyebrow">First, choose your art</p>
 				<h2 id="design-heading">Which one are you taking home?</h2>
 				<p>
-					Each design is available as one panel, a four-piece mini mural, or the full nine-piece
-					Signature Mural.
+					Choose a design to see the size and mural options on the next page.
 				</p>
 			</div>
 
-			<div class="design-grid" role="radiogroup" aria-label="Halloween design">
+			<div class="design-grid" aria-label="Choose a Halloween mural design">
 				{#each halloweenDesigns as design (design.id)}
-					<button
-						type="button"
-						class:selected={selectedDesign.slug === design.slug}
-						class="design-card"
-						role="radio"
-						aria-checked={selectedDesign.slug === design.slug}
-						onclick={() => (selectedDesignSlug = design.slug)}
-					>
+					<a class="design-card" href={`${resolve('/collections/halloween/design')}/${design.slug}?type=mural`}>
 						{#if design.thumbnail?.type === 'image'}
 							<img
 								class="design-artwork"
@@ -203,88 +148,13 @@
 						{/if}
 						<div class="design-card-copy">
 							<strong>{design.name}</strong>
-							<span>{selectedDesign.slug === design.slug ? 'Selected' : 'Select design'}</span>
+							<span>Choose this design →</span>
 						</div>
-					</button>
+					</a>
 				{/each}
 			</div>
 			<p class="asset-note">
 				New designs are going up as I finish them. More spooky stuff is on the way.
-			</p>
-		</section>
-
-		<section class="shop-section" aria-labelledby="format-heading">
-			<div class="section-intro">
-				<p class="eyebrow">Then choose your set</p>
-				<h2 id="format-heading">How much wall do you want to haunt?</h2>
-				<p>All panels are 8×10. The mini mural is four panels; Signature is the full nine.</p>
-			</div>
-
-			<div class="package-grid" role="radiogroup" aria-label="Halloween package">
-				{#each availablePackages as productPackage (productPackage.id)}
-					<button
-						type="button"
-						class:selected={selectedPackage.id === productPackage.id}
-						class:featured={productPackage.id === 'full-mural'}
-						class="package-card"
-						role="radio"
-						aria-checked={selectedPackage.id === productPackage.id}
-						onclick={() => (selectedPackageId = productPackage.id)}
-					>
-						<div class="package-topline">
-							<span>{productPackage.editionName}</span>
-							{#if productPackage.badge}<em>{productPackage.badge}</em>{/if}
-						</div>
-						<strong>{productPackage.name}</strong>
-						<b>{productPackage.priceLabel}</b>
-						<p>{productPackage.description}</p>
-					</button>
-				{/each}
-			</div>
-		</section>
-
-		<section class="selection-review" aria-labelledby="review-heading">
-			<div>
-				<p class="eyebrow">Your edition</p>
-				<h2 id="review-heading">Your edition</h2>
-				<dl class="edition-summary">
-					<div>
-						<dt>Design</dt>
-						<dd>{selectedDesign.name}</dd>
-					</div>
-					<div>
-						<dt>Format</dt>
-						<dd>{selectedPackage.editionName}</dd>
-					</div>
-					<div>
-						<dt>Price</dt>
-						<dd>${(selectedVariant.priceCents / 100).toFixed(2)}</dd>
-					</div>
-				</dl>
-			</div>
-			<label class="personalize-choice"
-				><input type="checkbox" bind:checked={personalized} /> Add a name or short phrase
-				<strong>+$5</strong></label
-			>
-			<div class="quantity-control">
-				<label for="quantity">Quantity</label>
-				<div>
-					<button
-						type="button"
-						aria-label="Decrease quantity"
-						onclick={() => (quantity = Math.max(1, quantity - 1))}>−</button
-					>
-					<input id="quantity" type="number" min="1" bind:value={quantity} />
-					<button type="button" aria-label="Increase quantity" onclick={() => (quantity += 1)}
-						>+</button
-					>
-				</div>
-			</div>
-			<button class="button-primary review-cta" type="button" onclick={addMuralToCart}
-				>Add to cart · ${(selectedVariant.priceCents / 100).toFixed(2)}</button
-			>
-			<p class="configuration-note">
-				You’ll confirm the details and pay securely at checkout. Personalized designs add $5.
 			</p>
 		</section>
 	{:else}
@@ -293,20 +163,12 @@
 				<p class="eyebrow">Made for a little road presence</p>
 				<h2 id="decals-heading">Magnetic Decals</h2>
 				<p>
-					Take the Halloween art with you. Pick a design, choose a size, and pop it on your car or
-					any magnetic surface.
+					Pick a design to see the decal sizes on the next page.
 				</p>
 			</div>
-			<div class="design-grid" role="radiogroup" aria-label="Magnetic decal artwork">
+			<div class="design-grid" aria-label="Choose magnetic decal artwork">
 				{#each halloweenDesigns as design (design.id)}
-					<button
-						type="button"
-						class:selected={selectedDesign.slug === design.slug}
-						class="design-card"
-						role="radio"
-						aria-checked={selectedDesign.slug === design.slug}
-						onclick={() => (selectedDesignSlug = design.slug)}
-					>
+					<a class="design-card" href={`${resolve('/collections/halloween/design')}/${design.slug}?type=decal`}>
 						<img
 							class="design-artwork"
 							src={design.thumbnail?.src}
@@ -314,40 +176,11 @@
 							loading="lazy"
 						/>
 						<div class="design-card-copy">
-							<strong>{design.name}</strong><span
-								>{selectedDesign.slug === design.slug ? 'Selected' : 'Select design'}</span
-							>
+							<strong>{design.name}</strong><span>Choose this design →</span>
 						</div>
-					</button>
+					</a>
 				{/each}
 			</div>
-			<div class="decal-size-picker" role="radiogroup" aria-label="Magnetic decal size">
-				{#each decalOptions as option (option.id)}
-					<button
-						type="button"
-						class:selected={decalSize === option.id}
-						aria-pressed={decalSize === option.id}
-						onclick={() => (decalSize = option.id)}
-						><span>{option.label}</span><strong>{option.price}</strong></button
-					>
-				{/each}
-			</div>
-			<label class="personalize-choice"
-				><input type="checkbox" bind:checked={decalPersonalized} /> Add a name or short phrase
-				<strong>+$5</strong></label
-			>
-			<div class="decal-add-form">
-				<button class="button-primary review-cta" type="button" onclick={addDecalToCart}
-					>Add to cart · ${(
-						((decalOptions.find((o) => o.id === decalSize)?.cents ?? 0) +
-							(decalPersonalized ? 500 : 0)) /
-						100
-					).toFixed(2)}</button
-				>
-			</div>
-			<p class="configuration-note">
-				Personalized decal artwork is $5 more. Reach out and I’ll make it yours.
-			</p>
 			<aside class="outdoor-use-warning" aria-labelledby="outdoor-use-heading">
 				<h3 id="outdoor-use-heading">Important — Outdoor Use</h3>
 				<p>
@@ -426,7 +259,7 @@
 
 <style>
 	.halloween-page {
-		width: min(1160px, calc(100vw - 1.1rem));
+		width: min(1120px, calc(100vw - 2rem));
 		margin: 0 auto;
 		padding: clamp(1.5rem, 4vw, 3.5rem) 0 2.5rem;
 	}

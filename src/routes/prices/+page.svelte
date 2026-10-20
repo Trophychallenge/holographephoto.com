@@ -231,26 +231,33 @@
 	.pricing-page {
 		display: block;
 		position: relative;
-		padding: clamp(0.5rem, 2vw, 1.5rem) 0;
+		padding: clamp(1rem, 3vw, 2.25rem) 0;
 	}
 
 	.pricing-stage {
-		width: var(--frame-rail);
+		width: min(var(--frame-rail), 1120px);
 		margin: 0 auto;
 		display: grid;
 		justify-items: center;
 		align-items: start;
-		gap: 1rem;
+		gap: 1.25rem;
 	}
 
 	.pricing-hero,
 	.mini-band {
-		width: min(100%, 44rem);
 		display: grid;
 		justify-items: center;
 		text-align: center;
 		gap: 0.55rem;
 		padding: 1.1rem;
+	}
+
+	.pricing-hero {
+		width: min(100%, 52rem);
+	}
+
+	.mini-band {
+		width: min(100%, 70rem);
 	}
 	.extras-note { max-width:42rem; text-align:center; font-size:.85rem; }
 
@@ -268,12 +275,10 @@
 	}
 
 	.selection-grid {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		align-items: stretch;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: 0.9rem;
-		width: min(100%, 54rem);
+		width: min(100%, 70rem);
 		margin: 0 auto;
 	}
 
@@ -283,8 +288,6 @@
 		justify-items: center;
 		align-content: start;
 		gap: 0.45rem;
-		flex: 0 1 16.5rem;
-		max-width: 16.5rem;
 		width: 100%;
 		padding: 1rem 0.9rem 1.1rem;
 		border: 1px solid rgba(255, 255, 255, 0.16);
@@ -730,6 +733,12 @@
 		}
 	}
 
+	@media (max-width: 1050px) {
+		.selection-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
 	@media (max-width: 640px) {
 		.loot-grid {
 			grid-template-columns: 1fr;
@@ -746,9 +755,8 @@
 			width: 100%;
 		}
 
-		.selection-card {
-			flex-basis: 100%;
-			max-width: 100%;
+		.selection-grid {
+			grid-template-columns: 1fr;
 		}
 
 		.selection-modal {
@@ -756,10 +764,4 @@
 		}
 	}
 
-	@media (max-width: 860px) and (min-width: 641px) {
-		.selection-card {
-			flex-basis: calc(50% - 0.45rem);
-			max-width: calc(50% - 0.45rem);
-		}
-	}
 </style>
