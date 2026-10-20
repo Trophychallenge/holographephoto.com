@@ -17,8 +17,8 @@ describe('photo order entry', () => {
 		expect(body).toContain('Upload your own photo below');
 	});
 	it('accepts an existing pricing selection and ignores unsupported choices', () => {
-		expect(photoOrderSelection(new URLSearchParams('package=3&size=8x10'))).toEqual({
-			quantity: '3',
+		expect(photoOrderSelection(new URLSearchParams('package=4&size=8x10'))).toEqual({
+			quantity: '4',
 			size: '8x10'
 		});
 		expect(photoOrderSelection(new URLSearchParams('package=2&size=giant'))).toEqual({

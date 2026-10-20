@@ -161,6 +161,177 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 	const formData = await request.formData();
 	const product = String(formData.get('product') ?? '');
 
+	if (product === 'halloween-magnetic-decal') {
+		if (String(formData.get('decal_use_ack') ?? '') !== 'yes') {
+			const message =
+				'Please confirm that you understand the indoor-only use warning before checkout.';
+			return wantsJson
+				? jsonResponse({ error: message }, 400)
+				: new Response(message, { status: 400 });
+		}
+		const design = getHalloweenDesign(String(formData.get('design_slug') ?? ''));
+		const decalSize = String(formData.get('decal_size') ?? '');
+		const personalized = String(formData.get('personalized') ?? '') === 'true';
+		const quantity = parseCheckoutQuantity(formData.get('quantity'));
+		const decalPrices: Record<string, { label: string; cents: number }> = {
+			'4-inch': { label: '4-inch', cents: 999 },
+			'6-inch': { label: '6-inch', cents: 1499 },
+			'8-inch': { label: '8-inch', cents: 1999 }
+		};
+		const selectedSize = decalPrices[decalSize];
+		if (!design || !selectedSize || !quantity || quantity > 50) {
+			const message = 'That magnetic decal selection is unavailable.';
+			return wantsJson
+				? jsonResponse({ error: message }, 400)
+				: new Response(message, { status: 400 });
+		}
+		try {
+			const params = buildCheckoutParams({
+				origin: url.origin,
+				quantity,
+				totalAmountCents: (selectedSize.cents + (personalized ? 500 : 0)) * quantity,
+				offerLabel: `${design.name} Magnetic Decal (${selectedSize.label})`,
+				offerDescription: `One ${selectedSize.label} Holographe Halloween magnetic decal featuring ${design.name}${personalized ? ', personalized with a name or short phrase' : ''}.`,
+				productMetadata: 'halloween-magnetic-decal',
+				metadata: {
+					order_type: 'halloween-decal',
+					design_slug: design.slug,
+					decal_size: decalSize,
+					personalized: String(personalized)
+				}
+			});
+			const session = await createStripeCheckoutSession({ fetch, params });
+			if (wantsJson) return jsonResponse({ url: session.url });
+			throw redirect(303, session.url);
+		} catch (error) {
+			if (error instanceof Response) {
+				return wantsJson ? jsonResponse({ error: await error.text() }, error.status) : error;
+			}
+			throw error;
+		}
+	}
+
+	if (product === 'halloween-cart') {
+		type CartEntry = {
+			kind: 'mural' | 'decal';
+			designSlug: string;
+			packageId?: string;
+			variantId?: string;
+			decalSize?: string;
+			personalized?: boolean;
+			quantity: number;
+		};
+		let cart: CartEntry[];
+		try {
+			cart = JSON.parse(String(formData.get('cart_json') ?? '[]')) as CartEntry[];
+		} catch {
+			cart = [];
+		}
+		if (!Array.isArray(cart) || cart.length < 1 || cart.length > 10) {
+			const message =
+				'Your cart is empty or has too many different items. Please keep it to ten designs per checkout.';
+			return wantsJson
+				? jsonResponse({ error: message }, 400)
+				: new Response(message, { status: 400 });
+		}
+		if (
+			cart.some((item) => item?.kind === 'decal') &&
+			String(formData.get('decal_use_ack') ?? '') !== 'yes'
+		) {
+			const message =
+				'Please confirm that you understand the indoor-only use warning before checkout.';
+			return wantsJson
+				? jsonResponse({ error: message }, 400)
+				: new Response(message, { status: 400 });
+		}
+		const lineItems: Array<{ name: string; description: string; cents: number; quantity: number }> =
+			[];
+		for (const item of cart) {
+			const design = getHalloweenDesign(item.designSlug);
+			const quantity = parseCheckoutQuantity(String(item.quantity));
+			if (!design || !quantity || quantity > 50) {
+				const message = 'One of the items in your cart is no longer available.';
+				return wantsJson
+					? jsonResponse({ error: message }, 400)
+					: new Response(message, { status: 400 });
+			}
+			if (item.kind === 'mural') {
+				const productPackage = getHalloweenPackage(item.packageId ?? '');
+				const variant = getHalloweenVariant(item.packageId ?? '', item.variantId ?? '');
+				if (!productPackage || !variant) {
+					const message = 'One of the mural options in your cart is no longer available.';
+					return wantsJson
+						? jsonResponse({ error: message }, 400)
+						: new Response(message, { status: 400 });
+				}
+				lineItems.push({
+					name: `${design.name} — ${productPackage.editionName}`,
+					description: `${productPackage.name}. Holographe Halloween Edition${variant.id.endsWith('.personalized') ? ', personalized' : ''}.`,
+					cents: variant.priceCents,
+					quantity
+				});
+			} else if (item.kind === 'decal') {
+				const sizes: Record<string, { label: string; cents: number }> = {
+					'4-inch': { label: '4-inch', cents: 999 },
+					'6-inch': { label: '6-inch', cents: 1499 },
+					'8-inch': { label: '8-inch', cents: 1999 }
+				};
+				const size = item.decalSize ? sizes[item.decalSize] : undefined;
+				if (!size) {
+					const message = 'One of the decal sizes in your cart is unavailable.';
+					return wantsJson
+						? jsonResponse({ error: message }, 400)
+						: new Response(message, { status: 400 });
+				}
+				lineItems.push({
+					name: `${design.name} Magnetic Decal (${size.label})`,
+					description: `Holographe Halloween magnetic decal${item.personalized ? ', personalized with a name or short phrase' : ''}.`,
+					cents: size.cents + (item.personalized ? 500 : 0),
+					quantity
+				});
+			} else {
+				const message = 'One of the items in your cart is unavailable.';
+				return wantsJson
+					? jsonResponse({ error: message }, 400)
+					: new Response(message, { status: 400 });
+			}
+		}
+		const params = new URLSearchParams();
+		params.set('mode', 'payment');
+		params.set('success_url', `${url.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`);
+		params.set('cancel_url', `${url.origin}/collections/halloween?checkout=cancelled`);
+		params.set('billing_address_collection', 'required');
+		params.set('phone_number_collection[enabled]', 'true');
+		params.set('shipping_address_collection[allowed_countries][0]', 'US');
+		params.set('allow_promotion_codes', 'true');
+		for (const [index, item] of lineItems.entries()) {
+			params.set(`line_items[${index}][quantity]`, String(item.quantity));
+			params.set(`line_items[${index}][price_data][currency]`, 'usd');
+			params.set(`line_items[${index}][price_data][unit_amount]`, String(item.cents));
+			params.set(`line_items[${index}][price_data][product_data][name]`, item.name);
+			params.set(`line_items[${index}][price_data][product_data][description]`, item.description);
+		}
+		params.set('metadata[product]', 'halloween-collection');
+		params.set('metadata[order_type]', 'halloween-cart');
+		params.set(
+			'metadata[total_amount_cents]',
+			String(lineItems.reduce((sum, item) => sum + item.cents * item.quantity, 0))
+		);
+		params.set(
+			'custom_text[submit][message]',
+			'Thank you for shopping small and choosing Holographe.'
+		);
+		try {
+			const session = await createStripeCheckoutSession({ fetch, params });
+			if (wantsJson) return jsonResponse({ url: session.url });
+			throw redirect(303, session.url);
+		} catch (error) {
+			if (error instanceof Response)
+				return wantsJson ? jsonResponse({ error: await error.text() }, error.status) : error;
+			throw error;
+		}
+	}
+
 	if (product === rivalQuestProduct.id) {
 		const configResult = parseRivalQuestConfiguration(Object.fromEntries(formData));
 		if (!configResult.ok) {
@@ -197,6 +368,9 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 		const design = getHalloweenDesign(designSlug);
 		const productPackage = getHalloweenPackage(packageId);
 		const variant = getHalloweenVariant(packageId, variantId);
+		const personalizationDetails = String(formData.get('personalization_details') ?? '')
+			.trim()
+			.slice(0, 80);
 
 		if (!design || !productPackage || !variant || !quantity) {
 			const message = 'That Halloween edition selection is unavailable.';
@@ -228,6 +402,8 @@ export const POST: RequestHandler = async ({ request, fetch, url }) => {
 				variant_id: variant.id,
 				package_id: productPackage.id
 			};
+			if (variant.id.endsWith('.personalized'))
+				metadata.personalization_details = personalizationDetails;
 			if (reservation) metadata.inventory_reservation_id = reservation.id;
 
 			const checkoutSession = await createStripeCheckoutSession({

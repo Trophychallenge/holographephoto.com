@@ -44,37 +44,36 @@ export const checkoutOffers: CheckoutOffer[] = [
 	{
 		quantity: 1,
 		totalAmountCents: 1999,
-		label: 'The Keepsake Set',
+		label: 'One 8×10 Magnet',
 		priceLabel: '$19.99',
 		subtitle: 'A simple first order',
 		highlight: 'Easy entry',
-		checkoutName: 'The Keepsake Set',
-		checkoutDescription: 'A simple starter order for trying Holographe with one favorite photo.',
-		primarySize: '5x7',
+		checkoutName: 'One 8×10 Holographe',
+		checkoutDescription: 'One custom 8×10 holographic photo magnet, made from your favorite photo.',
+		primarySize: '8x10',
 		badge: 'Starter'
 	},
 	{
-		quantity: 3,
-		totalAmountCents: 3499,
-		label: 'The Signature Set',
-		priceLabel: '$34.99',
-		subtitle: 'Three-piece set',
-		highlight: 'Three pieces',
-		checkoutName: 'The Signature Set',
-		checkoutDescription: 'A small set that gives you a few copies to keep, gift, or display.',
-		primarySize: '8x10',
+		quantity: 4,
+		totalAmountCents: 4499,
+		label: 'The Mini Mural',
+		priceLabel: '$44.99',
+		subtitle: 'Four-piece set',
+		highlight: 'Four panels',
+		checkoutName: 'The Mini Mural',
+		checkoutDescription: 'Four 8×10 holographic photo magnets, made from your chosen photo.',
+		primarySize: '8x10'
 	},
 	{
-		quantity: 5,
-		totalAmountCents: 5999,
-		label: 'The Heirloom Collection',
-		priceLabel: '$59.99',
-		subtitle: 'Five-piece set',
-		highlight: 'Family set',
-		checkoutName: 'The Heirloom Collection',
-		checkoutDescription:
-			'A fuller set for family gifting, multiple rooms, or a more complete keepsake collection.',
-		primarySize: '8x10',
+		quantity: 9,
+		totalAmountCents: 9999,
+		label: 'The Signature Mural',
+		priceLabel: '$99.99',
+		subtitle: 'Nine-piece mural',
+		highlight: 'Full mural',
+		checkoutName: 'The Signature Mural',
+		checkoutDescription: 'Nine 8×10 holographic photo magnets, arranged as one complete mural.',
+		primarySize: '8x10'
 	},
 	{
 		quantity: 10,
@@ -146,15 +145,14 @@ export const MAX_CHECKOUT_QUANTITY = checkoutOffers[checkoutOffers.length - 1].q
 export const packageTiers: PackageTier[] = [
 	{
 		id: 'starter',
-		name: 'The Keepsake Set',
+		name: 'One 8×10 Magnet',
 		priceLabel: '$19.99',
 		kicker: 'Starter package',
-		primarySize: 'Single keepsake',
-		quantityLabel: '1 holograph',
-		description:
-			'A simple first order if you want to try one and see it in person before buying more.',
-		included: ['1 custom holograph', 'Choose an available size in the customizer', 'Use one saved photo for the set'],
-		sizeOptions: ['5x7', '8x10'],
+		primarySize: '8×10',
+		quantityLabel: '1 holographic photo magnet',
+		description: 'One 8×10 holographic photo magnet, made with your favorite photo.',
+		included: ['1 custom 8×10 magnet', 'Upload one photo in the customizer'],
+		sizeOptions: ['8x10'],
 		upsells: ['Ask about personalization or presentation options'],
 		studioFlow: 'single-design',
 		checkoutQuantity: 1,
@@ -162,34 +160,34 @@ export const packageTiers: PackageTier[] = [
 	},
 	{
 		id: 'signature',
-		name: 'The Signature Set',
-		priceLabel: '$34.99',
+		name: 'The Mini Mural',
+		priceLabel: '$44.99',
 		kicker: 'Signature package',
-		primarySize: 'Small gift set',
-		quantityLabel: '3 holographs',
-		description: 'A better deal if you want one to keep and a couple more to gift or share.',
-		included: ['3 custom holographs', 'Choose an available size in the customizer', 'Use one saved photo for the set'],
-		sizeOptions: ['5x7', '8x10'],
+		primarySize: 'Four 8×10 panels',
+		quantityLabel: '4 holographic photo magnets',
+		description:
+			'Four matching 8×10 panels for a little more room to show off your favorite photo.',
+		included: ['4 custom 8×10 magnets', 'Upload one photo in the customizer'],
+		sizeOptions: ['8x10'],
 		upsells: ['Ask about personalization or presentation options'],
 		studioFlow: 'single-design',
-		checkoutQuantity: 3,
-		checkoutPrintSize: '8x10',
+		checkoutQuantity: 4,
+		checkoutPrintSize: '8x10'
 	},
 	{
 		id: 'deluxe',
-		name: 'The Heirloom Collection',
-		priceLabel: '$59.99',
+		name: 'The Signature Mural',
+		priceLabel: '$99.99',
 		kicker: 'Deluxe package',
-		primarySize: 'Family set',
-		quantityLabel: '5 holographs',
-		description:
-			'A five-piece set for family gifting, a fridge gallery, or a fuller keepsake collection.',
-		included: ['5 custom holographs', 'Choose an available size in the customizer', 'Use one saved photo for the set'],
-		sizeOptions: ['5x7', '8x10'],
+		primarySize: 'Nine 8×10 panels',
+		quantityLabel: '9 holographic photo magnets',
+		description: 'The full nine-piece 8×10 mural, made from one favorite photo.',
+		included: ['9 custom 8×10 magnets', 'Upload one photo in the customizer'],
+		sizeOptions: ['8x10'],
 		upsells: ['Ask about personalization or presentation options'],
 		studioFlow: 'single-design',
-		checkoutQuantity: 5,
-		checkoutPrintSize: '8x10',
+		checkoutQuantity: 9,
+		checkoutPrintSize: '8x10'
 	},
 	{
 		id: 'business',
@@ -221,10 +219,7 @@ export const packageTiers: PackageTier[] = [
 		quantityLabel: 'Boutique-scale statement display',
 		description:
 			'For memorial tables, boutique displays, wedding installations, and truly oversized emotional keepsakes.',
-		included: [
-			'Sizing and production details confirmed before purchase',
-			'Custom quote required'
-		],
+		included: ['Sizing and production details confirmed before purchase', 'Custom quote required'],
 		sizeOptions: ['11x14', '16x20', 'Custom'],
 		upsells: ['Discuss options in a custom quote']
 	}
@@ -244,7 +239,8 @@ export const addOns: AddOn[] = [
 	{
 		name: 'Custom personalization',
 		priceLabel: 'Included tools or quote required',
-		description: 'Use the customizer for a photo, overlay, and note. Ask for anything beyond those tools.'
+		description:
+			'Use the customizer for a photo, overlay, and note. Ask for anything beyond those tools.'
 	},
 	{
 		name: 'Presentation options',

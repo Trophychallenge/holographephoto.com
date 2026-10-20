@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import ProductMedia from '$lib/components/products/ProductMedia.svelte';
 	import CarnivalFeature from '$lib/components/home/CarnivalFeature.svelte';
 	import {
-		halloweenCollectionReferenceMedia,
 		halloweenDesigns,
 		halloweenPackages,
 		halloweenProducts,
@@ -13,6 +13,100 @@
 	let selectedDesignSlug = $state(halloweenDesigns[0].slug);
 	let selectedPackageId = $state<HalloweenPackage['id']>('full-mural');
 	let quantity = $state(1);
+	let collectionTab = $state<'murals' | 'decals'>('murals');
+	let personalized = $state(false);
+	let decalPersonalized = $state(false);
+	type CartItem =
+		| {
+				kind: 'mural';
+				designSlug: string;
+				packageId: HalloweenPackage['id'];
+				variantId: string;
+				quantity: number;
+		  }
+		| {
+				kind: 'decal';
+				designSlug: string;
+				decalSize: string;
+				personalized: boolean;
+				quantity: number;
+		  };
+	let cartItems = $state<CartItem[]>([]);
+	let cartMessage = $state('');
+	let decalUseAcknowledged = $state(false);
+	const cartHasDecal = $derived(cartItems.some((item) => item.kind === 'decal'));
+	onMount(() => {
+		try {
+			cartItems = JSON.parse(
+				localStorage.getItem('holographe-halloween-cart') ?? '[]'
+			) as CartItem[];
+		} catch {
+			cartItems = [];
+		}
+	});
+	$effect(() => {
+		if (typeof window !== 'undefined')
+			localStorage.setItem('holographe-halloween-cart', JSON.stringify(cartItems));
+	});
+	function addMuralToCart() {
+		cartItems = [
+			...cartItems,
+			{
+				kind: 'mural',
+				designSlug: selectedDesign.slug,
+				packageId: selectedPackage.id,
+				variantId: selectedVariant.id,
+				quantity
+			}
+		];
+		cartMessage = `${selectedDesign.name} added to your bag.`;
+	}
+	function addDecalToCart() {
+		cartItems = [
+			...cartItems,
+			{
+				kind: 'decal',
+				designSlug: selectedDesign.slug,
+				decalSize,
+				personalized: decalPersonalized,
+				quantity: 1
+			}
+		];
+		decalUseAcknowledged = false;
+		cartMessage = `${selectedDesign.name} decal added to your bag.`;
+	}
+	function removeCartItem(index: number) {
+		cartItems = cartItems.filter((_, i) => i !== index);
+		if (!cartItems.some((item) => item.kind === 'decal')) decalUseAcknowledged = false;
+	}
+	function cartItemName(item: CartItem) {
+		const design =
+			halloweenDesigns.find((candidate) => candidate.slug === item.designSlug)?.name ??
+			'Halloween design';
+		if (item.kind === 'decal') return `${design} decal · ${item.decalSize}`;
+		return `${design} · ${halloweenPackages.find((candidate) => candidate.id === item.packageId)?.label ?? 'Mural'}`;
+	}
+	function cartItemPrice(item: CartItem) {
+		if (item.kind === 'decal')
+			return (
+				(decalOptions.find((o) => o.id === item.decalSize)?.cents ?? 0) +
+				(item.personalized ? 500 : 0)
+			);
+		return (
+			halloweenPackages
+				.find((candidate) => candidate.id === item.packageId)
+				?.variants.find((variant) => variant.id === item.variantId)?.priceCents ?? 0
+		);
+	}
+	const cartTotal = $derived(
+		cartItems.reduce((sum, item) => sum + cartItemPrice(item) * item.quantity, 0)
+	);
+	let decalSize = $state('6-inch');
+	const decalOptions = [
+		{ id: '4-inch', label: '4-inch', price: '$9.99', cents: 999 },
+		{ id: '6-inch', label: '6-inch', price: '$14.99', cents: 1499 },
+		{ id: '8-inch', label: '8-inch', price: '$19.99', cents: 1999 }
+	];
 
 	const selectedDesign = $derived(
 		halloweenDesigns.find((design) => design.slug === selectedDesignSlug) ?? halloweenDesigns[0]
@@ -25,6 +119,11 @@
 	const selectedPackage = $derived(
 		availablePackages.find((productPackage) => productPackage.id === selectedPackageId) ??
 			availablePackages[0]
+	);
+	const selectedVariant = $derived(
+		selectedPackage.variants.find((variant) =>
+			variant.id.endsWith(personalized ? 'personalized' : 'standard')
+		) ?? selectedPackage.variants[0]
 	);
 </script>
 
@@ -46,9 +145,11 @@
 		<div class="collection-hero-copy">
 			<p class="eyebrow">Holographe Exclusive</p>
 			<h1>Halloween Edition</h1>
-			<p>Limited seasonal release.</p>
-			<p class="hero-editorial">Holographic magnetic decor for a memorable Halloween display.</p>
-			<p class="hero-note">Watch it come alive in the light.</p>
+			<p>Halloween magnets with a little extra personality.</p>
+			<p class="hero-editorial">
+				Pick the artwork you love, choose the size, and you’re ready to shop.
+			</p>
+			<p class="hero-note">Made by me in Texas. A little spooky, a lot of shine.</p>
 		</div>
 		<div class="collection-video">
 			<ProductMedia media={halloweenProducts[0].media} label="Halloween magnetic decor" autoplay />
@@ -56,138 +157,271 @@
 	</section>
 
 	<CarnivalFeature />
-	<section class="reference-section" aria-labelledby="reference-heading">
-		<div class="reference-copy">
-			<p class="eyebrow">The collection</p>
-			<h2 id="reference-heading">Six designs. One seasonal release.</h2>
-		</div>
-		<figure class="collection-reference">
-			<img
-				src={halloweenCollectionReferenceMedia.src}
-				alt={halloweenCollectionReferenceMedia.alt}
-				loading="lazy"
-			/>
-			<figcaption>All six mural worlds, shown together.</figcaption>
-		</figure>
-	</section>
+	<nav class="collection-tabs" aria-label="Halloween products">
+		<button
+			type="button"
+			class:active={collectionTab === 'murals'}
+			aria-pressed={collectionTab === 'murals'}
+			onclick={() => (collectionTab = 'murals')}>Mural Magnets</button
+		>
+		<button
+			type="button"
+			class:active={collectionTab === 'decals'}
+			aria-pressed={collectionTab === 'decals'}
+			onclick={() => (collectionTab = 'decals')}>Magnetic Decals</button
+		>
+	</nav>
 
-	<section class="shop-section" aria-labelledby="design-heading">
-		<div class="section-intro">
-			<p class="eyebrow">Choose your nightmare</p>
-			<h2 id="design-heading">Choose your nightmare.</h2>
-			<p>Choose the design that fits your night.</p>
-		</div>
+	{#if collectionTab === 'murals'}
+		<section class="shop-section" aria-labelledby="design-heading">
+			<div class="section-intro">
+				<p class="eyebrow">First, choose your art</p>
+				<h2 id="design-heading">Which one are you taking home?</h2>
+				<p>
+					Each design is available as one panel, a four-piece mini mural, or the full nine-piece
+					Signature Mural.
+				</p>
+			</div>
 
-		<div class="design-grid" role="radiogroup" aria-label="Halloween design">
-			{#each halloweenDesigns as design (design.id)}
-				<button
-					type="button"
-					class:selected={selectedDesign.slug === design.slug}
-					class="design-card"
-					role="radio"
-					aria-checked={selectedDesign.slug === design.slug}
-					onclick={() => (selectedDesignSlug = design.slug)}
-				>
-					{#if design.thumbnail?.type === 'image'}
-						<img class="design-artwork" src={design.thumbnail.src} alt={design.thumbnail.alt} />
-					{:else}
-						<div class="design-placeholder" aria-hidden="true"><strong>{design.name}</strong><small>{design.placeholderLabel}</small></div>
-					{/if}
-					<div class="design-card-copy">
-						<strong>{design.name}</strong>
-						<span>{selectedDesign.slug === design.slug ? 'Selected' : 'Select design'}</span>
-					</div>
-				</button>
-			{/each}
-		</div>
-		<p class="asset-note">Additional design artwork will be added as it becomes available.</p>
-	</section>
+			<div class="design-grid" role="radiogroup" aria-label="Halloween design">
+				{#each halloweenDesigns as design (design.id)}
+					<button
+						type="button"
+						class:selected={selectedDesign.slug === design.slug}
+						class="design-card"
+						role="radio"
+						aria-checked={selectedDesign.slug === design.slug}
+						onclick={() => (selectedDesignSlug = design.slug)}
+					>
+						{#if design.thumbnail?.type === 'image'}
+							<img
+								class="design-artwork"
+								src={design.thumbnail.src}
+								alt={design.thumbnail.alt}
+								loading="lazy"
+							/>
+						{/if}
+						<div class="design-card-copy">
+							<strong>{design.name}</strong>
+							<span>{selectedDesign.slug === design.slug ? 'Selected' : 'Select design'}</span>
+						</div>
+					</button>
+				{/each}
+			</div>
+			<p class="asset-note">
+				New designs are going up as I finish them. More spooky stuff is on the way.
+			</p>
+		</section>
 
-	<section class="shop-section" aria-labelledby="format-heading">
-		<div class="section-intro">
-			<p class="eyebrow">Make it yours</p>
-			<h2 id="format-heading">Choose your edition.</h2>
-			<p>Choose one panel, a three-panel set, or the full nine-piece mural.</p>
-		</div>
+		<section class="shop-section" aria-labelledby="format-heading">
+			<div class="section-intro">
+				<p class="eyebrow">Then choose your set</p>
+				<h2 id="format-heading">How much wall do you want to haunt?</h2>
+				<p>All panels are 8×10. The mini mural is four panels; Signature is the full nine.</p>
+			</div>
 
-		<div class="package-grid" role="radiogroup" aria-label="Halloween package">
-			{#each availablePackages as productPackage (productPackage.id)}
-				<button
-					type="button"
-					class:selected={selectedPackage.id === productPackage.id}
-					class:featured={productPackage.id === 'full-mural'}
-					class:custom={productPackage.id === 'custom-mural'}
-					class="package-card"
-					role="radio"
-					aria-checked={selectedPackage.id === productPackage.id}
-					onclick={() => (selectedPackageId = productPackage.id)}
-				>
-					<div class="package-topline">
-						<span>{productPackage.editionName}</span>
-						{#if productPackage.badge}<em>{productPackage.badge}</em>{/if}
-					</div>
-					<strong>{productPackage.name}</strong>
-					<b>{productPackage.priceLabel}</b>
-					<p>{productPackage.description}</p>
-					{#if productPackage.id === 'custom-mural'}
-						<p class="bespoke-note">Created specifically for your space.</p>
-					{/if}
-				</button>
-			{/each}
-		</div>
-	</section>
+			<div class="package-grid" role="radiogroup" aria-label="Halloween package">
+				{#each availablePackages as productPackage (productPackage.id)}
+					<button
+						type="button"
+						class:selected={selectedPackage.id === productPackage.id}
+						class:featured={productPackage.id === 'full-mural'}
+						class="package-card"
+						role="radio"
+						aria-checked={selectedPackage.id === productPackage.id}
+						onclick={() => (selectedPackageId = productPackage.id)}
+					>
+						<div class="package-topline">
+							<span>{productPackage.editionName}</span>
+							{#if productPackage.badge}<em>{productPackage.badge}</em>{/if}
+						</div>
+						<strong>{productPackage.name}</strong>
+						<b>{productPackage.priceLabel}</b>
+						<p>{productPackage.description}</p>
+					</button>
+				{/each}
+			</div>
+		</section>
 
-	<section class="selection-review" aria-labelledby="review-heading">
-		<div>
-			<p class="eyebrow">Your edition</p>
-			<h2 id="review-heading">Your edition</h2>
-			<dl class="edition-summary">
-				<div>
-					<dt>Design</dt>
-					<dd>{selectedDesign.name}</dd>
-				</div>
-				<div>
-					<dt>Format</dt>
-					<dd>{selectedPackage.editionName}</dd>
-				</div>
-				{#if selectedPackage.id === 'custom-mural'}
-					<div>
-						<dt>Customization</dt>
-						<dd>Created specifically for your space.</dd>
-					</div>
-				{/if}
-				<div>
-					<dt>Price</dt>
-					<dd>{selectedPackage.priceLabel}</dd>
-				</div>
-			</dl>
-		</div>
-		<div class="quantity-control">
-			<label for="quantity">Quantity</label>
+		<section class="selection-review" aria-labelledby="review-heading">
 			<div>
-				<button
-					type="button"
-					aria-label="Decrease quantity"
-					onclick={() => (quantity = Math.max(1, quantity - 1))}>−</button
-				>
-				<input id="quantity" type="number" min="1" bind:value={quantity} />
-				<button type="button" aria-label="Increase quantity" onclick={() => (quantity += 1)}
-					>+</button
+				<p class="eyebrow">Your edition</p>
+				<h2 id="review-heading">Your edition</h2>
+				<dl class="edition-summary">
+					<div>
+						<dt>Design</dt>
+						<dd>{selectedDesign.name}</dd>
+					</div>
+					<div>
+						<dt>Format</dt>
+						<dd>{selectedPackage.editionName}</dd>
+					</div>
+					<div>
+						<dt>Price</dt>
+						<dd>${(selectedVariant.priceCents / 100).toFixed(2)}</dd>
+					</div>
+				</dl>
+			</div>
+			<label class="personalize-choice"
+				><input type="checkbox" bind:checked={personalized} /> Add a name or short phrase
+				<strong>+$5</strong></label
+			>
+			<div class="quantity-control">
+				<label for="quantity">Quantity</label>
+				<div>
+					<button
+						type="button"
+						aria-label="Decrease quantity"
+						onclick={() => (quantity = Math.max(1, quantity - 1))}>−</button
+					>
+					<input id="quantity" type="number" min="1" bind:value={quantity} />
+					<button type="button" aria-label="Increase quantity" onclick={() => (quantity += 1)}
+						>+</button
+					>
+				</div>
+			</div>
+			<button class="button-primary review-cta" type="button" onclick={addMuralToCart}
+				>Add to cart · ${(selectedVariant.priceCents / 100).toFixed(2)}</button
+			>
+			<p class="configuration-note">
+				You’ll confirm the details and pay securely at checkout. Personalized designs add $5.
+			</p>
+		</section>
+	{:else}
+		<section class="shop-section decals-section" aria-labelledby="decals-heading">
+			<div class="section-intro">
+				<p class="eyebrow">Made for a little road presence</p>
+				<h2 id="decals-heading">Magnetic Decals</h2>
+				<p>
+					Take the Halloween art with you. Pick a design, choose a size, and pop it on your car or
+					any magnetic surface.
+				</p>
+			</div>
+			<div class="design-grid" role="radiogroup" aria-label="Magnetic decal artwork">
+				{#each halloweenDesigns as design (design.id)}
+					<button
+						type="button"
+						class:selected={selectedDesign.slug === design.slug}
+						class="design-card"
+						role="radio"
+						aria-checked={selectedDesign.slug === design.slug}
+						onclick={() => (selectedDesignSlug = design.slug)}
+					>
+						<img
+							class="design-artwork"
+							src={design.thumbnail?.src}
+							alt={design.thumbnail?.alt}
+							loading="lazy"
+						/>
+						<div class="design-card-copy">
+							<strong>{design.name}</strong><span
+								>{selectedDesign.slug === design.slug ? 'Selected' : 'Select design'}</span
+							>
+						</div>
+					</button>
+				{/each}
+			</div>
+			<div class="decal-size-picker" role="radiogroup" aria-label="Magnetic decal size">
+				{#each decalOptions as option (option.id)}
+					<button
+						type="button"
+						class:selected={decalSize === option.id}
+						aria-pressed={decalSize === option.id}
+						onclick={() => (decalSize = option.id)}
+						><span>{option.label}</span><strong>{option.price}</strong></button
+					>
+				{/each}
+			</div>
+			<label class="personalize-choice"
+				><input type="checkbox" bind:checked={decalPersonalized} /> Add a name or short phrase
+				<strong>+$5</strong></label
+			>
+			<div class="decal-add-form">
+				<button class="button-primary review-cta" type="button" onclick={addDecalToCart}
+					>Add to cart · ${(
+						((decalOptions.find((o) => o.id === decalSize)?.cents ?? 0) +
+							(decalPersonalized ? 500 : 0)) /
+						100
+					).toFixed(2)}</button
 				>
 			</div>
-		</div>
-		<a
-			class="button-primary review-cta"
-			href={resolve(
-				`/collections/halloween/seasonal-release?design=${selectedDesign.slug}&package=${selectedPackage.id}&quantity=${quantity}`
-			)}
-		>
-			Continue to Reserve
-		</a>
-		<p class="configuration-note">
-			Choose your variant on the next page, then continue to secure checkout.
-		</p>
-	</section>
+			<p class="configuration-note">
+				Personalized decal artwork is $5 more. Reach out and I’ll make it yours.
+			</p>
+			<aside class="outdoor-use-warning" aria-labelledby="outdoor-use-heading">
+				<h3 id="outdoor-use-heading">Important — Outdoor Use</h3>
+				<p>
+					Holographe decorative magnets feature a protective, UV-resistant laminate. However, the
+					finished products have not yet been tested or certified for outdoor or vehicle use. At
+					this time, they are intended for indoor magnetic surfaces only. Vehicle use is not
+					recommended until additional durability and adhesion testing is completed.
+				</p>
+			</aside>
+		</section>
+	{/if}
+	{#if cartMessage}<p class="cart-message" role="status">{cartMessage}</p>{/if}
+	{#if cartItems.length}
+		<section class="selection-review cart-review" aria-labelledby="cart-heading">
+			<div>
+				<p class="eyebrow">
+					Your bag · {cartItems.length}
+					{cartItems.length === 1 ? 'item' : 'items'}
+				</p>
+				<h2 id="cart-heading">Ready when you are.</h2>
+				<ul class="cart-list">
+					{#each cartItems as item, index}<li>
+							<span>{cartItemName(item)} × {item.quantity}</span><strong
+								>${((cartItemPrice(item) * item.quantity) / 100).toFixed(2)}</strong
+							><button
+								type="button"
+								aria-label={`Remove ${cartItemName(item)}`}
+								onclick={() => removeCartItem(index)}>Remove</button
+							>
+						</li>{/each}
+				</ul>
+				<p class="cart-total">Subtotal <strong>${(cartTotal / 100).toFixed(2)}</strong></p>
+			</div>
+			<form method="POST" action="/checkout" class="cart-checkout-form">
+				<input type="hidden" name="product" value="halloween-cart" />
+				{#if cartHasDecal}
+					<aside
+						class="outdoor-use-warning cart-outdoor-warning"
+						aria-labelledby="cart-outdoor-use-heading"
+					>
+						<h3 id="cart-outdoor-use-heading">Important — Outdoor Use</h3>
+						<p>
+							Holographe decorative magnets feature a protective, UV-resistant laminate. However,
+							the finished products have not yet been tested or certified for outdoor or vehicle
+							use. At this time, they are intended for indoor magnetic surfaces only. Vehicle use is
+							not recommended until additional durability and adhesion testing is completed.
+						</p>
+					</aside>
+					<label class="decal-acknowledgment">
+						<input
+							type="checkbox"
+							name="decal_use_ack"
+							value="yes"
+							bind:checked={decalUseAcknowledged}
+							required
+						/>
+						<span
+							>I understand these magnets are for indoor magnetic surfaces only and are not tested
+							or certified for outdoor or vehicle use. I will not use them on a vehicle.</span
+						>
+					</label>
+				{/if}
+				<input type="hidden" name="cart_json" value={JSON.stringify(cartItems)} /><button
+					class="button-primary review-cta"
+					type="submit"
+					disabled={cartHasDecal && !decalUseAcknowledged}
+					>Secure checkout · ${(cartTotal / 100).toFixed(2)}</button
+				>
+				<p class="configuration-note">
+					Shipping and any applicable tax are calculated securely at checkout.
+				</p>
+			</form>
+		</section>
+	{/if}
 </div>
 
 <style>
@@ -195,6 +429,159 @@
 		width: min(1160px, calc(100vw - 1.1rem));
 		margin: 0 auto;
 		padding: clamp(1.5rem, 4vw, 3.5rem) 0 2.5rem;
+	}
+	.collection-tabs {
+		display: flex;
+		gap: 0.5rem;
+		margin: 1.25rem 0 2rem;
+		padding: 0.35rem;
+		border: 1px solid rgba(236, 185, 108, 0.2);
+		border-radius: 999px;
+		background: #100b10;
+		width: max-content;
+		max-width: 100%;
+	}
+	.collection-tabs button {
+		border: 0;
+		border-radius: 999px;
+		padding: 0.8rem 1.2rem;
+		background: transparent;
+		color: #d8c5dc;
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	.collection-tabs button.active {
+		background: #f0bf75;
+		color: #21120d;
+	}
+	.decal-size-picker {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 1.5rem;
+	}
+	.decal-size-picker button {
+		display: grid;
+		gap: 0.35rem;
+		min-width: 8rem;
+		padding: 1rem;
+		border: 1px solid rgba(236, 185, 108, 0.3);
+		border-radius: 1rem;
+		background: #100b10;
+		color: #fdf6ec;
+		text-align: left;
+		cursor: pointer;
+	}
+	.decal-size-picker button.selected {
+		border-color: #f0bf75;
+		box-shadow: 0 0 0 2px rgba(240, 191, 117, 0.18);
+	}
+	.decal-size-picker strong {
+		color: #f0bf75;
+		font-size: 1.1rem;
+	}
+	.decal-add-form {
+		margin-top: 1.25rem;
+	}
+	.outdoor-use-warning {
+		max-width: 52rem;
+		margin-top: 1.5rem;
+		padding: 1rem 1.15rem;
+		border: 1px solid rgba(240, 191, 117, 0.35);
+		border-left: 3px solid #f0bf75;
+		border-radius: 0.8rem;
+		background: rgba(240, 191, 117, 0.07);
+	}
+	.outdoor-use-warning h3 {
+		margin: 0 0 0.45rem;
+		color: #f0bf75;
+		font-size: 0.86rem;
+		letter-spacing: 0.04em;
+	}
+	.outdoor-use-warning p {
+		margin: 0;
+		color: #f2e6d2;
+		font-size: 0.84rem;
+		line-height: 1.6;
+	}
+	.personalize-choice {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin: 1.1rem 0;
+		color: #f2e6d2;
+	}
+	.personalize-choice strong {
+		color: #f0bf75;
+	}
+	.cart-outdoor-warning {
+		margin: 0 0 1rem;
+	}
+	.decal-acknowledgment {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.7rem;
+		margin: 0.25rem 0 1rem;
+		padding: 0.9rem;
+		border: 1px solid rgba(240, 191, 117, 0.3);
+		border-radius: 0.8rem;
+		color: #f2e6d2;
+		font-size: 0.86rem;
+		line-height: 1.5;
+	}
+	.decal-acknowledgment input {
+		flex: 0 0 auto;
+		width: 1.15rem;
+		height: 1.15rem;
+		margin-top: 0.1rem;
+		accent-color: #f0bf75;
+	}
+	.cart-message {
+		margin: 1rem 0;
+		color: #f0bf75;
+	}
+	.cart-list {
+		list-style: none;
+		padding: 0;
+		margin: 1rem 0;
+		display: grid;
+		gap: 0.75rem;
+	}
+	.cart-list li {
+		display: grid;
+		grid-template-columns: 1fr auto auto;
+		gap: 0.8rem;
+		align-items: center;
+		padding: 0.75rem 0;
+		border-bottom: 1px solid var(--line);
+	}
+	.cart-list strong,
+	.cart-total strong {
+		color: #f0bf75;
+	}
+	.cart-list button {
+		color: #d8c5dc;
+		border: 0;
+		background: transparent;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	.cart-total {
+		display: flex;
+		justify-content: space-between;
+		font-size: 1.1rem;
+	}
+	.cart-review {
+		margin-top: 2rem;
+	}
+	.cart-checkout-form {
+		display: grid;
+		align-content: center;
+	}
+	.cart-checkout-form button:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
 	}
 	.collection-hero {
 		--text: #fff7fb;
@@ -257,21 +644,6 @@
 	.shop-section {
 		padding: clamp(3.5rem, 8vw, 7rem) 0 0;
 	}
-	.reference-section {
-		padding: clamp(4.5rem, 10vw, 9rem) 0 0;
-	}
-	.reference-copy {
-		max-width: 38rem;
-		margin-bottom: 1.5rem;
-	}
-	.reference-copy h2 {
-		margin: 0.9rem 0 0;
-		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(2.3rem, 4.6vw, 4.3rem);
-		font-weight: 500;
-		letter-spacing: -0.055em;
-		line-height: 0.94;
-	}
 	.section-intro {
 		max-width: 44rem;
 		margin-bottom: 2rem;
@@ -285,7 +657,13 @@
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1rem;
 	}
-	.design-artwork { display:block; width:100%; aspect-ratio:1; object-fit:cover; border-radius:.8rem; }
+	.design-artwork {
+		display: block;
+		width: 100%;
+		aspect-ratio: 1;
+		object-fit: cover;
+		border-radius: 0.8rem;
+	}
 	.design-card,
 	.package-card {
 		width: 100%;
@@ -312,29 +690,6 @@
 		border-color: rgba(235, 191, 124, 0.68);
 		background: rgba(39, 25, 27, 0.92);
 	}
-	.design-placeholder {
-		display: grid;
-		align-content: end;
-		min-height: 13rem;
-		padding: 1rem;
-		background:
-			radial-gradient(circle at 78% 20%, rgba(233, 157, 77, 0.3), transparent 22%),
-			radial-gradient(circle at 18% 75%, rgba(109, 70, 151, 0.36), transparent 32%),
-			linear-gradient(135deg, #100d16, #1c1012 62%, #090a0e);
-	}
-	.design-placeholder small {
-		font-size: 0.62rem;
-		letter-spacing: 0.13em;
-		text-transform: uppercase;
-		color: #eac18d;
-	}
-	.design-placeholder strong {
-		margin: 0.55rem 0;
-		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(1.35rem, 2.4vw, 2rem);
-		font-weight: 500;
-		line-height: 0.98;
-	}
 	.design-card-copy {
 		display: flex;
 		justify-content: space-between;
@@ -359,29 +714,9 @@
 		font-size: 0.78rem;
 	}
 
-	.collection-reference {
-		margin: 1.5rem 0 0;
-		padding: 0.7rem;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 1.1rem;
-		background: rgba(10, 10, 13, 0.8);
-	}
-
-	.collection-reference img {
-		display: block;
-		width: 100%;
-		height: auto;
-		border-radius: 0.7rem;
-	}
-
-	.collection-reference figcaption {
-		padding: 0.7rem 0.25rem 0.1rem;
-		color: var(--muted);
-		font-size: 0.78rem;
-	}
 	.package-grid {
 		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 0.85rem;
 	}
 	.package-card {
@@ -394,9 +729,6 @@
 	.package-card.featured {
 		border-color: rgba(235, 191, 124, 0.38);
 		background: linear-gradient(160deg, rgba(76, 45, 35, 0.7), rgba(13, 13, 16, 0.95));
-	}
-	.package-card.custom {
-		background: linear-gradient(160deg, rgba(54, 38, 65, 0.7), rgba(13, 13, 16, 0.95));
 	}
 	.package-topline {
 		display: flex;
@@ -426,12 +758,6 @@
 		margin: 0;
 		color: var(--muted);
 		font-size: 0.85rem;
-	}
-	.package-card .bespoke-note {
-		align-self: end;
-		color: #dfc5f4;
-		font-family: Georgia, 'Times New Roman', serif;
-		font-size: 0.92rem;
 	}
 	.selection-review {
 		display: grid;

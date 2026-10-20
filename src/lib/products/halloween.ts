@@ -5,7 +5,7 @@ export type ProductMedia =
 	| { type: 'video'; src: string; poster?: string; alt: string };
 
 export type HalloweenPackage = {
-	id: 'single-panel' | 'mini-mural' | 'full-mural' | 'custom-mural';
+	id: 'single-panel' | 'mini-mural' | 'full-mural';
 	label: string;
 	editionName: string;
 	name: string;
@@ -55,83 +55,91 @@ export const halloweenCollectionReferenceMedia: ProductMedia = {
 export const halloweenPackages: HalloweenPackage[] = [
 	{
 		id: 'single-panel',
-		label: 'Single Panel',
-		editionName: 'The Statement',
-		name: 'Single 8×10 Halloween panel',
-		priceLabel: '$14.99',
-		description: 'One statement panel.',
+		label: 'Single 8×10',
+		editionName: 'Single 8×10',
+		name: 'One 8×10 magnetic panel',
+		priceLabel: '$19.99',
+		description: 'One 8×10 panel, ready to make your fridge or display a little more you.',
 		stripeStatus: 'range-needs-variant-prices',
 		variants: [
-			{ id: 'single.standard', label: 'Standard', priceCents: 1499 },
-			{ id: 'single.personalized', label: 'Personalized — request a quote', priceCents: 0 }
+			{ id: 'single.standard', label: 'Standard', priceCents: 1999 },
+			{ id: 'single.personalized', label: 'Personalized (+$5)', priceCents: 2499 }
 		],
 		futureOptionKeys: ['panel-number']
 	},
 	{
 		id: 'mini-mural',
-		label: 'Three-Panel Set',
-		editionName: 'The Three-Panel Set',
-		name: '3-panel Halloween set',
-		priceLabel: '$29.99',
-		description: 'Three coordinating panels for an instant seasonal display.',
+		label: 'Mini Mural',
+		editionName: 'Mini Mural',
+		name: 'Four 8×10 panels',
+		priceLabel: '$44.99',
+		description: 'Four 8×10 panels that come together as a little wall of Halloween.',
 		stripeStatus: 'range-needs-variant-prices',
 		variants: [
-			{ id: 'mini4.standard', label: 'Standard', priceCents: 2999 },
-			{ id: 'mini4.personalized', label: 'Personalized — request a quote', priceCents: 0 }
+			{ id: 'mini4.standard', label: 'Standard', priceCents: 4499 },
+			{ id: 'mini4.personalized', label: 'Personalized (+$5)', priceCents: 4999 }
 		],
 		futureOptionKeys: ['2x2-grouping']
 	},
 	{
 		id: 'full-mural',
-		label: 'Full Mural',
-		editionName: 'The Full Installation',
-		name: 'Full 9-panel mural',
-		priceLabel: '$59.99',
-		description: 'The complete nine-piece mural.',
+		label: 'Signature Mural',
+		editionName: 'Signature Mural',
+		name: 'Full nine-piece mural',
+		priceLabel: '$99.99',
+		description: 'The complete nine-piece 8×10 mural. The full scene, all together.',
 		badge: 'Complete Mural',
 		stripeStatus: 'exact-price-needs-stripe-price',
-		variants: [{ id: 'full.standard', label: 'Standard', priceCents: 5999 }],
-		futureOptionKeys: []
-	},
-	{
-		id: 'custom-mural',
-		label: 'Custom',
-		editionName: 'The Bespoke Edition',
-		name: 'Personalized/custom 9-panel mural',
-		priceLabel: 'Request a quote',
-		description: 'A personalized mural request, prepared around your direction.',
-		stripeStatus: 'range-needs-variant-prices',
 		variants: [
-			{ id: 'custom.personalized', label: 'Personalized — request a quote', priceCents: 0 },
-			{ id: 'custom.full', label: 'Fully custom — request a quote', priceCents: 0 }
+			{ id: 'full.standard', label: 'Standard', priceCents: 9999 },
+			{ id: 'full.personalized', label: 'Personalized (+$5)', priceCents: 10499 }
 		],
-		futureOptionKeys: ['personalization-details', 'custom-upload']
+		futureOptionKeys: []
 	}
 ];
 
 const allPackageIds = halloweenPackages.map((productPackage) => productPackage.id);
 
 export const halloweenDesigns: HalloweenDesign[] = [
-	'Haunted Hospital',
-	'Pumpkin Patch Massacre',
-	'Ghostly Graveyard',
-	'Creepy Carnival',
-	'Witches Brew',
-	'Scream Season'
-].map((name) => ({
-	id: name.toLowerCase().replaceAll(' ', '-'),
-	name,
-	slug: name.toLowerCase().replaceAll(' ', '-'),
-	active: true,
-	available: true,
-	productOptionIds: allPackageIds,
-	badges: ['Holographe Exclusive'],
-	placeholderLabel: 'Artwork preview not available yet',
-	thumbnail:
-		name === 'Creepy Carnival'
-			? { type: 'image', src: '/media/halloween/creepy-carnival.jpg', alt: 'Creepy Carnival Halloween mural artwork' }
-			: undefined
-}));
+	'Haunted Wedding',
+	'Carnival Clown',
+	'Midnight Matinee',
+	'Halloween Lit Street',
+	'Haunted Gothic Corridor',
+	'Killing Time',
+	'Skull Garden'
+].map((name, index) => {
+	const slug = [
+		'haunted-wedding',
+		'carnival-clown',
+		'midnight-matinee',
+		'halloween-lit-street',
+		'haunted-gothic-corridor',
+		'killing-time',
+		'skull-garden'
+	][index];
+	return {
+		id: slug,
+		name,
+		slug,
+		active: true,
+		available: true,
+		productOptionIds: allPackageIds,
+		badges: ['Holographe Exclusive'],
+		thumbnail: {
+			type: 'image',
+			src: `/media/halloween/customer-designs/${slug}.webp`,
+			alt: `${name} Halloween magnetic mural artwork`
+		},
+		previewMedia: [
+			{
+				type: 'image',
+				src: `/media/halloween/customer-designs/${slug}.webp`,
+				alt: `${name} Halloween magnetic mural artwork`
+			}
+		]
+	};
+});
 
 export const halloweenProducts: CatalogProduct[] = [
 	{
